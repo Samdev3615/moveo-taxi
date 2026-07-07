@@ -1,0 +1,203 @@
+{
+  "nav": {
+    "home": "בית",
+    "booking": "הזמנה",
+    "airport": "נמל תעופה",
+    "intercity": "בין-עירוני",
+    "routes": "מסלולים",
+    "drivers": "לנהגים",
+    "about": "אודות",
+    "contact": "צור קשר",
+    "login": "כניסה",
+    "book": "הזמן עכשיו"
+  },
+  "hero": {
+    "badge": "העברות נמל תעופה ובין-עירוניות",
+    "titleLine1": "הנסיעות שלך,",
+    "titleGreen": "נמל תעופה",
+    "titleOrange": "בין-עירוני",
+    "subtitle": "הזמן מונית עם נהגים מקצועיים במחיר הטוב ביותר.",
+    "cta": "הזמן עכשיו",
+    "ctaSecondary": "צור קשר בוואטסאפ",
+    "stat_service": "שירות",
+    "stat_customers": "לקוחות מרוצים",
+    "stat_years": "שנות ניסיון"
+  },
+  "trust": {
+    "drivers": "נהגים מורשים",
+    "drivers_desc": "נהגים מקצועיים",
+    "prices": "מחיר קבוע",
+    "prices_desc": "ללא הפתעות",
+    "payment": "תשלום מאובטח",
+    "payment_desc": "עסקה בטוחה",
+    "support": "תמיכה 24/7",
+    "support_desc": "אנחנו כאן לעזור",
+    "bar": {
+      "commission": "עמלה בלבד",
+      "commission_desc": "העמלה הנמוכה ביותר בשוק",
+      "advance": "הזמנה מוקדמת",
+      "advance_desc": "עד 30 יום מראש",
+      "drivers": "נהגים אמינים",
+      "drivers_desc": "נהגים מקצועיים ומנוסים",
+      "price": "ערובת המחיר הטוב ביותר",
+      "price_desc": "נשווה את המחיר אם תמצא זול יותר",
+      "support": "תמיכה 24/7",
+      "support_desc": "אנחנו כאן כדי לעזור לך"
+    }
+  },
+  "stats": {
+    "drivers": "נהגים שותפים",
+    "clients": "לקוחות מרוצים",
+    "trips": "נסיעות בוצעו",
+    "safety": "בטיחות ואמינות"
+  },
+  "booking": {
+    "title": "הזמן נסיעה",
+    "widget_title": "הזמן את הנסיעה שלך",
+    "widget_cta": "ראה מחירים והזמן",
+    "instant_confirmation": "אישור מיידי",
+    "mode": {
+      "oneway": "נסיעה הלוך",
+      "roundtrip": "הלוך-חזור"
+    },
+    "tabs": {
+      "airport": "נמל תעופה",
+      "intercity": "בין-עירוני"
+    },
+    "form": {
+      "from": "מוצא",
+      "to": "יעד",
+      "date": "תאריך",
+      "time": "שעה",
+      "passengers": "נוסעים",
+      "luggage": "מטען",
+      "vehicle": "סוג רכב",
+      "direction": "כיוון",
+      "toAirport": "לנמל התעופה",
+      "fromAirport": "מנמל התעופה",
+      "flightNumber": "מספר טיסה (אופציונלי)",
+      "terminal": "טרמינל",
+      "name": "שם מלא",
+      "phone": "מספר טלפון",
+      "email": "אימייל (אופציונלי)",
+      "notes": "הערות",
+      "submit": "הזמן עכשיו",
+      "calculating": "מחשב...",
+      "vehicles": {
+        "sedan": "מונית פרטית (1-4 נוסעים)",
+        "minibus": "מיניבוס (5-8 נוסעים)"
+      },
+      "cities": {
+        "tel_aviv": "תל אביב",
+        "jerusalem": "ירושלים",
+        "haifa": "חיפה",
+        "beer_sheva": "באר שבע",
+        "eilat": "אילת",
+        "netanya": "נתניה",
+        "ashdod": "אשדוד",
+        "rishon": "ראשון לציון",
+        "petah_tikva": "פתח תקווה",
+        "ben_gurion": "נמל תעופה בן גוריון"
+      }
+    },
+    "price": {
+      "estimate": "הערכת מחיר",
+      "currency": "₪",
+      "note": "המחיר הסופי ייקבע בהתחשב בתנאי הדרך"
+    }
+  },
+  "features": {
+    "title": "למה לבחור ב-Moveo Taxi?",
+    "items": {
+      "reliable": { "title": "אמין ובטוח", "description": "נהגים מקצועיים עם ניסיון רב ורישיון תקף" },
+      "available": { "title": "זמין 24/7", "description": "שירות לכל שעה ביום ובלילה, כולל חגים" },
+      "fixed": { "title": "מחיר קבוע", "description": "אין הפתעות — המחיר נקבע מראש ולא משתנה" },
+      "comfort": { "title": "נוח ומרווח", "description": "כלי רכב מודרניים ונוחים לנסיעה ארוכה" }
+    }
+  },
+  "routes": {
+    "title": "מסלולים פופולריים",
+    "subtitle": "מחירים קבועים לנסיעות בין-עירוניות",
+    "viewAll": "צפה בכל המסלולים",
+    "from": "מ",
+    "to": "ל",
+    "book": "הזמן"
+  },
+  "airport": {
+    "title": "העברות נמל תעופה",
+    "subtitle": "שירות מהיר ואמין לנמל תעופה בן גוריון",
+    "terminals": "טרמינלים 1 ו-3",
+    "flightMonitoring": "מעקב טיסות בזמן אמת",
+    "waitingTime": "זמן המתנה ללא תוספת מחיר"
+  },
+  "contact": {
+    "title": "צור קשר",
+    "whatsapp": "שלח הודעה בוואטסאפ",
+    "call": "התקשר עכשיו",
+    "email": "שלח אימייל",
+    "hours": "שעות פעילות",
+    "hoursValue": "24/7 — כל ימות השנה"
+  },
+  "footer": {
+    "tagline": "שירות מוניות אמין לכל ישראל",
+    "rights": "כל הזכויות שמורות"
+  },
+  "confirmation": {
+    "title": "ההזמנה התקבלה!",
+    "subtitle": "נחזור אליך בהקדם לאישור הנסיעה",
+    "bookingId": "מספר הזמנה",
+    "details": "פרטי הנסיעה",
+    "whatsapp": "אשר בוואטסאפ",
+    "newBooking": "הזמנה חדשה"
+  },
+  "admin": {
+    "title": "לוח ניהול",
+    "login": "כניסה",
+    "password": "סיסמה",
+    "bookings": "הזמנות",
+    "today": "היום",
+    "week": "השבוע",
+    "all": "הכל",
+    "pending": "ממתין",
+    "confirmed": "מאושר",
+    "completed": "הושלם",
+    "cancelled": "בוטל",
+    "confirm": "אשר",
+    "cancel": "בטל",
+    "export": "ייצוא CSV"
+  },
+  "about": {
+    "title": "אודות Moveo Taxi",
+    "subtitle": "שירות מוניות מקצועי בישראל מאז 2015",
+    "mission_title": "המשימה שלנו",
+    "mission_text": "לספק שירות הסעות אמין, נוח ובמחיר סביר לכל הנסיעות הבין-עירוניות והעברות לנמל התעופה בישראל.",
+    "values_title": "הערכים שלנו",
+    "value_reliable": "אמינות",
+    "value_reliable_desc": "תמיד בזמן, תמיד מקצועי",
+    "value_professional": "מקצועיות",
+    "value_professional_desc": "נהגים מנוסים ומנומסים",
+    "value_fast": "מהירות",
+    "value_fast_desc": "מסלולים מותאמים לנוחותך",
+    "value_transparent": "שקיפות",
+    "value_transparent_desc": "מחירים קבועים, ללא הפתעות"
+  },
+  "driversPage": {
+    "title": "הצטרף לצי שלנו",
+    "subtitle": "הפוך לנהג שותף של Moveo Taxi",
+    "cta": "הצטרף עכשיו",
+    "benefits_title": "למה להצטרף אלינו?",
+    "benefit_income": "הכנסה אטרקטיבית",
+    "benefit_income_desc": "הרוויח יותר עם העמלה הנמוכה ביותר בשוק",
+    "benefit_flexible": "שעות גמישות",
+    "benefit_flexible_desc": "עבוד מתי שנוח לך",
+    "benefit_support": "תמיכה ייעודית",
+    "benefit_support_desc": "הצוות שלנו לצדך 7 ימים בשבוע",
+    "benefit_partners": "רשת שותפים",
+    "benefit_partners_desc": "הצטרף ל-800+ נהגים מקצועיים",
+    "join_title": "איך להצטרף?",
+    "join_step1": "שלח מועמדות בוואטסאפ",
+    "join_step2": "אימות רישיון הנהיגה",
+    "join_step3": "הכשרה והצטרפות לרשת שלנו",
+    "join_cta": "הגש מועמדות בוואטסאפ"
+  }
+}

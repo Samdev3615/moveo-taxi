@@ -1,0 +1,203 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "booking": "Réserver",
+    "airport": "Aéroport",
+    "intercity": "Inter-villes",
+    "routes": "Trajets",
+    "drivers": "Pour les chauffeurs",
+    "about": "À propos",
+    "contact": "Contact",
+    "login": "Se connecter",
+    "book": "Réserver maintenant"
+  },
+  "hero": {
+    "badge": "Transferts aéroport & inter-villes",
+    "titleLine1": "Vos trajets,",
+    "titleGreen": "notre priorité",
+    "titleOrange": "Aéroport & Inter-villes",
+    "subtitle": "Réservez votre taxi avec des chauffeurs professionnels au meilleur prix.",
+    "cta": "Réserver maintenant",
+    "ctaSecondary": "WhatsApp",
+    "stat_service": "Service",
+    "stat_customers": "Clients satisfaits",
+    "stat_years": "Ans d'expérience"
+  },
+  "trust": {
+    "drivers": "Chauffeurs licenciés",
+    "drivers_desc": "Chauffeurs professionnels",
+    "prices": "Prix fixes sans surprise",
+    "prices_desc": "Pas de mauvaises surprises",
+    "payment": "Paiement sécurisé",
+    "payment_desc": "Transactions sécurisées",
+    "support": "Support 24/7",
+    "support_desc": "Nous sommes là pour vous",
+    "bar": {
+      "commission": "seulement",
+      "commission_desc": "La commission la plus basse du marché",
+      "advance": "Réservation à l'avance",
+      "advance_desc": "Jusqu'à 30 jours à l'avance",
+      "drivers": "Chauffeurs fiables",
+      "drivers_desc": "Des chauffeurs professionnels et expérimentés",
+      "price": "Meilleur prix garanti",
+      "price_desc": "Si vous trouvez moins cher, nous égalons le prix",
+      "support": "Support 24/7",
+      "support_desc": "Nous sommes là pour vous aider"
+    }
+  },
+  "stats": {
+    "drivers": "Chauffeurs partenaires",
+    "clients": "Clients satisfaits",
+    "trips": "Trajets effectués",
+    "safety": "Sécurité et fiabilité"
+  },
+  "booking": {
+    "title": "Réserver un trajet",
+    "widget_title": "Réservez votre trajet",
+    "widget_cta": "Voir les prix et réserver",
+    "instant_confirmation": "Confirmation immédiate",
+    "mode": {
+      "oneway": "Aller simple",
+      "roundtrip": "Aller-retour"
+    },
+    "tabs": {
+      "airport": "Aéroport",
+      "intercity": "Inter-ville"
+    },
+    "form": {
+      "from": "Départ",
+      "to": "Destination",
+      "date": "Date",
+      "time": "Heure",
+      "passengers": "Passagers",
+      "luggage": "Bagages",
+      "vehicle": "Type de véhicule",
+      "direction": "Direction",
+      "toAirport": "Vers l'aéroport",
+      "fromAirport": "Depuis l'aéroport",
+      "flightNumber": "Numéro de vol (optionnel)",
+      "terminal": "Terminal",
+      "name": "Nom complet",
+      "phone": "Numéro de téléphone",
+      "email": "Email (optionnel)",
+      "notes": "Notes",
+      "submit": "Réserver",
+      "calculating": "Calcul en cours...",
+      "vehicles": {
+        "sedan": "Taxi privé (1-4 passagers)",
+        "minibus": "Minibus (5-8 passagers)"
+      },
+      "cities": {
+        "tel_aviv": "Tel Aviv",
+        "jerusalem": "Jérusalem",
+        "haifa": "Haïfa",
+        "beer_sheva": "Beer Sheva",
+        "eilat": "Eilat",
+        "netanya": "Netanya",
+        "ashdod": "Ashdod",
+        "rishon": "Rishon LeZion",
+        "petah_tikva": "Petah Tikva",
+        "ben_gurion": "Aéroport Ben Gourion (TLV)"
+      }
+    },
+    "price": {
+      "estimate": "Estimation du prix",
+      "currency": "₪",
+      "note": "Le prix final peut varier selon les conditions de circulation"
+    }
+  },
+  "features": {
+    "title": "Pourquoi choisir Moveo Taxi ?",
+    "items": {
+      "reliable": { "title": "Fiable & Sûr", "description": "Chauffeurs professionnels avec une grande expérience et un permis valide" },
+      "available": { "title": "Disponible 24h/24", "description": "Service à toute heure, jour et nuit, y compris les jours fériés" },
+      "fixed": { "title": "Prix fixes", "description": "Aucune surprise — le prix est fixé à l'avance et ne change pas" },
+      "comfort": { "title": "Confortable & Spacieux", "description": "Véhicules modernes et confortables pour les longs trajets" }
+    }
+  },
+  "routes": {
+    "title": "Trajets populaires",
+    "subtitle": "Prix fixes pour les trajets inter-villes",
+    "viewAll": "Voir tous les trajets",
+    "from": "De",
+    "to": "À",
+    "book": "Réserver"
+  },
+  "airport": {
+    "title": "Transferts aéroport",
+    "subtitle": "Transferts rapides et fiables vers l'aéroport Ben Gourion",
+    "terminals": "Terminaux 1 & 3",
+    "flightMonitoring": "Suivi des vols en temps réel",
+    "waitingTime": "Temps d'attente sans supplément"
+  },
+  "contact": {
+    "title": "Nous contacter",
+    "whatsapp": "Envoyer un message WhatsApp",
+    "call": "Appeler maintenant",
+    "email": "Envoyer un email",
+    "hours": "Horaires",
+    "hoursValue": "24h/24, 7j/7 — Toute l'année"
+  },
+  "footer": {
+    "tagline": "Service de taxi fiable dans tout Israël",
+    "rights": "Tous droits réservés"
+  },
+  "confirmation": {
+    "title": "Réservation reçue !",
+    "subtitle": "Nous vous contacterons rapidement pour confirmer votre trajet",
+    "bookingId": "Numéro de réservation",
+    "details": "Détails du trajet",
+    "whatsapp": "Confirmer par WhatsApp",
+    "newBooking": "Nouvelle réservation"
+  },
+  "admin": {
+    "title": "Tableau de bord",
+    "login": "Connexion",
+    "password": "Mot de passe",
+    "bookings": "Réservations",
+    "today": "Aujourd'hui",
+    "week": "Cette semaine",
+    "all": "Tout",
+    "pending": "En attente",
+    "confirmed": "Confirmé",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "export": "Exporter CSV"
+  },
+  "about": {
+    "title": "À propos de Moveo Taxi",
+    "subtitle": "Service de taxi professionnel en Israël depuis 2015",
+    "mission_title": "Notre mission",
+    "mission_text": "Offrir un service de transport fiable, confortable et abordable pour tous les trajets inter-villes et transferts aéroport en Israël.",
+    "values_title": "Nos valeurs",
+    "value_reliable": "Fiabilité",
+    "value_reliable_desc": "Toujours à l'heure, toujours professionnel",
+    "value_professional": "Professionnalisme",
+    "value_professional_desc": "Des chauffeurs expérimentés et courtois",
+    "value_fast": "Rapidité",
+    "value_fast_desc": "Des trajets optimisés pour votre confort",
+    "value_transparent": "Transparence",
+    "value_transparent_desc": "Prix fixes, sans surprise"
+  },
+  "driversPage": {
+    "title": "Rejoignez notre flotte",
+    "subtitle": "Devenez chauffeur partenaire Moveo Taxi",
+    "cta": "Rejoindre maintenant",
+    "benefits_title": "Pourquoi nous rejoindre ?",
+    "benefit_income": "Revenus attractifs",
+    "benefit_income_desc": "Gagnez plus avec la meilleure commission du marché",
+    "benefit_flexible": "Horaires flexibles",
+    "benefit_flexible_desc": "Travaillez quand vous voulez",
+    "benefit_support": "Support dédié",
+    "benefit_support_desc": "Notre équipe vous accompagne 7j/7",
+    "benefit_partners": "Réseau de partenaires",
+    "benefit_partners_desc": "Rejoignez +800 chauffeurs professionnels",
+    "join_title": "Comment nous rejoindre ?",
+    "join_step1": "Envoyez votre candidature sur WhatsApp",
+    "join_step2": "Vérification de votre permis de conduire",
+    "join_step3": "Formation et intégration à notre réseau",
+    "join_cta": "Postuler sur WhatsApp"
+  }
+}
