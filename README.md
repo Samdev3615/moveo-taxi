@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Moveo Taxi 🚖
 
-## Getting Started
+Site de réservation de taxi en Israël — transferts aéroport Ben Gourion et trajets inter-villes.
 
-First, run the development server:
+## Stack technique
+
+- **Next.js 14** (App Router)
+- **next-intl** — 5 langues : hébreu (RTL), anglais, français, russe, espagnol
+- **Tailwind CSS v4**
+- **Supabase** — base de données et panel admin
+- **Vercel** — déploiement
+
+## Lancer le projet
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables d'environnement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Créer un fichier `.env.local` :
 
-## Learn More
+```env
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Pages
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Route | Description |
+|-------|-------------|
+| `/` | Accueil avec widget de réservation |
+| `/airport` | Transferts aéroport Ben Gourion |
+| `/booking` | Formulaire de réservation |
+| `/routes` | Trajets inter-villes et tarifs |
+| `/about` | À propos de Moveo Taxi |
+| `/contact` | Contact et horaires |
+| `/admin` | Panel admin (protégé) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Langues
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Le site est disponible en 5 langues via les routes `/he`, `/en`, `/fr`, `/ru`, `/es`.
+L'hébreu est la langue par défaut avec support RTL complet.
