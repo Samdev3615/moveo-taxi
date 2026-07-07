@@ -1,10 +1,21 @@
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return { title: t("contact.title"), description: t("contact.description") };
+}
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
-const PHONE = "+972-53-1234567";
-const WHATSAPP_NUMBER = "972531234567";
+const PHONE = "+972-54-310-0044";
+const WHATSAPP_NUMBER = "972543100044";
 
 export default async function ContactPage() {
   const t = await getTranslations();

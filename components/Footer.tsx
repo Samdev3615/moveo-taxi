@@ -4,8 +4,8 @@ import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
 import Logo from "./Logo";
 
-const PHONE = "+972-53-1234567";
-const WHATSAPP_NUMBER = "972531234567";
+const PHONE = "+972-54-310-0044";
+const WHATSAPP_NUMBER = "972543100044";
 
 export default function Footer() {
   const t = useTranslations();

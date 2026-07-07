@@ -199,5 +199,27 @@
     "join_step2": "Verification of your driving license",
     "join_step3": "Training and integration into our network",
     "join_cta": "Apply on WhatsApp"
+  },
+  "meta": {
+    "home": {
+      "title": "Moveo Taxi — Ben Gurion Airport Transfers & Intercity Taxi Israel",
+      "description": "Book your taxi in Israel. Ben Gurion airport transfers, intercity trips Tel Aviv, Jerusalem, Haifa. Professional drivers, fixed prices, available 24/7."
+    },
+    "airport": {
+      "title": "Ben Gurion Airport Transfer (TLV) | Moveo Taxi Israel",
+      "description": "Taxi to and from Ben Gurion Airport. Easy online booking, guaranteed fixed price, punctual driver. Moveo Taxi — available 24/7."
+    },
+    "routes": {
+      "title": "Intercity Taxi Israel — Prices & Booking | Moveo Taxi",
+      "description": "All intercity routes in Israel with fixed prices. Tel Aviv, Jerusalem, Haifa, Beer Sheva. Fast online booking with Moveo Taxi."
+    },
+    "about": {
+      "title": "About Moveo Taxi | Premium Taxi Service in Israel",
+      "description": "Moveo Taxi — professional taxi service in Israel since 2015. 800+ licensed drivers, 50,000+ trips, guaranteed fixed prices."
+    },
+    "contact": {
+      "title": "Contact Moveo Taxi — Phone, WhatsApp, 24/7",
+      "description": "Contact Moveo Taxi by phone or WhatsApp to book your taxi in Israel. Service available 24/7."
+    }
   }
 }

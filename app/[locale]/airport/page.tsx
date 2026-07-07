@@ -1,12 +1,23 @@
+import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return { title: t("airport.title"), description: t("airport.description") };
+}
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BookingWidget from "@/components/BookingWidget";
 
-const WHATSAPP_NUMBER = "972531234567";
-const PHONE = "+972-53-1234567";
+const WHATSAPP_NUMBER = "972543100044";
+const PHONE = "+972-54-310-0044";
 
 const AIRPORT_ROUTES = [
   { city: "tel_aviv", duration: "30 min", price: 140 },

@@ -1,14 +1,40 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { locales, rtlLocales, type Locale } from "@/i18n/config";
 import "../globals.css";
 
-export const metadata: Metadata = {
-  title: "Moveo Taxi — שירות מוניות בישראל",
-  description: "הזמנת מוניות לנסיעות בין-עירוניות ולנמל תעופה בן גוריון",
-};
+const BASE_URL = "https://www.moveotaxi.co.il";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+
+  return {
+    title: {
+      default: t("home.title"),
+      template: "%s | Moveo Taxi",
+    },
+    description: t("home.description"),
+    alternates: {
+      canonical: `${BASE_URL}/${locale}`,
+      languages: {
+        he: `${BASE_URL}/he`,
+        en: `${BASE_URL}/en`,
+        fr: `${BASE_URL}/fr`,
+        ru: `${BASE_URL}/ru`,
+        es: `${BASE_URL}/es`,
+        "x-default": `${BASE_URL}/he`,
+      },
+    },
+    metadataBase: new URL(BASE_URL),
+  };
+}
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));

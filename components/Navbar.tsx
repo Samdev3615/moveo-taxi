@@ -7,8 +7,8 @@ import { Menu, X, Phone } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Logo from "./Logo";
 
-const PHONE = "+972-53-1234567";
-const WHATSAPP_NUMBER = "972531234567";
+const PHONE = "+972-54-310-0044";
+const WHATSAPP_NUMBER = "972543100044";
 
 export default function Navbar() {
   const t = useTranslations("nav");

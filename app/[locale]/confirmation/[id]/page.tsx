@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
-const WHATSAPP_NUMBER = "972501234567";
+const WHATSAPP_NUMBER = "972543100044";
 
 export default async function ConfirmationPage({
   params,

@@ -1,4 +1,15 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return { title: t("home.title"), description: t("home.description") };
+}
 import { Users, Car, CheckCircle, ShieldCheck, Tag, Lock, Headphones } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

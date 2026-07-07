@@ -199,5 +199,27 @@
     "join_step2": "Verificación de tu licencia de conducir",
     "join_step3": "Formación e integración en nuestra red",
     "join_cta": "Solicitar por WhatsApp"
+  },
+  "meta": {
+    "home": {
+      "title": "Moveo Taxi — Traslados Aeropuerto Ben Gurión y Taxi Interurbano Israel",
+      "description": "Reserve su taxi en Israel. Traslados aeropuerto Ben Gurión, viajes interurbanos Tel Aviv, Jerusalén, Haifa. Conductores profesionales, precios fijos, disponible 24/7."
+    },
+    "airport": {
+      "title": "Traslado Aeropuerto Ben Gurión (TLV) | Moveo Taxi Israel",
+      "description": "Taxi al y desde el aeropuerto Ben Gurión. Reserva online fácil, precio fijo garantizado, conductor puntual. Moveo Taxi — disponible 24/7."
+    },
+    "routes": {
+      "title": "Taxi Interurbano Israel — Precios y Reservas | Moveo Taxi",
+      "description": "Todas las rutas interurbanas en Israel con precios fijos. Tel Aviv, Jerusalén, Haifa, Beer Sheva. Reserva rápida online con Moveo Taxi."
+    },
+    "about": {
+      "title": "Sobre Moveo Taxi | Servicio de Taxi Premium en Israel",
+      "description": "Moveo Taxi — servicio de taxi profesional en Israel desde 2015. 800+ conductores con licencia, 50 000+ viajes, precios fijos garantizados."
+    },
+    "contact": {
+      "title": "Contactar Moveo Taxi — Teléfono, WhatsApp, 24/7",
+      "description": "Contacte Moveo Taxi por teléfono o WhatsApp para reservar su taxi en Israel. Servicio disponible 24/7."
+    }
   }
 }
