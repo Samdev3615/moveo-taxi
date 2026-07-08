@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
 
-const BASE_URL = "https://www.moveotaxi.co.il";
+const BASE_URL = "https://www.moveotaxi.com";
 
 const pages = [
   { path: "", changeFrequency: "daily" as const, priority: 1.0 },

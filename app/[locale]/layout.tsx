@@ -5,7 +5,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { locales, rtlLocales, type Locale } from "@/i18n/config";
 import "../globals.css";
 
-const BASE_URL = "https://www.moveotaxi.co.il";
+const BASE_URL = "https://www.moveotaxi.com";
 
 export async function generateMetadata({
   params,
