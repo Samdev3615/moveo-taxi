@@ -45,8 +45,8 @@ export default async function ContactPage() {
       icon: <span className="text-2xl">✉️</span>,
       bg: "bg-[#F5922A]",
       label: t("contact.email"),
-      value: "info@moveotaxi.co.il",
-      href: "mailto:info@moveotaxi.co.il",
+      value: "support@moveotaxi.com",
+      href: "mailto:support@moveotaxi.com",
       external: false,
     },
   ];
