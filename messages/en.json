@@ -25,9 +25,9 @@
   },
   "trust": {
     "drivers": "Licensed Drivers",
-    "drivers_desc": "Professional drivers",
+    "drivers_desc": "Verified, insured and experienced",
     "prices": "Fixed Prices",
-    "prices_desc": "No surprises",
+    "prices_desc": "Price confirmed before your trip",
     "payment": "Secure Payment",
     "payment_desc": "Safe transactions",
     "support": "24/7 Support",
@@ -47,9 +47,9 @@
   },
   "stats": {
     "drivers": "Partner Drivers",
-    "clients": "Happy Clients",
-    "trips": "Completed Trips",
-    "safety": "Safety & Reliability"
+    "available": "Available 24/7",
+    "languages": "Languages Available",
+    "noHiddenFees": "Hidden Fees"
   },
   "booking": {
     "title": "Book a Ride",
@@ -103,7 +103,7 @@
     "price": {
       "estimate": "Price Estimate",
       "currency": "₪",
-      "note": "Final price may vary based on traffic conditions"
+      "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested."
     }
   },
   "features": {

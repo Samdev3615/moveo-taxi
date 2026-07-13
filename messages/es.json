@@ -25,9 +25,9 @@
   },
   "trust": {
     "drivers": "Conductores licenciados",
-    "drivers_desc": "Conductores profesionales",
+    "drivers_desc": "Verificados, asegurados y con experiencia",
     "prices": "Precios fijos",
-    "prices_desc": "Sin sorpresas",
+    "prices_desc": "Precio confirmado antes de su viaje",
     "payment": "Pago seguro",
     "payment_desc": "Transacciones seguras",
     "support": "Soporte 24/7",
@@ -47,9 +47,9 @@
   },
   "stats": {
     "drivers": "Conductores asociados",
-    "clients": "Clientes satisfechos",
-    "trips": "Viajes realizados",
-    "safety": "Seguridad y fiabilidad"
+    "available": "Disponible 24/7",
+    "languages": "Idiomas disponibles",
+    "noHiddenFees": "Cargos ocultos"
   },
   "booking": {
     "title": "Reservar un viaje",
@@ -103,7 +103,7 @@
     "price": {
       "estimate": "Precio estimado",
       "currency": "₪",
-      "note": "El precio final puede variar según el tráfico"
+      "note": "Precio fijo confirmado al reservar. Suplemento solo si solicita parada o desvío adicional."
     }
   },
   "features": {

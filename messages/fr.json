@@ -25,9 +25,9 @@
   },
   "trust": {
     "drivers": "Chauffeurs licenciés",
-    "drivers_desc": "Chauffeurs professionnels",
+    "drivers_desc": "Vérifiés, assurés et expérimentés",
     "prices": "Prix fixes sans surprise",
-    "prices_desc": "Pas de mauvaises surprises",
+    "prices_desc": "Tarif confirmé avant votre départ",
     "payment": "Paiement sécurisé",
     "payment_desc": "Transactions sécurisées",
     "support": "Support 24/7",
@@ -47,9 +47,9 @@
   },
   "stats": {
     "drivers": "Chauffeurs partenaires",
-    "clients": "Clients satisfaits",
-    "trips": "Trajets effectués",
-    "safety": "Sécurité et fiabilité"
+    "available": "Disponible 24h/24",
+    "languages": "Langues disponibles",
+    "noHiddenFees": "Frais cachés"
   },
   "booking": {
     "title": "Réserver un trajet",
@@ -103,7 +103,7 @@
     "price": {
       "estimate": "Estimation du prix",
       "currency": "₪",
-      "note": "Le prix final peut varier selon les conditions de circulation"
+      "note": "Prix fixe confirmé à la réservation. Supplément uniquement sur demande (arrêt ou détour)."
     }
   },
   "features": {

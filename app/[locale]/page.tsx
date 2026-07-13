@@ -10,7 +10,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
   return { title: t("home.title"), description: t("home.description") };
 }
-import { Users, Car, CheckCircle, ShieldCheck, Tag, Lock, Headphones } from "lucide-react";
+import { Users, Car, Globe, Clock, ShieldCheck, Tag, Lock, Headphones } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingWidget from "@/components/BookingWidget";
@@ -32,7 +32,7 @@ const POPULAR_ROUTES = [
     to: "ben_gurion",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Azrieli_Towers_Tel_Aviv.jpg/320px-Azrieli_Towers_Tel_Aviv.jpg",
     duration: "30 min",
-    price: 120,
+    price: 140,
     type: "airport",
   },
   {
@@ -40,15 +40,15 @@ const POPULAR_ROUTES = [
     to: "ben_gurion",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Bahai_Garden_Haifa.jpg/320px-Bahai_Garden_Haifa.jpg",
     duration: "1h 15min",
-    price: 280,
+    price: 200,
     type: "airport",
   },
   {
     from: "beer_sheva",
     to: "ben_gurion",
     image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Negev_Bedouin.jpg/320px-Negev_Bedouin.jpg",
-    duration: "35 min",
-    price: 160,
+    duration: "1h",
+    price: 250,
     type: "airport",
   },
 ];
@@ -110,9 +110,9 @@ export default async function HomePage() {
 
               <div className="flex divide-x divide-white/20 rtl:divide-x-reverse">
                 {[
-                  { value: "800+",    labelKey: "stats.drivers" },
-                  { value: "25 000+", labelKey: "stats.clients" },
-                  { value: "50 000+", labelKey: "stats.trips"   },
+                  { value: "800+", labelKey: "stats.drivers"   },
+                  { value: "24/7", labelKey: "stats.available" },
+                  { value: "5",    labelKey: "stats.languages" },
                 ].map((stat, i) => (
                   <div key={stat.labelKey} className={i === 0 ? "pe-6" : "px-6"}>
                     <div className="text-2xl xl:text-3xl font-black text-white leading-none" dir="ltr">
@@ -195,10 +195,10 @@ export default async function HomePage() {
             {/* Stats */}
             <div className="flex flex-col gap-7 lg:pt-16">
               {[
-                { icon: Users,        value: "800+",    labelKey: "stats.drivers", color: "text-[#16A34A]", bg: "bg-[#16A34A]/8" },
-                { icon: Car,          value: "25 000+", labelKey: "stats.clients", color: "text-[#F97316]", bg: "bg-[#F97316]/8" },
-                { icon: CheckCircle,  value: "50 000+", labelKey: "stats.trips",   color: "text-[#16A34A]", bg: "bg-[#16A34A]/8" },
-                { icon: ShieldCheck,  value: "100%",    labelKey: "stats.safety",  color: "text-[#F97316]", bg: "bg-[#F97316]/8" },
+                { icon: Users,  value: "800+", labelKey: "stats.drivers",      color: "text-[#16A34A]", bg: "bg-[#16A34A]/8" },
+                { icon: Globe,  value: "5",    labelKey: "stats.languages",    color: "text-[#F97316]", bg: "bg-[#F97316]/8" },
+                { icon: Clock,  value: "24/7", labelKey: "stats.available",    color: "text-[#16A34A]", bg: "bg-[#16A34A]/8" },
+                { icon: Tag,    value: "0",    labelKey: "stats.noHiddenFees", color: "text-[#F97316]", bg: "bg-[#F97316]/8" },
               ].map((stat) => {
                 const Icon = stat.icon;
                 return (
