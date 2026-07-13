@@ -38,7 +38,11 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
-    sendBookingNotification({ id: data.id, ...body }).catch(console.error);
+    try {
+      await sendBookingNotification({ id: data.id, ...body });
+    } catch (emailErr) {
+      console.error("Email notification failed:", emailErr);
+    }
 
     return NextResponse.json({ id: data.id }, { status: 201 });
   } catch (err) {
