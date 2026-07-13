@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { sendBookingNotification } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,6 +37,8 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) throw error;
+
+    sendBookingNotification({ id: data.id, ...body }).catch(console.error);
 
     return NextResponse.json({ id: data.id }, { status: 201 });
   } catch (err) {
