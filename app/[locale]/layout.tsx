@@ -3,9 +3,17 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { locales, rtlLocales, type Locale } from "@/i18n/config";
+import { Heebo } from "next/font/google";
 import "../globals.css";
 
 const BASE_URL = "https://www.moveotaxi.com";
+
+const heebo = Heebo({
+  subsets: ["latin", "hebrew"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-heebo",
+});
 
 export async function generateMetadata({
   params,
@@ -60,17 +68,9 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={isRTL ? "rtl" : "ltr"}
-      className="h-full scroll-smooth"
+      className={`h-full scroll-smooth ${heebo.variable}`}
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="min-h-full flex flex-col antialiased">
+      <body className={`min-h-full flex flex-col antialiased ${heebo.className}`}>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

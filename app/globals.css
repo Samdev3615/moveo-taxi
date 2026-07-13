@@ -27,7 +27,7 @@ body {
 }
 
 body {
-  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-heebo), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Smooth scroll */
