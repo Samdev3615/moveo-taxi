@@ -58,6 +58,10 @@ type TFunc = (key: string) => string;
 export default async function HomePage() {
   const locale = await getLocale();
   const t = await getTranslations();
+  const tHIW = await getTranslations("howItWorks");
+  const tFAQ = await getTranslations("faq");
+  const steps = tHIW.raw("steps") as Array<{ num: string; title: string; desc: string }>;
+  const faqItems = tFAQ.raw("items") as Array<{ q: string; a: string }>;
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -167,6 +171,20 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ─── COMMENT ÇA MARCHE ─────────────────────────────────── */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-12">
+            {tHIW("title")}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {steps.map((step, i) => (
+              <HowItWorksStep key={i} step={step} isLast={i === steps.length - 1} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── ROUTES + STATS ────────────────────────────────────── */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -223,9 +241,66 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ─── FAQ ───────────────────────────────────────────────── */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">
+            {tFAQ("title")}
+          </h2>
+          <div className="flex flex-col gap-3">
+            {faqItems.map((item, i) => (
+              <FAQItem key={i} q={item.q} a={item.a} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       <Footer />
       <WhatsAppButton />
     </div>
+  );
+}
+
+function HowItWorksStep({
+  step,
+  isLast,
+}: {
+  step: { num: string; title: string; desc: string };
+  isLast: boolean;
+}) {
+  return (
+    <div className="relative flex flex-col items-center text-center gap-4">
+      {/* Connector line between steps (hidden on last) */}
+      {!isLast && (
+        <div className="hidden lg:block absolute top-6 start-[calc(50%+28px)] end-0 h-[2px] bg-gradient-to-r from-[#16A34A]/40 to-[#F97316]/20 rtl:bg-gradient-to-l" />
+      )}
+      {/* Step number bubble */}
+      <div className="relative z-10 w-12 h-12 rounded-full bg-gradient-to-br from-[#16A34A] to-[#15803D] flex items-center justify-center shadow-md flex-shrink-0">
+        <span className="text-white font-black text-lg leading-none">{step.num}</span>
+      </div>
+      <div>
+        <h3 className="font-bold text-gray-900 text-base mb-1">{step.title}</h3>
+        <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function FAQItem({ q, a }: { q: string; a: string }) {
+  return (
+    <details className="group border border-gray-200 rounded-2xl bg-white overflow-hidden">
+      <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none select-none font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors">
+        <span>{q}</span>
+        <span className="flex-shrink-0 w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-open:text-[#16A34A] group-open:border-[#16A34A]/30 group-open:bg-[#16A34A]/5 transition-colors">
+          <svg className="w-3 h-3 transition-transform group-open:rotate-180" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M2 4l4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
+      </summary>
+      <div className="px-5 pb-4 pt-1 text-sm text-gray-500 leading-relaxed border-t border-gray-100">
+        {a}
+      </div>
+    </details>
   );
 }
 

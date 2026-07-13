@@ -55,7 +55,7 @@
     "title": "Reservar un viaje",
     "widget_title": "Reserva tu viaje",
     "widget_cta": "Ver precios y reservar",
-    "instant_confirmation": "Confirmación inmediata",
+    "instant_confirmation": "Respuesta en 30 minutos",
     "mode": {
       "oneway": "Solo ida",
       "roundtrip": "Ida y vuelta"
@@ -105,6 +105,26 @@
       "currency": "₪",
       "note": "Precio fijo confirmado al reservar. Suplemento solo si solicita parada o desvío adicional."
     }
+  },
+  "howItWorks": {
+    "title": "¿Cómo funciona?",
+    "steps": [
+      { "num": "1", "title": "Obtén tu precio", "desc": "Ingresa los detalles de tu viaje y recibe al instante un precio fijo garantizado." },
+      { "num": "2", "title": "Confirma tu reserva", "desc": "Completa tus datos de contacto. Confirmación enviada por email o WhatsApp." },
+      { "num": "3", "title": "Recibe los datos del conductor", "desc": "Antes de la salida, recibirás el nombre y teléfono de tu conductor." },
+      { "num": "4", "title": "Tu conductor te espera", "desc": "Tu conductor te esperará en el punto acordado con tu nombre. Soporte disponible durante todo el trayecto." }
+    ]
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "items": [
+      { "q": "¿Qué pasa si mi vuelo se retrasa?", "a": "Tu conductor sigue tu vuelo en tiempo real. Si hay retraso, ajusta su hora de llegada automáticamente sin coste adicional." },
+      { "q": "¿Cómo encuentro a mi conductor en el aeropuerto?", "a": "Tu conductor te esperará en la salida de llegadas con un cartel con tu nombre, y recibirás su teléfono antes del viaje." },
+      { "q": "¿Puedo viajar con equipaje extra?", "a": "Sí. Nuestros vehículos admiten maletas y bolsas estándar. Para un volumen excepcional, indícalo en las notas de reserva." },
+      { "q": "¿Cuándo y cómo pago?", "a": "El pago se realiza directamente al conductor al final del trayecto, en efectivo o con tarjeta. No se requiere pago anticipado online." },
+      { "q": "¿Puedo cancelar mi reserva?", "a": "Sí. Cancelación gratuita hasta 2 horas antes de la salida. Contáctanos por WhatsApp o teléfono." },
+      { "q": "¿Están disponibles las sillas de bebé?", "a": "Sí. Indícalo en las notas de reserva y lo organizaremos sin coste adicional." }
+    ]
   },
   "features": {
     "title": "¿Por qué elegir Moveo Taxi?",
@@ -199,6 +219,17 @@
     "join_step2": "Verificación de tu licencia de conducir",
     "join_step3": "Formación e integración en nuestra red",
     "join_cta": "Solicitar por WhatsApp"
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "intro": "Moveo Taxi respeta tu privacidad. Esta política explica cómo recopilamos y usamos la información personal cuando utilizas nuestro servicio de reserva de taxi.",
+    "section1_title": "Información que recopilamos",
+    "section1_text": "Recopilamos tu nombre, número de teléfono, email (opcional) y los detalles del viaje cuando realizas una reserva. Esta información se utiliza únicamente para confirmar y completar tu reserva.",
+    "section2_title": "Almacenamiento de datos",
+    "section2_text": "La información de tu reserva se almacena de forma segura y solo es accesible para nuestro equipo. No vendemos ni compartimos tus datos con terceros.",
+    "section3_title": "Contacto",
+    "section3_text": "Para cualquier pregunta relacionada con la privacidad, contáctanos a través de",
+    "section3_link": "nuestra página de contacto"
   },
   "meta": {
     "home": {

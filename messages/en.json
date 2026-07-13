@@ -55,7 +55,7 @@
     "title": "Book a Ride",
     "widget_title": "Book Your Trip",
     "widget_cta": "View Prices & Book",
-    "instant_confirmation": "Immediate Confirmation",
+    "instant_confirmation": "Response within 30 minutes",
     "mode": {
       "oneway": "One Way",
       "roundtrip": "Round Trip"
@@ -105,6 +105,26 @@
       "currency": "₪",
       "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested."
     }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "steps": [
+      { "num": "1", "title": "Get your price", "desc": "Enter your trip details and instantly receive a guaranteed fixed price." },
+      { "num": "2", "title": "Confirm your booking", "desc": "Fill in your contact details. Confirmation sent by email or WhatsApp." },
+      { "num": "3", "title": "Receive your driver's info", "desc": "Before departure, you receive your driver's name and phone number." },
+      { "num": "4", "title": "Your driver is waiting", "desc": "Your driver meets you at the agreed spot with your name. Support available throughout the trip." }
+    ]
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "items": [
+      { "q": "What happens if my flight is delayed?", "a": "Your driver tracks your flight in real time. If delayed, they adjust their arrival time automatically at no extra charge." },
+      { "q": "How do I find my driver at the airport?", "a": "Your driver will wait at the arrivals exit with a sign bearing your name, and you'll receive their phone number before the trip." },
+      { "q": "Can I travel with extra luggage?", "a": "Yes. Our vehicles accommodate standard suitcases and bags. For exceptional volume, note it when booking." },
+      { "q": "When and how do I pay?", "a": "Payment is made directly to the driver at the end of the trip, by cash or card. No online prepayment required." },
+      { "q": "Can I cancel my booking?", "a": "Yes. Free cancellation up to 2 hours before departure. Contact us by WhatsApp or phone." },
+      { "q": "Are baby seats available?", "a": "Yes. Mention it in the booking notes and we'll arrange it at no extra charge." }
+    ]
   },
   "features": {
     "title": "Why Choose Moveo Taxi?",
@@ -199,6 +219,17 @@
     "join_step2": "Verification of your driving license",
     "join_step3": "Training and integration into our network",
     "join_cta": "Apply on WhatsApp"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "Moveo Taxi respects your privacy. This policy explains how we collect and use personal information when you use our taxi booking service.",
+    "section1_title": "Information We Collect",
+    "section1_text": "We collect your name, phone number, email (optional), and trip details when you make a booking. This information is used solely to confirm and fulfill your reservation.",
+    "section2_title": "Data Storage",
+    "section2_text": "Your booking information is stored securely and is only accessible to our team. We do not sell or share your data with third parties.",
+    "section3_title": "Contact",
+    "section3_text": "For any privacy-related questions, please contact us via",
+    "section3_link": "our contact page"
   },
   "meta": {
     "home": {

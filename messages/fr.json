@@ -55,7 +55,7 @@
     "title": "Réserver un trajet",
     "widget_title": "Réservez votre trajet",
     "widget_cta": "Voir les prix et réserver",
-    "instant_confirmation": "Confirmation immédiate",
+    "instant_confirmation": "Réponse dans les 30 minutes",
     "mode": {
       "oneway": "Aller simple",
       "roundtrip": "Aller-retour"
@@ -105,6 +105,26 @@
       "currency": "₪",
       "note": "Prix fixe confirmé à la réservation. Supplément uniquement sur demande (arrêt ou détour)."
     }
+  },
+  "howItWorks": {
+    "title": "Comment ça marche ?",
+    "steps": [
+      { "num": "1", "title": "Obtenez votre prix", "desc": "Saisissez votre trajet et obtenez instantanément un prix fixe garanti." },
+      { "num": "2", "title": "Confirmez votre réservation", "desc": "Remplissez vos coordonnées. Confirmation envoyée par email ou WhatsApp." },
+      { "num": "3", "title": "Recevez les infos du chauffeur", "desc": "Avant le départ, vous recevez le nom et le numéro de votre chauffeur." },
+      { "num": "4", "title": "Votre chauffeur vous attend", "desc": "Il vous attend à l'endroit convenu avec votre nom. Support disponible tout au long du trajet." }
+    ]
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "items": [
+      { "q": "Que se passe-t-il si mon vol est retardé ?", "a": "Notre chauffeur suit votre vol en temps réel. En cas de retard, il ajuste son heure d'arrivée sans frais supplémentaires." },
+      { "q": "Comment retrouver mon chauffeur à l'aéroport ?", "a": "Il vous attendra à la sortie des arrivées avec une pancarte à votre nom, et vous recevrez son numéro de téléphone avant le trajet." },
+      { "q": "Puis-je voyager avec des bagages supplémentaires ?", "a": "Oui. Nos véhicules peuvent accueillir les bagages standards. Pour un volume exceptionnel, précisez-le dans les notes de réservation." },
+      { "q": "Quand et comment dois-je payer ?", "a": "Le paiement s'effectue directement au chauffeur à la fin du trajet, en espèces ou par carte. Aucun prépaiement en ligne." },
+      { "q": "Puis-je annuler ma réservation ?", "a": "Oui. Annulation gratuite jusqu'à 2 heures avant le départ. Contactez-nous par WhatsApp ou téléphone." },
+      { "q": "Les sièges bébé sont-ils disponibles ?", "a": "Oui. Précisez-le dans les notes lors de la réservation et nous l'organiserons sans frais supplémentaires." }
+    ]
   },
   "features": {
     "title": "Pourquoi choisir Moveo Taxi ?",
@@ -199,6 +219,17 @@
     "join_step2": "Vérification de votre permis de conduire",
     "join_step3": "Formation et intégration à notre réseau",
     "join_cta": "Postuler sur WhatsApp"
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "intro": "Moveo Taxi respecte votre vie privée. Cette politique explique comment nous collectons et utilisons vos informations personnelles lorsque vous utilisez notre service de réservation de taxi.",
+    "section1_title": "Informations collectées",
+    "section1_text": "Nous collectons votre nom, votre numéro de téléphone, votre email (optionnel) et les détails de votre trajet lors d'une réservation. Ces informations sont utilisées uniquement pour confirmer et effectuer votre réservation.",
+    "section2_title": "Stockage des données",
+    "section2_text": "Vos informations de réservation sont stockées de manière sécurisée et ne sont accessibles qu'à notre équipe. Nous ne vendons ni ne partageons vos données avec des tiers.",
+    "section3_title": "Contact",
+    "section3_text": "Pour toute question relative à la confidentialité, veuillez nous contacter via",
+    "section3_link": "notre page de contact"
   },
   "meta": {
     "home": {
