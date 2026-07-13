@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 
@@ -10,6 +12,18 @@ const WHATSAPP_NUMBER = "972543100044";
 export default function Footer() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
+  const [clicks, setClicks] = useState(0);
+
+  function handleSecretClick() {
+    const next = clicks + 1;
+    if (next >= 5) {
+      setClicks(0);
+      router.push("/admin");
+    } else {
+      setClicks(next);
+    }
+  }
 
   return (
     <footer className="bg-gray-900 text-white mt-auto">
@@ -71,7 +85,10 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
-          <span>© {new Date().getFullYear()} Moveo Taxi. {t("footer.rights")}.</span>
+          <span>
+            <span onClick={handleSecretClick} style={{ cursor: "default" }}>©</span>
+            {" "}{new Date().getFullYear()} Moveo Taxi. {t("footer.rights")}.
+          </span>
           <div className="flex gap-4">
             <Link href={`/${locale}/privacy`} className="hover:text-gray-300">Privacy</Link>
             <Link href={`/${locale}/terms`} className="hover:text-gray-300">Terms</Link>

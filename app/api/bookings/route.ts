@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { sendBookingNotification } from "@/lib/email";
+import { sendBookingNotification, sendClientConfirmation } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,7 +41,15 @@ export async function POST(req: NextRequest) {
     try {
       await sendBookingNotification({ id: data.id, ...body });
     } catch (emailErr) {
-      console.error("Email notification failed:", emailErr);
+      console.error("Admin notification failed:", emailErr);
+    }
+
+    if (body.email) {
+      try {
+        await sendClientConfirmation({ id: data.id, ...body });
+      } catch (emailErr) {
+        console.error("Client confirmation failed:", emailErr);
+      }
     }
 
     return NextResponse.json({ id: data.id }, { status: 201 });
