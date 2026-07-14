@@ -133,7 +133,6 @@ export default async function HomePage() {
             {/* Widget — carte blanche qui ressort sur le fond sombre */}
             <div className="flex items-center">
               <div className="relative w-full max-w-[420px] mx-auto lg:mx-0">
-                <div className="absolute top-0 inset-x-0 h-[3px] rounded-t-[24px] bg-gradient-to-r from-[#16A34A] to-[#F97316] z-10" />
                 <div className="rounded-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.5)] overflow-hidden bg-white">
                   <BookingWidget />
                 </div>
