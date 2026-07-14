@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
+import DatePicker from "@/components/DatePicker";
+import TimePicker from "@/components/TimePicker";
 import { cn } from "@/lib/utils";
 import { CITIES, getPrice, type CityKey } from "@/lib/prices";
 
@@ -198,23 +200,20 @@ function BookingFormInner() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.date")}</label>
-                <input
-                  type="date"
-                  lang={locale}
+                <DatePicker
                   value={form.date}
+                  onChange={(v) => update("date", v)}
                   min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => update("date", e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3c6e]"
+                  appLocale={locale}
+                  placeholder={t("form.date")}
+                  inputClassName="border-gray-200 focus:ring-[#1a3c6e]"
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.time")}</label>
-                <input
-                  type="time"
-                  lang={locale}
+                <TimePicker
                   value={form.time}
-                  onChange={(e) => update("time", e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3c6e]"
+                  onChange={(v) => update("time", v)}
                 />
               </div>
             </div>

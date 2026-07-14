@@ -34,3 +34,21 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* react-day-picker custom theme */
+.rdp-moveo {
+  --rdp-accent-color: #16A34A;
+  --rdp-accent-background-color: #f0fdf4;
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+}
+.rdp-moveo .rdp-selected .rdp-day_button {
+  background-color: #16A34A;
+  color: white;
+  border-radius: 8px;
+}
+.rdp-moveo .rdp-day_button:hover {
+  background-color: #f0fdf4;
+  color: #16A34A;
+  border-radius: 8px;
+}

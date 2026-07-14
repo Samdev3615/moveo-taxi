@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { MapPin, ArrowLeftRight, Calendar, Clock, Users, Briefcase, ArrowRight, ShieldCheck } from "lucide-react";
+import { MapPin, ArrowLeftRight, Users, Briefcase, ArrowRight, ShieldCheck } from "lucide-react";
+import DatePicker from "@/components/DatePicker";
+import TimePicker from "@/components/TimePicker";
 import { cn } from "@/lib/utils";
 import { CITIES, getPrice, type CityKey } from "@/lib/prices";
 
@@ -150,34 +152,22 @@ export default function BookingWidget() {
             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
               {t("form.date")}
             </label>
-            <div className="relative">
-              <Calendar size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="date"
-                required
-                lang={locale}
-                value={date}
-                min={new Date().toISOString().split("T")[0]}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full ps-9 pe-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A]"
-              />
-            </div>
+            <DatePicker
+              value={date}
+              onChange={setDate}
+              min={new Date().toISOString().split("T")[0]}
+              appLocale={locale}
+              placeholder={t("form.date")}
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
               {t("form.time")}
             </label>
-            <div className="relative">
-              <Clock size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="time"
-                required
-                lang={locale}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="w-full ps-9 pe-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A]"
-              />
-            </div>
+            <TimePicker
+              value={time}
+              onChange={setTime}
+            />
           </div>
         </div>
 
