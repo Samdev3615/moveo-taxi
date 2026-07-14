@@ -145,7 +145,7 @@ export default function BookingWidget() {
         </div>
 
         {/* Date / Time */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
               {t("form.date")}
@@ -180,7 +180,7 @@ export default function BookingWidget() {
         </div>
 
         {/* Passengers / Luggage */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
               {t("form.passengers")}

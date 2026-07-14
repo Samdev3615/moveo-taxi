@@ -86,7 +86,7 @@ export default async function HomePage() {
 
         {/* Contenu */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-80px)] flex items-center">
-          <div className="grid lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_420px] gap-10 xl:gap-16 w-full py-16">
+          <div className="grid md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_420px] gap-10 xl:gap-16 w-full py-16">
 
             {/* Texte — blanc sur fond sombre */}
             <div className="flex flex-col gap-7">
@@ -97,13 +97,13 @@ export default async function HomePage() {
               </div>
 
               <h1 className="font-black tracking-tight leading-[0.90]">
-                <span className="block text-[52px] sm:text-[62px] xl:text-[76px] text-white">
+                <span className="block text-[36px] sm:text-[52px] xl:text-[76px] text-white">
                   {t("hero.titleLine1")}
                 </span>
-                <span className="block text-[52px] sm:text-[62px] xl:text-[76px] text-[#16A34A]">
+                <span className="block text-[36px] sm:text-[52px] xl:text-[76px] text-[#16A34A]">
                   {t("hero.titleGreen")}
                 </span>
-                <span className="block text-[44px] sm:text-[52px] xl:text-[64px] text-[#F97316] mt-2">
+                <span className="block text-[30px] sm:text-[44px] xl:text-[64px] text-[#F97316] mt-2">
                   {t("hero.titleOrange")}
                 </span>
               </h1>
@@ -202,7 +202,7 @@ export default async function HomePage() {
                   <span className="ltr:hidden">←</span>
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {POPULAR_ROUTES.map((route, i) => (
                   <RouteCard key={i} route={route} t={t} locale={locale} />
                 ))}

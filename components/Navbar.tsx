@@ -119,6 +119,7 @@ export default function Navbar() {
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
                 className="flex-1 text-center bg-[#25D366] text-white py-2.5 rounded-xl text-sm font-semibold"
+                onClick={() => setMobileOpen(false)}
               >
                 WhatsApp
               </a>

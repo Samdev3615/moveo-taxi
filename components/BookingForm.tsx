@@ -106,7 +106,7 @@ function BookingFormInner() {
         ))}
       </div>
 
-      <div className="p-6 space-y-5">
+      <div className="p-4 sm:p-6 space-y-5">
         {/* Step 1: Trip details */}
         {step === 1 && (
           <>
@@ -155,7 +155,7 @@ function BookingFormInner() {
             )}
 
             {/* From / To */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.from")}</label>
                 <select
@@ -195,7 +195,7 @@ function BookingFormInner() {
             </div>
 
             {/* Date / Time */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.date")}</label>
                 <input
@@ -218,7 +218,7 @@ function BookingFormInner() {
             </div>
 
             {/* Passengers / Vehicle */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.passengers")}</label>
                 <select
