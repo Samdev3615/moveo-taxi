@@ -12,6 +12,7 @@ const WHATSAPP_NUMBER = "972543100044";
 
 export default function Navbar() {
   const t = useTranslations("nav");
+  const tTrust = useTranslations("trust");
   const locale = useLocale();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -59,7 +60,7 @@ export default function Navbar() {
                 <Phone size={14} className="text-[#16A34A]" />
               </div>
               <div className="leading-tight">
-                <div className="text-[10px] text-gray-400 font-normal">Support 24/7</div>
+                <div className="text-[10px] text-gray-400 font-normal">{tTrust("support")}</div>
                 <div className="font-semibold text-[#16A34A] text-sm">{PHONE}</div>
               </div>
             </a>
