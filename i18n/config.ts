@@ -18,4 +18,12 @@ export const localeFlags: Record<Locale, string> = {
   es: "🇪🇸",
 };
 
+export const localeFlagCodes: Record<Locale, string> = {
+  he: "il",
+  en: "gb",
+  fr: "fr",
+  ru: "ru",
+  es: "es",
+};
+
 export const rtlLocales: Locale[] = ["he"];
