@@ -9,7 +9,7 @@ const sizes = {
   sm: { w: 100, h: 45 },
   md: { w: 130, h: 58 },
   lg: { w: 175, h: 78 },
-  xl: { w: 200, h: 80 },
+  xl: { w: 190, h: 68 },
 };
 
 export default function Logo({ size = "md", darkBg = false }: LogoProps) {
