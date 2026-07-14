@@ -106,6 +106,10 @@
       "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested."
     }
   },
+  "driversBadge": {
+    "title": "Professional drivers",
+    "desc": "IDF veterans with certified ongoing training"
+  },
   "howItWorks": {
     "title": "How it works",
     "steps": [

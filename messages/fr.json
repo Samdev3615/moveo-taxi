@@ -106,6 +106,10 @@
       "note": "Prix fixe confirmé à la réservation. Supplément uniquement sur demande (arrêt ou détour)."
     }
   },
+  "driversBadge": {
+    "title": "Chauffeurs professionnels",
+    "desc": "Anciens militaires certifiés avec formations périodiques continues"
+  },
   "howItWorks": {
     "title": "Comment ça marche ?",
     "steps": [

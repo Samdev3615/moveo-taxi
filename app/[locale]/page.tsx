@@ -10,7 +10,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
   return { title: t("home.title"), description: t("home.description") };
 }
-import { Users, Car, Globe, Clock, ShieldCheck, Tag, Lock, Headphones } from "lucide-react";
+import { Users, Car, Globe, Clock, ShieldCheck, Tag, Lock, Headphones, Award } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingWidget from "@/components/BookingWidget";
@@ -58,6 +58,7 @@ type TFunc = (key: string) => string;
 export default async function HomePage() {
   const locale = await getLocale();
   const t = await getTranslations();
+  const tDB = await getTranslations("driversBadge");
   const tHIW = await getTranslations("howItWorks");
   const tFAQ = await getTranslations("faq");
   const steps = tHIW.raw("steps") as Array<{ num: string; title: string; desc: string }>;
@@ -166,6 +167,25 @@ export default async function HomePage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── DRIVERS BADGE ─────────────────────────────────────── */}
+      <section className="bg-gray-950 py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center sm:text-start">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#16A34A]/15 border border-[#16A34A]/30 flex items-center justify-center">
+              <Award size={22} className="text-[#16A34A]" />
+            </div>
+            <div>
+              <p className="text-white font-bold text-base sm:text-lg leading-tight">
+                {tDB("title")}
+              </p>
+              <p className="text-gray-400 text-sm mt-0.5">
+                {tDB("desc")}
+              </p>
+            </div>
           </div>
         </div>
       </section>

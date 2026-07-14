@@ -106,6 +106,10 @@
       "note": "Precio fijo confirmado al reservar. Suplemento solo si solicita parada o desvío adicional."
     }
   },
+  "driversBadge": {
+    "title": "Conductores profesionales",
+    "desc": "Veteranos del ejército israelí con formación periódica certificada"
+  },
   "howItWorks": {
     "title": "¿Cómo funciona?",
     "steps": [
