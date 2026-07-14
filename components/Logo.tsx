@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 interface LogoProps {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   darkBg?: boolean;
 }
 
@@ -9,6 +9,7 @@ const sizes = {
   sm: { w: 100, h: 45 },
   md: { w: 130, h: 58 },
   lg: { w: 175, h: 78 },
+  xl: { w: 220, h: 98 },
 };
 
 export default function Logo({ size = "md", darkBg = false }: LogoProps) {
