@@ -155,6 +155,7 @@ export default function BookingWidget() {
               <input
                 type="date"
                 required
+                lang={locale}
                 value={date}
                 min={new Date().toISOString().split("T")[0]}
                 onChange={(e) => setDate(e.target.value)}
@@ -171,6 +172,7 @@ export default function BookingWidget() {
               <input
                 type="time"
                 required
+                lang={locale}
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 className="w-full ps-9 pe-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A]"

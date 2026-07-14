@@ -200,6 +200,7 @@ function BookingFormInner() {
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.date")}</label>
                 <input
                   type="date"
+                  lang={locale}
                   value={form.date}
                   min={new Date().toISOString().split("T")[0]}
                   onChange={(e) => update("date", e.target.value)}
@@ -210,6 +211,7 @@ function BookingFormInner() {
                 <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.time")}</label>
                 <input
                   type="time"
+                  lang={locale}
                   value={form.time}
                   onChange={(e) => update("time", e.target.value)}
                   className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3c6e]"
