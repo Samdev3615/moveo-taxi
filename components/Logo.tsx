@@ -21,7 +21,7 @@ export default function Logo({ size = "md", darkBg = false }: LogoProps) {
       alt="Moveo Taxi — Service de taxi en Israël"
       width={w}
       height={h}
-      className="object-contain h-full w-auto"
+      className="object-contain"
       priority
     />
   );
