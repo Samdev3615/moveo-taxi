@@ -47,7 +47,7 @@ export default async function RoutesPage() {
       <section className="bg-gradient-to-br from-gray-50 to-white py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-[#E8F5EE] text-[#1B7A3C] text-sm font-semibold px-4 py-2 rounded-full mb-6">
-            🗺️ {t("nav.routes")}
+            {t("nav.routes")}
           </div>
           <h1 className="text-4xl font-black text-gray-900 mb-3">{t("routes.title")}</h1>
           <p className="text-gray-500 text-lg max-w-xl mx-auto">{t("routes.subtitle")}</p>
@@ -88,7 +88,7 @@ export default async function RoutesPage() {
                       </div>
                     </div>
                     <div className="text-xs text-gray-400 text-end">
-                      🚗 {route.duration}
+                      {route.duration}
                     </div>
                   </div>
 

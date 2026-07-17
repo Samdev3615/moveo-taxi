@@ -10,45 +10,42 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
   return { title: t("home.title"), description: t("home.description") };
 }
-import { Users, Car, Globe, Clock, ShieldCheck, Tag, Lock, Headphones, Award } from "lucide-react";
+import { Users, Car, Globe, Clock, ShieldCheck, Tag, Lock, Headphones, Award, TrendingDown } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingWidget from "@/components/BookingWidget";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 
-const POPULAR_ROUTES = [
+const POPULAR_ROUTE_DEFS = [
   {
     from: "jerusalem",
     to: "ben_gurion",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Jerusalem_Dome_of_the_rock_BW_14.JPG/320px-Jerusalem_Dome_of_the_rock_BW_14.JPG",
+    image: "/images/route-jerusalem.jpg",
     duration: "45 min",
-    price: 180,
     type: "airport",
   },
   {
     from: "tel_aviv",
     to: "ben_gurion",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Azrieli_Towers_Tel_Aviv.jpg/320px-Azrieli_Towers_Tel_Aviv.jpg",
+    image: "/images/route-tel-aviv.jpg",
     duration: "30 min",
-    price: 140,
     type: "airport",
   },
   {
     from: "haifa",
     to: "ben_gurion",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Bahai_Garden_Haifa.jpg/320px-Bahai_Garden_Haifa.jpg",
+    image: "/images/route-haifa.jpg",
     duration: "1h 15min",
-    price: 200,
     type: "airport",
   },
   {
     from: "beer_sheva",
     to: "ben_gurion",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Negev_Bedouin.jpg/320px-Negev_Bedouin.jpg",
+    image: "/images/route-beer-sheva.jpg",
     duration: "1h",
-    price: 250,
     type: "airport",
   },
 ];
@@ -59,10 +56,27 @@ export default async function HomePage() {
   const locale = await getLocale();
   const t = await getTranslations();
   const tDB = await getTranslations("driversBadge");
+  const tPB = await getTranslations("priceBadge");
   const tHIW = await getTranslations("howItWorks");
   const tFAQ = await getTranslations("faq");
   const steps = tHIW.raw("steps") as Array<{ num: string; title: string; desc: string }>;
   const faqItems = tFAQ.raw("items") as Array<{ q: string; a: string }>;
+
+  // Chargement des vrais prix depuis la base
+  const { data: priceRows } = await supabase
+    .from("route_prices")
+    .select("from_city, to_city, car4_day")
+    .in("from_city", POPULAR_ROUTE_DEFS.map((r) => r.from))
+    .eq("to_city", "ben_gurion");
+
+  const priceMap = Object.fromEntries(
+    (priceRows ?? []).map((r) => [`${r.from_city}→${r.to_city}`, r.car4_day as number])
+  );
+
+  const POPULAR_ROUTES = POPULAR_ROUTE_DEFS.map((r) => ({
+    ...r,
+    price: priceMap[`${r.from}→${r.to}`] ?? null,
+  }));
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -71,9 +85,11 @@ export default async function HomePage() {
       {/* ─── HERO ──────────────────────────────────────────────── */}
       <section className="relative min-h-[calc(100vh-80px)] bg-gray-950 overflow-hidden">
 
-        {/* Image en fond plein — aucune colonne, aucun collage */}
+        {/* Image en fond plein — version RTL (hébreu) ou LTR selon la locale */}
         <Image
-          src="/images/hero-taxi-transfert-aeroport-israel.png"
+          src={locale === "he"
+            ? "/images/hero-taxi-transfert-aeroport-israel.png"
+            : "/images/hero-taxi-ltr.png"}
           alt="Moveo Taxi — Transferts aéroport Ben Gurion Israël"
           fill
           className="object-cover object-center"
@@ -104,16 +120,12 @@ export default async function HomePage() {
                 <span className="block text-[36px] sm:text-[52px] xl:text-[76px] text-[#16A34A]">
                   {t("hero.titleGreen")}
                 </span>
-                <span className="block text-[30px] sm:text-[44px] xl:text-[64px] text-[#F97316] mt-2">
+                <span className="block text-[24px] sm:text-[34px] xl:text-[46px] text-[#F97316] mt-2">
                   {t("hero.titleOrange")}
                 </span>
               </h1>
 
-              <p className="text-white/65 text-base sm:text-lg leading-relaxed max-w-[400px]">
-                {t("hero.subtitle")}
-              </p>
-
-              <div className="flex divide-x divide-white/20 rtl:divide-x-reverse">
+<div className="flex divide-x divide-white/20 rtl:divide-x-reverse">
                 {[
                   { value: "800+", labelKey: "stats.drivers"   },
                   { value: "24/7", labelKey: "stats.available" },
@@ -134,7 +146,7 @@ export default async function HomePage() {
             {/* Widget — carte blanche qui ressort sur le fond sombre */}
             <div className="flex items-center">
               <div className="relative w-full max-w-[420px] mx-auto lg:mx-0">
-                <div className="rounded-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.5)] overflow-hidden bg-white">
+                <div className="rounded-[24px] shadow-[0_32px_80px_rgba(0,0,0,0.5)] bg-white">
                   <BookingWidget />
                 </div>
               </div>
@@ -171,21 +183,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ─── DRIVERS BADGE ─────────────────────────────────────── */}
+      {/* ─── BANDEAUX GARANTIE ──────────────────────────────────── */}
       <section className="bg-gray-950 py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center sm:text-start">
-            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#16A34A]/15 border border-[#16A34A]/30 flex items-center justify-center">
-              <Award size={22} className="text-[#16A34A]" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-0 text-center sm:text-start divide-y sm:divide-y-0 sm:divide-x divide-white/10">
+
+            {/* Badge chauffeurs */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 py-5 sm:py-0 sm:pe-12 lg:pe-20">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#16A34A]/15 border border-[#16A34A]/30 flex items-center justify-center">
+                <Award size={22} className="text-[#16A34A]" />
+              </div>
+              <div>
+                <p className="text-white font-bold text-base sm:text-lg leading-tight">{tDB("title")}</p>
+                <p className="text-gray-400 text-sm mt-0.5">{tDB("desc")}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-white font-bold text-base sm:text-lg leading-tight">
-                {tDB("title")}
-              </p>
-              <p className="text-gray-400 text-sm mt-0.5">
-                {tDB("desc")}
-              </p>
+
+            {/* Badge prix */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 py-5 sm:py-0 sm:ps-12 lg:ps-20">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-[#F97316]/15 border border-[#F97316]/30 flex items-center justify-center">
+                <TrendingDown size={22} className="text-[#F97316]" />
+              </div>
+              <div>
+                <p className="text-white font-bold text-base sm:text-lg leading-tight">{tPB("title")}</p>
+                <p className="text-gray-400 text-sm mt-0.5">{tPB("desc")}</p>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -328,7 +352,7 @@ function RouteCard({
   t,
   locale,
 }: {
-  route: { from: string; to: string; image: string; duration: string; price: number; type: string };
+  route: { from: string; to: string; image: string; duration: string; price: number | null; type: string };
   t: TFunc;
   locale: string;
 }) {
@@ -344,13 +368,12 @@ function RouteCard({
       href={`/${locale}/booking?${params.toString()}`}
       className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-all hover:-translate-y-1"
     >
-      <div className="h-32 relative overflow-hidden bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7]">
+      <div className="h-52 relative overflow-hidden bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7]">
         <Image
           src={route.image}
           alt={t(`booking.form.cities.${route.from}`)}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          unoptimized
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-2 start-2">
           <span className="bg-[#16A34A] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
@@ -369,7 +392,10 @@ function RouteCard({
             {route.duration}
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-lg font-black text-[#F97316]">₪{route.price}</span>
+            {route.price !== null
+              ? <span className="text-lg font-black text-[#F97316]">₪{route.price}</span>
+              : <span className="text-xs text-gray-400 italic">Sur devis</span>
+            }
             <div className="bg-[#16A34A] rounded-full p-1 group-hover:bg-[#15803D] transition-colors">
               <span className="text-white text-xs font-bold px-0.5 rtl:hidden">→</span>
               <span className="text-white text-xs font-bold px-0.5 ltr:hidden">←</span>

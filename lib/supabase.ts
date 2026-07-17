@@ -33,3 +33,16 @@ export interface Booking {
 export type BookingInsert = Omit<Booking, "id" | "created_at" | "status"> & {
   status?: BookingStatus;
 };
+
+export interface RoutePrice {
+  id: string;
+  from_city: string;
+  to_city: string;
+  car4_day: number;
+  car4_night: number;
+  car6_day: number;
+  car6_night: number;
+  updated_at: string;
+}
+
+export type RoutePriceInsert = Omit<RoutePrice, "id" | "updated_at">;

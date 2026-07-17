@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default async function TermsPage() {
-  const t = await getTranslations();
+  const t = await getTranslations("terms");
   const locale = await getLocale();
 
   return (
@@ -12,32 +12,27 @@ export default async function TermsPage() {
       <Navbar />
       <section className="py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-black text-gray-900 mb-8">Terms of Service</h1>
-          <div className="prose text-gray-600 space-y-4">
+          <h1 className="text-3xl font-black text-gray-900 mb-8">{t("title")}</h1>
+          <div className="prose text-gray-600 space-y-6">
+            <p>{t("intro")}</p>
+
+            <h2 className="text-xl font-bold text-gray-800">{t("booking_title")}</h2>
+            <p>{t("booking_text")}</p>
+
+            <h2 className="text-xl font-bold text-gray-800">{t("pricing_title")}</h2>
+            <p>{t("pricing_text")}</p>
+
+            <h2 className="text-xl font-bold text-gray-800">{t("payment_title")}</h2>
+            <p>{t("payment_text")}</p>
+
+            <h2 className="text-xl font-bold text-gray-800">{t("liability_title")}</h2>
+            <p>{t("liability_text")}</p>
+
+            <h2 className="text-xl font-bold text-gray-800">{t("contact_title")}</h2>
             <p>
-              By using Moveo Taxi&apos;s booking service, you agree to the following terms.
-            </p>
-            <h2 className="text-xl font-bold text-gray-800">Booking & Cancellation</h2>
-            <p>
-              Bookings are confirmed upon contact from our team. You may cancel your booking
-              up to 2 hours before the scheduled pickup without charge. Late cancellations
-              may incur a fee.
-            </p>
-            <h2 className="text-xl font-bold text-gray-800">Pricing</h2>
-            <p>
-              All prices shown are fixed rates in New Israeli Shekel (₪). Prices are
-              confirmed at the time of booking and will not change unless your route changes.
-            </p>
-            <h2 className="text-xl font-bold text-gray-800">Liability</h2>
-            <p>
-              Moveo Taxi is not responsible for delays caused by traffic, weather, or other
-              circumstances beyond our control.
-            </p>
-            <h2 className="text-xl font-bold text-gray-800">Contact</h2>
-            <p>
-              For questions about these terms, please{" "}
-              <Link href={`/${locale}/contact`} className="text-[#1B7A3C] font-semibold hover:underline">
-                contact us
+              {t("contact_text")}{" "}
+              <Link href={`/${locale}/contact`} className="text-[#16A34A] font-semibold hover:underline">
+                {t("contact_link")}
               </Link>
               .
             </p>

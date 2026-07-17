@@ -1,51 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { MapPin, ArrowLeftRight, Users, Briefcase, ArrowRight, ShieldCheck } from "lucide-react";
+import { MapPin, Users, ArrowRight, ShieldCheck } from "lucide-react";
 import DatePicker from "@/components/DatePicker";
 import TimePicker from "@/components/TimePicker";
 import { cn } from "@/lib/utils";
-import { CITIES, getPrice, type CityKey } from "@/lib/prices";
-
-type TripMode = "oneway" | "roundtrip";
+import { CITIES, type CityKey } from "@/lib/prices";
 
 export default function BookingWidget() {
   const t = useTranslations("booking");
   const locale = useLocale();
   const router = useRouter();
 
-  const [mode, setMode] = useState<TripMode>("oneway");
   const [from, setFrom] = useState<CityKey | "">("");
   const [to, setTo] = useState<CityKey | "">("ben_gurion");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("06:00");
-  const [passengers, setPassengers] = useState("1-4");
-  const [luggage, setLuggage] = useState("1-3");
-  const [price, setPrice] = useState<number | null>(null);
+  const [passengers, setPassengers] = useState(1);
+  const [priceData, setPriceData] = useState<{
+    car4_day: number; car4_night: number; car6_day: number; car6_night: number;
+  } | null>(null);
+  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [noPrice, setNoPrice] = useState(false);
+
+  const hour = time ? parseInt(time.split(":")[0]) : 10;
+  const isNight = hour >= 21 || hour < 6;
+  const isCar6 = passengers > 4;
+  const price = priceData
+    ? (isCar6 ? (isNight ? priceData.car6_night : priceData.car6_day)
+               : (isNight ? priceData.car4_night : priceData.car4_day))
+    : null;
+
+  useEffect(() => {
+    if (!from || !to || from === to) { setPriceData(null); setNoPrice(false); return; }
+    const controller = new AbortController();
+    setLoadingPrice(true);
+    setPriceData(null);
+    setNoPrice(false);
+    fetch(`/api/price?from=${from}&to=${to}`, { signal: controller.signal })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.car4_day) { setPriceData(data); setNoPrice(false); }
+        else if (data.no_price) { setNoPrice(true); setPriceData(null); }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingPrice(false));
+    return () => controller.abort();
+  }, [from, to]);
 
   function swap() {
     setFrom(to);
     setTo(from as CityKey);
   }
 
-  function recalc(f: CityKey | "", tDest: CityKey | "") {
-    if (f && tDest) {
-      const p = getPrice(f as CityKey, tDest as CityKey, "sedan");
-      setPrice(p);
-    }
-  }
-
-  function handleFrom(val: CityKey | "") {
-    setFrom(val);
-    recalc(val, to);
-  }
-
-  function handleTo(val: CityKey | "") {
-    setTo(val);
-    recalc(from, val);
-  }
+  function handleFrom(val: CityKey | "") { setFrom(val); }
+  function handleTo(val: CityKey | "") { setTo(val); }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +66,7 @@ export default function BookingWidget() {
       to: to,
       date,
       time,
-      passengers: passengers.split("-")[0],
+      passengers: String(passengers),
     });
     router.push(`/${locale}/booking?${params.toString()}`);
   }
@@ -63,33 +74,14 @@ export default function BookingWidget() {
   const cities = CITIES;
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden w-full">
+    <div className="bg-white rounded-3xl shadow-xl border border-gray-100 w-full">
       {/* Header */}
       <div className="bg-gray-50 border-b border-gray-100 px-6 pt-5 pb-0">
         <h2 className="text-base font-bold text-gray-900 mb-4">{t("widget_title")}</h2>
 
-        {/* Mode tabs */}
-        <div className="flex gap-1">
-          {(["oneway", "roundtrip"] as TripMode[]).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMode(m)}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-t-xl transition-all",
-                mode === m
-                  ? "bg-white text-[#16A34A] border-b-2 border-[#16A34A] shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              )}
-            >
-              {m === "oneway" ? (
-                <ArrowRight size={15} />
-              ) : (
-                <ArrowLeftRight size={15} />
-              )}
-              {t(`mode.${m}`)}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 pb-3">
+          <ArrowRight size={15} className="text-[#16A34A]" />
+          <span className="text-sm font-semibold text-[#16A34A]">{t("mode.oneway")}</span>
         </div>
       </div>
 
@@ -122,7 +114,7 @@ export default function BookingWidget() {
                 onClick={swap}
                 className="bg-white border border-gray-200 rounded-full p-1.5 hover:bg-gray-50 hover:border-[#16A34A] transition-colors shadow-sm"
               >
-                <ArrowLeftRight size={14} className="text-gray-500" />
+                <ArrowRight size={14} className="text-gray-500 rotate-90" />
               </button>
             </div>
 
@@ -171,47 +163,50 @@ export default function BookingWidget() {
           </div>
         </div>
 
-        {/* Passengers / Luggage */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
-              {t("form.passengers")}
-            </label>
-            <div className="relative">
-              <Users size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select
-                value={passengers}
-                onChange={(e) => setPassengers(e.target.value)}
-                className="w-full ps-9 pe-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A]"
+        {/* Passengers */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+            {t("form.passengers")}
+          </label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setPassengers(n)}
+                className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${
+                  passengers === n
+                    ? n <= 4
+                      ? "bg-[#16A34A] text-white border-[#16A34A]"
+                      : "bg-[#F97316] text-white border-[#F97316]"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                }`}
               >
-                {["1-4", "5-8"].map((v) => <option key={v} value={v}>{v}</option>)}
-              </select>
-            </div>
+                {n}
+              </button>
+            ))}
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
-              {t("form.luggage")}
-            </label>
-            <div className="relative">
-              <Briefcase size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <select
-                value={luggage}
-                onChange={(e) => setLuggage(e.target.value)}
-                className="w-full ps-9 pe-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A]"
-              >
-                {["0", "1-3", "4-6", "7+"].map((v) => <option key={v} value={v}>{v}</option>)}
-              </select>
-            </div>
-          </div>
+          <p className="text-xs text-gray-400 mt-1.5">
+            {passengers <= 4
+              ? t("form.vehicle_auto_4")
+              : t("form.vehicle_auto_6")}
+          </p>
         </div>
 
-        {/* Price estimate */}
-        {price !== null && (
+        {/* Price */}
+        {loadingPrice && (
+          <div className="bg-[#f0fdf4] rounded-xl px-4 py-3 flex items-center justify-center">
+            <span className="text-sm text-[#16A34A] animate-pulse">{t("form.calculating")}</span>
+          </div>
+        )}
+        {!loadingPrice && price !== null && (
           <div className="bg-[#f0fdf4] rounded-xl px-4 py-3 flex items-center justify-between">
-            <span className="text-sm text-[#16A34A] font-medium">{t("price.estimate")}</span>
-            <span className="text-xl font-black text-[#F97316]">
-              ₪{price}
-            </span>
+            <span className="text-xl font-black text-[#F97316]">₪{price}</span>
+          </div>
+        )}
+        {!loadingPrice && noPrice && (
+          <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+            <span className="text-sm text-amber-700">{t("price.on_request")}</span>
           </div>
         )}
 

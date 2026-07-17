@@ -15,8 +15,8 @@
     "badge": "Airport & Intercity Transfers",
     "titleLine1": "Your trips,",
     "titleGreen": "our priority",
-    "titleOrange": "Airport & Intercity",
-    "subtitle": "Book your taxi with professional drivers at the best price.",
+    "titleOrange": "Ben Gurion & intercity trips across Israel",
+    "subtitle": "Airport transfers and intercity trips across Israel",
     "cta": "Book Now",
     "ctaSecondary": "Chat on WhatsApp",
     "stat_service": "Service",
@@ -28,8 +28,8 @@
     "drivers_desc": "Verified, insured and experienced",
     "prices": "Fixed Prices",
     "prices_desc": "Price confirmed before your trip",
-    "payment": "Secure Payment",
-    "payment_desc": "Safe transactions",
+    "payment": "Flexible Payment",
+    "payment_desc": "Pay directly to the driver at the end of your trip",
     "support": "24/7 Support",
     "support_desc": "We're here to help",
     "bar": {
@@ -55,14 +55,16 @@
     "title": "Book a Ride",
     "widget_title": "Book Your Trip",
     "widget_cta": "View Prices & Book",
-    "instant_confirmation": "Response within 30 minutes",
+    "instant_confirmation": "Instant price · Driver confirmed within 30 min",
     "mode": {
       "oneway": "One Way",
       "roundtrip": "Round Trip"
     },
     "tabs": {
       "airport": "Airport",
-      "intercity": "Intercity"
+      "intercity": "Intercity",
+      "flight": "Flight",
+      "contact": "Contact"
     },
     "form": {
       "from": "From",
@@ -80,12 +82,26 @@
       "name": "Full Name",
       "phone": "Phone Number",
       "email": "Email (optional)",
+      "pickup_address": "Exact pickup address",
+      "suitcases": "Suitcases",
+      "trolleys": "Trolleys",
+      "pickup_address_placeholder": "e.g. 12 Herzl St, Tel Aviv",
       "notes": "Notes",
+      "continue": "Continue",
+      "back": "Back",
+      "error_from": "Please select a departure city.",
+      "error_to": "Please select a destination.",
+      "error_date": "Please choose a travel date.",
+      "error_time": "Please choose a departure time.",
+      "error_name": "Please enter your full name.",
+      "error_phone": "Please enter your phone number.",
       "submit": "Book Now",
       "calculating": "Calculating...",
+      "vehicle_auto_4": "4-seater taxi (1–4 passengers)",
+      "vehicle_auto_6": "6-seater taxi (5–6 passengers)",
       "vehicles": {
-        "sedan": "Private Taxi (1-4 passengers)",
-        "minibus": "Minibus (5-8 passengers)"
+        "sedan": "4-seater taxi",
+        "minibus": "6-seater taxi"
       },
       "cities": {
         "tel_aviv": "Tel Aviv",
@@ -97,18 +113,55 @@
         "ashdod": "Ashdod",
         "rishon": "Rishon LeZion",
         "petah_tikva": "Petah Tikva",
-        "ben_gurion": "Ben Gurion Airport (TLV)"
+        "ben_gurion": "Ben Gurion Airport (TLV)",
+        "herzliya": "Herzliya",
+        "raanana": "Ra'anana",
+        "kfar_saba": "Kfar Saba",
+        "modiin": "Modi'in",
+        "rehovot": "Rehovot",
+        "ashkelon": "Ashkelon",
+        "nahariya": "Nahariya",
+        "acre": "Akko (Acre)",
+        "tiberias": "Tiberias",
+        "nazareth": "Nazareth",
+        "afula": "Afula",
+        "kiryat_shmona": "Kiryat Shmona",
+        "dimona": "Dimona",
+        "bat_yam": "Bat Yam",
+        "holon": "Holon",
+        "bnei_brak": "Bnei Brak",
+        "lod": "Lod",
+        "ramla": "Ramla",
+        "beit_shemesh": "Beit Shemesh",
+        "hadera": "Hadera",
+        "nes_ziona": "Nes Ziona",
+        "ramat_gan": "Ramat Gan",
+        "kiryat_gat": "Kiryat Gat",
+        "tzfat": "Safed (Tzfat)",
+        "rosh_hayin": "Rosh HaAyin",
+        "hod_hasharon": "Hod HaSharon",
+        "ramat_hasharon": "Ramat HaSharon",
+        "yavne": "Yavne",
+        "kiryat_ata": "Kiryat Ata",
+        "bet_shean": "Beit She'an",
+        "sderot": "Sderot",
+        "arad": "Arad"
       }
     },
     "price": {
       "estimate": "Price Estimate",
       "currency": "₪",
-      "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested."
+      "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested.",
+      "on_request": "We don't have a set price for this route yet. We'll get back to you shortly after your booking."
     }
   },
   "driversBadge": {
     "title": "Professional drivers",
     "desc": "IDF veterans with certified ongoing training"
+  },
+  "priceBadge": {
+    "title": "Over 30% cheaper",
+    "desc": "Our fares are below the official rates set by Israel's Ministry of Transport"
   },
   "howItWorks": {
     "title": "How it works",
@@ -122,12 +175,12 @@
   "faq": {
     "title": "Frequently asked questions",
     "items": [
-      { "q": "What happens if my flight is delayed?", "a": "Your driver tracks your flight in real time. If delayed, they adjust their arrival time automatically at no extra charge." },
-      { "q": "How do I find my driver at the airport?", "a": "Your driver will wait at the arrivals exit with a sign bearing your name, and you'll receive their phone number before the trip." },
+      { "q": "What happens if my flight is delayed?", "a": "Your driver tracks your flight in real time until your landing in Israel. If delayed, they adjust their arrival time automatically at no extra charge." },
+      { "q": "How do I find my driver at the airport?", "a": "You'll receive your driver's phone number before the trip. They will wait for you on level 2 of terminal 3, gate 23." },
       { "q": "Can I travel with extra luggage?", "a": "Yes. Our vehicles accommodate standard suitcases and bags. For exceptional volume, note it when booking." },
-      { "q": "When and how do I pay?", "a": "Payment is made directly to the driver at the end of the trip, by cash or card. No online prepayment required." },
+      { "q": "When and how do I pay?", "a": "Payment is made directly to the driver at the end of the trip, in cash only. No online prepayment required." },
       { "q": "Can I cancel my booking?", "a": "Yes. Free cancellation up to 2 hours before departure. Contact us by WhatsApp or phone." },
-      { "q": "Are baby seats available?", "a": "Yes. Mention it in the booking notes and we'll arrange it at no extra charge." }
+      { "q": "Are baby seats available?", "a": "Yes. Mention it in the booking notes. An additional charge may apply." }
     ]
   },
   "features": {
@@ -164,7 +217,9 @@
   },
   "footer": {
     "tagline": "Reliable taxi service across Israel",
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Service"
   },
   "confirmation": {
     "title": "Booking Received!",
@@ -234,6 +289,21 @@
     "section3_title": "Contact",
     "section3_text": "For any privacy-related questions, please contact us via",
     "section3_link": "our contact page"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "intro": "By using Moveo Taxi's booking service, you agree to the following terms.",
+    "booking_title": "Booking & Cancellation",
+    "booking_text": "Bookings are confirmed upon contact from our team. You may cancel up to 2 hours before pickup without charge. Late cancellations may incur a fee.",
+    "pricing_title": "Pricing",
+    "pricing_text": "All prices shown are fixed rates in New Israeli Shekel (₪), confirmed at the time of booking. Prices will not change unless your route changes.",
+    "payment_title": "Payment",
+    "payment_text": "Payment is made directly to the driver at the end of the trip, in cash or by card. No online prepayment is required.",
+    "liability_title": "Liability",
+    "liability_text": "Moveo Taxi is not responsible for delays caused by traffic, weather, or other circumstances beyond our control.",
+    "contact_title": "Contact",
+    "contact_text": "For questions about these terms, please",
+    "contact_link": "contact us"
   },
   "meta": {
     "home": {

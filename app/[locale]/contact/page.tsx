@@ -13,6 +13,7 @@ export async function generateMetadata({
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { Phone, Mail, Clock } from "lucide-react";
 
 const PHONE = "+972-54-310-0044";
 const WHATSAPP_NUMBER = "972543100044";
@@ -34,7 +35,7 @@ export default async function ContactPage() {
       external: true,
     },
     {
-      icon: <span className="text-2xl">📞</span>,
+      icon: <Phone size={24} color="white" />,
       bg: "bg-[#1B7A3C]",
       label: t("contact.call"),
       value: PHONE,
@@ -42,7 +43,7 @@ export default async function ContactPage() {
       external: false,
     },
     {
-      icon: <span className="text-2xl">✉️</span>,
+      icon: <Mail size={24} color="white" />,
       bg: "bg-[#F5922A]",
       label: t("contact.email"),
       value: "support@moveotaxi.com",
@@ -59,7 +60,7 @@ export default async function ContactPage() {
       <section className="bg-gradient-to-br from-gray-50 to-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-[#E8F5EE] text-[#1B7A3C] text-sm font-semibold px-4 py-2 rounded-full mb-6">
-            📞 24/7
+            24/7
           </div>
           <h1 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
             {t("contact.title")}
@@ -99,7 +100,7 @@ export default async function ContactPage() {
 
           {/* Hours */}
           <div className="mt-10 bg-gray-50 rounded-2xl p-6 text-center">
-            <div className="text-3xl mb-3">🕐</div>
+            <div className="flex justify-center mb-3"><Clock size={28} color="#1B7A3C" /></div>
             <h3 className="font-bold text-gray-900 mb-2">{t("contact.hours")}</h3>
             <p className="text-2xl font-black text-[#1B7A3C]">{t("contact.hoursValue")}</p>
           </div>

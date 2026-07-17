@@ -25,35 +25,35 @@ const confirmationTemplates: Record<string, {
 }> = {
   he: {
     subject: (id) => `אישור הזמנה #${id} — Moveo Taxi`,
-    title: "הזמנתך התקבלה! 🚕",
+    title: "הזמנתך התקבלה!",
     subtitle: "תודה על פנייתך. אנו ניצור איתך קשר בקרוב לאישור הנסיעה.",
     labels: { from: "מוצא", to: "יעד", date: "תאריך", passengers: "נוסעים", price: "מחיר משוער", phone: "טלפון", id: "מספר הזמנה", contact: "ליצירת קשר: " },
     isRtl: true,
   },
   en: {
     subject: (id) => `Booking Confirmation #${id} — Moveo Taxi`,
-    title: "Your booking is confirmed! 🚕",
+    title: "Your booking is confirmed!",
     subtitle: "Thank you for booking with us. We will contact you shortly to confirm your trip.",
     labels: { from: "From", to: "To", date: "Date", passengers: "Passengers", price: "Estimated price", phone: "Phone", id: "Booking ID", contact: "Contact us: " },
     isRtl: false,
   },
   fr: {
     subject: (id) => `Confirmation de réservation #${id} — Moveo Taxi`,
-    title: "Votre réservation est reçue ! 🚕",
+    title: "Votre réservation est reçue !",
     subtitle: "Merci pour votre réservation. Nous vous contacterons rapidement pour confirmer votre trajet.",
     labels: { from: "Départ", to: "Destination", date: "Date", passengers: "Passagers", price: "Prix estimé", phone: "Téléphone", id: "N° de réservation", contact: "Nous contacter : " },
     isRtl: false,
   },
   ru: {
     subject: (id) => `Подтверждение бронирования #${id} — Moveo Taxi`,
-    title: "Ваш заказ получен! 🚕",
+    title: "Ваш заказ получен!",
     subtitle: "Спасибо за ваш заказ. Мы свяжемся с вами в ближайшее время для подтверждения поездки.",
     labels: { from: "Откуда", to: "Куда", date: "Дата", passengers: "Пассажиры", price: "Примерная цена", phone: "Телефон", id: "Номер заказа", contact: "Связаться с нами: " },
     isRtl: false,
   },
   es: {
     subject: (id) => `Confirmación de reserva #${id} — Moveo Taxi`,
-    title: "¡Tu reserva ha sido recibida! 🚕",
+    title: "¡Tu reserva ha sido recibida!",
     subtitle: "Gracias por reservar con nosotros. Nos pondremos en contacto con usted pronto para confirmar su viaje.",
     labels: { from: "Origen", to: "Destino", date: "Fecha", passengers: "Pasajeros", price: "Precio estimado", phone: "Teléfono", id: "N° de reserva", contact: "Contáctenos: " },
     isRtl: false,
@@ -83,11 +83,11 @@ export async function sendBookingNotification(booking: BookingData) {
   await transporter.sendMail({
     from: `"Moveo Taxi" <${process.env.GMAIL_USER}>`,
     to: process.env.GMAIL_USER,
-    subject: `🚕 Nouvelle réservation #${shortId} — ${booking.name}`,
+    subject: `Nouvelle réservation #${shortId} — ${booking.name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #16A34A; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
-          <h1 style="margin: 0; font-size: 22px;">🚕 Nouvelle réservation</h1>
+          <h1 style="margin: 0; font-size: 22px;">Nouvelle réservation</h1>
           <p style="margin: 5px 0 0; opacity: 0.85;">ID : #${shortId}</p>
         </div>
         <div style="background: #f9fafb; padding: 24px; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb;">

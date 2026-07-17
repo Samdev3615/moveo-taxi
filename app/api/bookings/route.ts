@@ -27,16 +27,24 @@ export async function POST(req: NextRequest) {
           phone: body.phone,
           email: body.email || null,
           passengers: body.passengers || 1,
-          vehicle_type: body.vehicle_type || "sedan",
+          vehicle_type: body.vehicle_type === "car6" ? "minibus" : "sedan",
           price_estimate: body.price_estimate || null,
-          notes: body.notes || null,
+          notes: [
+            body.pickup_address ? `Adresse: ${body.pickup_address}` : null,
+            body.suitcases > 0 ? `Valises: ${body.suitcases}` : null,
+            body.trolleys > 0 ? `Trolleys: ${body.trolleys}` : null,
+            body.notes || null,
+          ].filter(Boolean).join("\n") || null,
           status: "pending",
         },
       ])
       .select("id")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase insert error:", JSON.stringify(error));
+      throw error;
+    }
 
     try {
       await sendBookingNotification({ id: data.id, ...body });
@@ -53,9 +61,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ id: data.id }, { status: 201 });
-  } catch (err) {
-    console.error("Booking error:", err);
-    return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : (err as { message?: string })?.message ?? "Unknown error";
+    console.error("Booking error:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 

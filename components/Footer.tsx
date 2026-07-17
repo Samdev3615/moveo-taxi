@@ -71,10 +71,10 @@ export default function Footer() {
             <h3 className="font-bold mb-4 text-sm uppercase tracking-wider text-[#16A34A]">{t("contact.title")}</h3>
             <div className="space-y-3 text-sm text-gray-400">
               <a href={`tel:${PHONE}`} className="flex items-center gap-2 hover:text-white transition-colors">
-                📞 {PHONE}
+                {PHONE}
               </a>
               <a href={`https://wa.me/${WHATSAPP_NUMBER}`} className="flex items-center gap-2 hover:text-white transition-colors">
-                💬 WhatsApp
+                WhatsApp
               </a>
               <p className="text-xs mt-3">
                 <span className="text-gray-500">{t("contact.hours")}:</span><br />
@@ -90,8 +90,8 @@ export default function Footer() {
             {" "}{new Date().getFullYear()} Moveo Taxi. {t("footer.rights")}.
           </span>
           <div className="flex gap-4">
-            <Link href={`/${locale}/privacy`} className="hover:text-gray-300">Privacy</Link>
-            <Link href={`/${locale}/terms`} className="hover:text-gray-300">Terms</Link>
+            <Link href={`/${locale}/privacy`} className="hover:text-gray-300">{t("footer.privacyLink")}</Link>
+            <Link href={`/${locale}/terms`} className="hover:text-gray-300">{t("footer.termsLink")}</Link>
           </div>
         </div>
       </div>

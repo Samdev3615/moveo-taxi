@@ -6,8 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
 import DatePicker from "@/components/DatePicker";
 import TimePicker from "@/components/TimePicker";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { cn } from "@/lib/utils";
-import { CITIES, getPrice, type CityKey } from "@/lib/prices";
+import { CITIES, type CityKey } from "@/lib/prices";
 
 type Step = 1 | 2 | 3;
 
@@ -21,11 +22,14 @@ interface FormData {
   flight_number: string;
   terminal: string;
   passengers: number;
-  vehicle_type: "sedan" | "minibus";
+  vehicle_type: "car4" | "car6";
   name: string;
   phone: string;
   email: string;
   notes: string;
+  pickup_address: string;
+  suitcases: number;
+  trolleys: number;
   price_estimate: number | null;
 }
 
@@ -37,7 +41,10 @@ function BookingFormInner() {
 
   const [step, setStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
+  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [noPrice, setNoPrice] = useState(false);
   const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState("");
 
   const [form, setForm] = useState<FormData>({
     trip_type: (searchParams.get("type") as "airport" | "intercity") || "airport",
@@ -49,20 +56,54 @@ function BookingFormInner() {
     flight_number: "",
     terminal: "",
     passengers: Number(searchParams.get("passengers")) || 1,
-    vehicle_type: (searchParams.get("vehicle") as "sedan" | "minibus") || "sedan",
+    vehicle_type: "car4" as "car4" | "car6",
     name: "",
     phone: "",
     email: "",
     notes: "",
+    pickup_address: "",
+    suitcases: 0,
+    trolleys: 0,
     price_estimate: null,
   });
 
+  const [priceData, setPriceData] = useState<{
+    car4_day: number; car4_night: number; car6_day: number; car6_night: number;
+  } | null>(null);
+
   useEffect(() => {
-    if (form.from_city && form.to_city) {
-      const p = getPrice(form.from_city as CityKey, form.to_city as CityKey, form.vehicle_type);
-      setForm((f) => ({ ...f, price_estimate: p }));
+    if (!form.from_city || !form.to_city || form.from_city === form.to_city) {
+      setPriceData(null);
+      setNoPrice(false);
+      return;
     }
-  }, [form.from_city, form.to_city, form.vehicle_type]);
+    const controller = new AbortController();
+    setLoadingPrice(true);
+    setPriceData(null);
+    setNoPrice(false);
+    fetch(`/api/price?from=${form.from_city}&to=${form.to_city}`, { signal: controller.signal })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.car4_day) { setPriceData(data); setNoPrice(false); }
+        else if (data.no_price) { setNoPrice(true); setPriceData(null); }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingPrice(false));
+    return () => controller.abort();
+  }, [form.from_city, form.to_city]);
+
+  useEffect(() => {
+    if (!priceData) { setForm((f) => ({ ...f, price_estimate: null })); return; }
+    const hour = form.time ? parseInt(form.time.split(":")[0]) : 10;
+    const isNight = hour >= 21 || hour < 6;
+    const isCar6 = form.passengers > 4;
+    // auto-set vehicle type
+    const vehicle: "car4" | "car6" = isCar6 ? "car6" : "car4";
+    const price = isCar6
+      ? (isNight ? priceData.car6_night : priceData.car6_day)
+      : (isNight ? priceData.car4_night : priceData.car4_day);
+    setForm((f) => ({ ...f, vehicle_type: vehicle, price_estimate: price }));
+  }, [priceData, form.passengers, form.time]);
 
   function update(field: keyof FormData, value: string | number | null) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -103,7 +144,7 @@ function BookingFormInner() {
             )}
           >
             {s < step ? <CheckCircle size={16} className="inline me-1" /> : null}
-            {s === 1 ? t("tabs.airport") : s === 2 ? "✈" : t("form.name").slice(0, 6)}
+            {s === 1 ? t("tabs.airport") : s === 2 ? t("tabs.flight") : t("tabs.contact")}
           </div>
         ))}
       </div>
@@ -218,38 +259,82 @@ function BookingFormInner() {
               </div>
             </div>
 
-            {/* Passengers / Vehicle */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.passengers")}</label>
-                <select
-                  value={form.passengers}
-                  onChange={(e) => update("passengers", Number(e.target.value))}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3c6e]"
-                >
-                  {[1,2,3,4,5,6,7,8].map((n) => <option key={n} value={n}>{n}</option>)}
-                </select>
+            {/* Pickup address */}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.pickup_address")}</label>
+              <AddressAutocomplete
+                value={form.pickup_address}
+                onChange={(v) => update("pickup_address", v)}
+                placeholder={t("form.pickup_address_placeholder")}
+              />
+            </div>
+
+            {/* Passengers */}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-2">{t("form.passengers")}</label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => update("passengers", n)}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold border transition-all ${
+                      form.passengers === n
+                        ? n <= 4
+                          ? "bg-[#1a3c6e] text-white border-[#1a3c6e]"
+                          : "bg-[#F97316] text-white border-[#F97316]"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">{t("form.vehicle")}</label>
-                <select
-                  value={form.vehicle_type}
-                  onChange={(e) => update("vehicle_type", e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3c6e]"
-                >
-                  <option value="sedan">{t("form.vehicles.sedan")}</option>
-                  <option value="minibus">{t("form.vehicles.minibus")}</option>
-                </select>
-              </div>
+              <p className="text-xs text-gray-400 mt-1.5">
+                {form.passengers <= 4
+                  ? t("form.vehicle_auto_4")
+                  : t("form.vehicle_auto_6")}
+              </p>
+            </div>
+
+            {/* Luggage */}
+            <div className="grid grid-cols-2 gap-4">
+              {(["suitcases", "trolleys"] as const).map((field) => (
+                <div key={field}>
+                  <label className="block text-xs font-medium text-gray-500 mb-2">{t(`form.${field}`)}</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => update(field, Math.max(0, (form[field] as number) - 1))}
+                      className="w-9 h-9 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >−</button>
+                    <span className="flex-1 text-center text-sm font-bold text-gray-800">{form[field] as number}</span>
+                    <button
+                      type="button"
+                      onClick={() => update(field, Math.min(9, (form[field] as number) + 1))}
+                      className="w-9 h-9 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors flex items-center justify-center"
+                    >+</button>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Price */}
-            {form.price_estimate !== null && (
+            {loadingPrice && (
+              <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center justify-center">
+                <span className="text-sm text-blue-700 animate-pulse">{t("form.calculating")}</span>
+              </div>
+            )}
+            {!loadingPrice && form.price_estimate !== null && (
               <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center justify-between">
-                <span className="text-sm text-blue-700">{t("price.estimate")}</span>
                 <span className="text-xl font-bold text-[#1a3c6e]">
                   {form.price_estimate} {t("price.currency")}
                 </span>
+              </div>
+            )}
+            {!loadingPrice && noPrice && (
+              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+                <span className="text-sm text-amber-700">{t("price.on_request")}</span>
               </div>
             )}
           </>
@@ -330,12 +415,16 @@ function BookingFormInner() {
             {/* Summary */}
             {form.price_estimate !== null && (
               <div className="bg-[#1a3c6e] text-white rounded-xl p-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm opacity-80">{t("price.estimate")}</span>
+                <div className="flex justify-end items-center">
                   <span className="text-2xl font-bold text-[#f5c518]">
                     {form.price_estimate} ₪
                   </span>
                 </div>
+              </div>
+            )}
+            {noPrice && (
+              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+                <span className="text-sm text-amber-700">{t("price.on_request")}</span>
               </div>
             )}
 
@@ -347,37 +436,57 @@ function BookingFormInner() {
       </div>
 
       {/* Navigation buttons */}
-      <div className="px-6 pb-6 flex gap-3">
-        {step > 1 && (
-          <button
-            type="button"
-            onClick={() => setStep((s) => (s - 1) as Step)}
-            className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors"
-          >
-            ←
-          </button>
+      <div className="px-6 pb-6 space-y-3">
+        {validationError && (
+          <p className="text-red-500 text-sm text-center bg-red-50 border border-red-100 rounded-xl px-4 py-2">
+            {validationError}
+          </p>
         )}
+        <div className="flex gap-3">
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={() => { setStep((s) => (s - 1) as Step); setValidationError(""); }}
+              className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+            >
+              {t("form.back")}
+            </button>
+          )}
 
-        {((step === 1) || (step === 2 && isAirport)) ? (
-          <button
-            type="button"
-            onClick={() => setStep((s) => (s + 1) as Step)}
-            disabled={!form.from_city || !form.to_city || !form.date || !form.time}
-            className="flex-1 bg-[#1a3c6e] text-white font-bold py-3 rounded-xl hover:bg-[#112a50] transition-colors disabled:opacity-40"
-          >
-            →
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={loading || !form.name || !form.phone}
-            className="flex-1 bg-[#f5c518] text-[#1a3c6e] font-bold py-3 rounded-xl hover:bg-[#d4a800] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-          >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : null}
-            {t("form.submit")}
-          </button>
-        )}
+          {((step === 1) || (step === 2 && isAirport)) ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (step === 1) {
+                  if (!form.from_city) { setValidationError(t("form.error_from")); return; }
+                  if (!form.to_city) { setValidationError(t("form.error_to")); return; }
+                  if (!form.date) { setValidationError(t("form.error_date")); return; }
+                  if (!form.time) { setValidationError(t("form.error_time")); return; }
+                }
+                setValidationError("");
+                setStep((s) => (s + 1) as Step);
+              }}
+              className="flex-1 bg-[#1a3c6e] text-white font-bold py-3 rounded-xl hover:bg-[#112a50] transition-colors"
+            >
+              {t("form.continue")}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                if (!form.name) { setValidationError(t("form.error_name")); return; }
+                if (!form.phone) { setValidationError(t("form.error_phone")); return; }
+                setValidationError("");
+                handleSubmit();
+              }}
+              disabled={loading}
+              className="flex-1 bg-[#f5c518] text-[#1a3c6e] font-bold py-3 rounded-xl hover:bg-[#d4a800] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 size={18} className="animate-spin" /> : null}
+              {t("form.submit")}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

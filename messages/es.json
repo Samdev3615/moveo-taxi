@@ -15,8 +15,8 @@
     "badge": "Traslados aeropuerto & interurbanos",
     "titleLine1": "Tus viajes,",
     "titleGreen": "nuestra prioridad",
-    "titleOrange": "Aeropuerto & Interurbano",
-    "subtitle": "Reserva tu taxi con conductores profesionales al mejor precio.",
+    "titleOrange": "Ben Gurión & viajes interurbanos en todo Israel",
+    "subtitle": "Traslados al aeropuerto y viajes interurbanos en todo Israel",
     "cta": "Reservar ahora",
     "ctaSecondary": "WhatsApp",
     "stat_service": "Servicio",
@@ -28,8 +28,8 @@
     "drivers_desc": "Verificados, asegurados y con experiencia",
     "prices": "Precios fijos",
     "prices_desc": "Precio confirmado antes de su viaje",
-    "payment": "Pago seguro",
-    "payment_desc": "Transacciones seguras",
+    "payment": "Pago flexible",
+    "payment_desc": "Paga directamente al conductor al final del viaje",
     "support": "Soporte 24/7",
     "support_desc": "Estamos aquí para ayudarte",
     "bar": {
@@ -55,14 +55,16 @@
     "title": "Reservar un viaje",
     "widget_title": "Reserva tu viaje",
     "widget_cta": "Ver precios y reservar",
-    "instant_confirmation": "Respuesta en 30 minutos",
+    "instant_confirmation": "Precio inmediato · Conductor confirmado en 30 min",
     "mode": {
       "oneway": "Solo ida",
       "roundtrip": "Ida y vuelta"
     },
     "tabs": {
       "airport": "Aeropuerto",
-      "intercity": "Interurbano"
+      "intercity": "Interurbano",
+      "flight": "Vuelo",
+      "contact": "Contacto"
     },
     "form": {
       "from": "Origen",
@@ -80,12 +82,26 @@
       "name": "Nombre completo",
       "phone": "Número de teléfono",
       "email": "Email (opcional)",
+      "pickup_address": "Dirección exacta de recogida",
+      "suitcases": "Maletas",
+      "trolleys": "Trolleys",
+      "pickup_address_placeholder": "Ej.: Calle Herzl 12, Tel Aviv",
       "notes": "Notas",
+      "continue": "Continuar",
+      "back": "Volver",
+      "error_from": "Por favor seleccione una ciudad de origen.",
+      "error_to": "Por favor seleccione un destino.",
+      "error_date": "Por favor elija una fecha de viaje.",
+      "error_time": "Por favor elija una hora de salida.",
+      "error_name": "Por favor ingrese su nombre completo.",
+      "error_phone": "Por favor ingrese su número de teléfono.",
       "submit": "Reservar",
       "calculating": "Calculando...",
+      "vehicle_auto_4": "Taxi 4 plazas (1–4 pasajeros)",
+      "vehicle_auto_6": "Taxi 6 plazas (5–6 pasajeros)",
       "vehicles": {
-        "sedan": "Taxi privado (1-4 pasajeros)",
-        "minibus": "Minibús (5-8 pasajeros)"
+        "sedan": "Taxi 4 plazas",
+        "minibus": "Taxi 6 plazas"
       },
       "cities": {
         "tel_aviv": "Tel Aviv",
@@ -97,18 +113,55 @@
         "ashdod": "Ashdod",
         "rishon": "Rishon LeZion",
         "petah_tikva": "Petah Tikva",
-        "ben_gurion": "Aeropuerto Ben Gurion (TLV)"
+        "ben_gurion": "Aeropuerto Ben Gurion (TLV)",
+        "herzliya": "Herzliya",
+        "raanana": "Ra'anana",
+        "kfar_saba": "Kfar Saba",
+        "modiin": "Modi'in",
+        "rehovot": "Rehovot",
+        "ashkelon": "Ascalón",
+        "nahariya": "Nahariya",
+        "acre": "Acre",
+        "tiberias": "Tiberíades",
+        "nazareth": "Nazaret",
+        "afula": "Afula",
+        "kiryat_shmona": "Kiryat Shmona",
+        "dimona": "Dimona",
+        "bat_yam": "Bat Yam",
+        "holon": "Holon",
+        "bnei_brak": "Bnei Brak",
+        "lod": "Lod",
+        "ramla": "Ramla",
+        "beit_shemesh": "Beit Shemesh",
+        "hadera": "Hadera",
+        "nes_ziona": "Nes Ziona",
+        "ramat_gan": "Ramat Gan",
+        "kiryat_gat": "Kiryat Gat",
+        "tzfat": "Safed (Tzfat)",
+        "rosh_hayin": "Rosh HaAyin",
+        "hod_hasharon": "Hod HaSharon",
+        "ramat_hasharon": "Ramat HaSharon",
+        "yavne": "Yavne",
+        "kiryat_ata": "Kiryat Ata",
+        "bet_shean": "Beit She'an",
+        "sderot": "Sderot",
+        "arad": "Arad"
       }
     },
     "price": {
       "estimate": "Precio estimado",
       "currency": "₪",
-      "note": "Precio fijo confirmado al reservar. Suplemento solo si solicita parada o desvío adicional."
+      "note": "Precio fijo confirmado al reservar. Suplemento solo si solicita parada o desvío adicional.",
+      "on_request": "Aún no tenemos tarifa para esta ruta. Nos pondremos en contacto contigo tras tu reserva."
     }
   },
   "driversBadge": {
     "title": "Conductores profesionales",
     "desc": "Veteranos del ejército israelí con formación periódica certificada"
+  },
+  "priceBadge": {
+    "title": "Más de un 30% más barato",
+    "desc": "Nuestras tarifas están por debajo de los precios oficiales del Ministerio de Transporte de Israel"
   },
   "howItWorks": {
     "title": "¿Cómo funciona?",
@@ -122,12 +175,12 @@
   "faq": {
     "title": "Preguntas frecuentes",
     "items": [
-      { "q": "¿Qué pasa si mi vuelo se retrasa?", "a": "Tu conductor sigue tu vuelo en tiempo real. Si hay retraso, ajusta su hora de llegada automáticamente sin coste adicional." },
-      { "q": "¿Cómo encuentro a mi conductor en el aeropuerto?", "a": "Tu conductor te esperará en la salida de llegadas con un cartel con tu nombre, y recibirás su teléfono antes del viaje." },
+      { "q": "¿Qué pasa si mi vuelo se retrasa?", "a": "Tu conductor sigue tu vuelo en tiempo real hasta tu aterrizaje en Israel. Si hay retraso, ajusta su hora de llegada automáticamente sin coste adicional." },
+      { "q": "¿Cómo encuentro a mi conductor en el aeropuerto?", "a": "Recibirás el número de teléfono de tu conductor antes del viaje. Te esperará en el nivel 2 del terminal 3, puerta 23." },
       { "q": "¿Puedo viajar con equipaje extra?", "a": "Sí. Nuestros vehículos admiten maletas y bolsas estándar. Para un volumen excepcional, indícalo en las notas de reserva." },
-      { "q": "¿Cuándo y cómo pago?", "a": "El pago se realiza directamente al conductor al final del trayecto, en efectivo o con tarjeta. No se requiere pago anticipado online." },
+      { "q": "¿Cuándo y cómo pago?", "a": "El pago se realiza directamente al conductor al final del trayecto, en efectivo únicamente. No se requiere pago anticipado online." },
       { "q": "¿Puedo cancelar mi reserva?", "a": "Sí. Cancelación gratuita hasta 2 horas antes de la salida. Contáctanos por WhatsApp o teléfono." },
-      { "q": "¿Están disponibles las sillas de bebé?", "a": "Sí. Indícalo en las notas de reserva y lo organizaremos sin coste adicional." }
+      { "q": "¿Están disponibles las sillas de bebé?", "a": "Sí. Indícalo en las notas de reserva. Puede aplicarse un cargo adicional." }
     ]
   },
   "features": {
@@ -164,7 +217,9 @@
   },
   "footer": {
     "tagline": "Servicio de taxi confiable en todo Israel",
-    "rights": "Todos los derechos reservados"
+    "rights": "Todos los derechos reservados",
+    "privacyLink": "Privacidad",
+    "termsLink": "Condiciones de servicio"
   },
   "confirmation": {
     "title": "¡Reserva recibida!",
@@ -234,6 +289,21 @@
     "section3_title": "Contacto",
     "section3_text": "Para cualquier pregunta relacionada con la privacidad, contáctanos a través de",
     "section3_link": "nuestra página de contacto"
+  },
+  "terms": {
+    "title": "Condiciones de servicio",
+    "intro": "Al utilizar el servicio de reserva de Moveo Taxi, acepta las siguientes condiciones.",
+    "booking_title": "Reserva y cancelación",
+    "booking_text": "Las reservas se confirman tras el contacto de nuestro equipo. Puede cancelar hasta 2 horas antes de la recogida sin coste. Las cancelaciones tardías pueden conllevar un cargo.",
+    "pricing_title": "Tarifas",
+    "pricing_text": "Todos los precios son tarifas fijas en nuevo séquel israelí (₪), confirmadas en el momento de la reserva. No cambiarán salvo modificación de la ruta.",
+    "payment_title": "Pago",
+    "payment_text": "El pago se realiza directamente al conductor al final del trayecto, en efectivo o con tarjeta. No se requiere pago anticipado online.",
+    "liability_title": "Responsabilidad",
+    "liability_text": "Moveo Taxi no es responsable de los retrasos causados por tráfico, climatología u otras circunstancias fuera de nuestro control.",
+    "contact_title": "Contacto",
+    "contact_text": "Para preguntas sobre estas condiciones, por favor",
+    "contact_link": "contáctenos"
   },
   "meta": {
     "home": {

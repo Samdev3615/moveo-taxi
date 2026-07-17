@@ -15,6 +15,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BookingWidget from "@/components/BookingWidget";
+import { Wifi, Clock, Building, Smartphone, CheckCircle, Car, MapPin, Plane, Phone } from "lucide-react";
 
 const WHATSAPP_NUMBER = "972543100044";
 const PHONE = "+972-54-310-0044";
@@ -44,7 +45,7 @@ export default async function AirportPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 bg-[#E8F5EE] text-[#1B7A3C] text-sm font-semibold px-4 py-2 rounded-full mb-6">
-                ✈ Ben Gurion Airport (TLV)
+                Ben Gurion Airport (TLV)
               </div>
               <h1 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4 leading-tight">
                 {t("airport.title")}
@@ -53,14 +54,14 @@ export default async function AirportPage() {
 
               <div className="space-y-4 mb-8">
                 {[
-                  { emoji: "📡", text: t("airport.flightMonitoring") },
-                  { emoji: "⏰", text: t("airport.waitingTime") },
-                  { emoji: "🏢", text: t("airport.terminals") },
-                  { emoji: "🕐", text: "24/7" },
+                  { Icon: Wifi,     text: t("airport.flightMonitoring") },
+                  { Icon: Clock,    text: t("airport.waitingTime") },
+                  { Icon: Building, text: t("airport.terminals") },
+                  { Icon: Clock,    text: "24/7" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#E8F5EE] flex items-center justify-center flex-shrink-0 text-lg">
-                      {item.emoji}
+                    <div className="w-10 h-10 rounded-xl bg-[#E8F5EE] flex items-center justify-center flex-shrink-0">
+                      <item.Icon size={18} color="#1B7A3C" />
                     </div>
                     <span className="text-gray-700 font-medium">{item.text}</span>
                   </div>
@@ -81,7 +82,7 @@ export default async function AirportPage() {
                   href={`tel:${PHONE}`}
                   className="inline-flex items-center gap-2 border-2 border-[#1B7A3C] text-[#1B7A3C] px-6 py-3 rounded-xl font-semibold hover:bg-[#E8F5EE] transition-colors"
                 >
-                  📞 {PHONE}
+                  <Phone size={16} /> {PHONE}
                 </a>
               </div>
             </div>
@@ -111,11 +112,11 @@ export default async function AirportPage() {
                 className="group bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-1 transition-all"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-9 h-9 bg-[#E8F5EE] rounded-xl flex items-center justify-center text-base">
-                    🏙️
+                  <div className="w-9 h-9 bg-[#E8F5EE] rounded-xl flex items-center justify-center">
+                    <MapPin size={16} color="#1B7A3C" />
                   </div>
                   <span className="bg-[#FFF3E6] text-[#F5922A] text-xs font-bold px-2.5 py-1 rounded-full">
-                    ✈
+                    <Plane size={12} />
                   </span>
                 </div>
                 <h3 className="font-bold text-gray-900 mb-0.5">
@@ -125,7 +126,7 @@ export default async function AirportPage() {
                   {t("booking.form.cities.ben_gurion")}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400">🚗 {route.duration}</span>
+                  <span className="text-xs text-gray-400">{route.duration}</span>
                   <span className="text-lg font-black text-[#F5922A]">₪{route.price}</span>
                 </div>
               </Link>
@@ -144,28 +145,13 @@ export default async function AirportPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              {
-                step: "1",
-                icon: "📱",
-                title: t("features.items.reliable.title"),
-                desc: t("features.items.reliable.description"),
-              },
-              {
-                step: "2",
-                icon: "✅",
-                title: t("features.items.available.title"),
-                desc: t("features.items.available.description"),
-              },
-              {
-                step: "3",
-                icon: "🚕",
-                title: t("features.items.fixed.title"),
-                desc: t("features.items.fixed.description"),
-              },
+              { step: "1", Icon: Smartphone,   title: t("features.items.reliable.title"),  desc: t("features.items.reliable.description") },
+              { step: "2", Icon: CheckCircle,  title: t("features.items.available.title"), desc: t("features.items.available.description") },
+              { step: "3", Icon: Car,          title: t("features.items.fixed.title"),     desc: t("features.items.fixed.description") },
             ].map((item) => (
               <div key={item.step} className="bg-white rounded-2xl p-6 shadow-sm text-center">
-                <div className="w-12 h-12 bg-[#E8F5EE] rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">
-                  {item.icon}
+                <div className="w-12 h-12 bg-[#E8F5EE] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <item.Icon size={22} color="#1B7A3C" />
                 </div>
                 <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>

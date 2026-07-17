@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { Shield, Star, Zap, Gem } from "lucide-react";
 
 export async function generateMetadata({
   params,
@@ -20,30 +21,10 @@ export default async function AboutPage() {
   const locale = await getLocale();
 
   const values = [
-    {
-      emoji: "🛡️",
-      key: "reliable" as const,
-      bg: "bg-[#E8F5EE]",
-      color: "text-[#1B7A3C]",
-    },
-    {
-      emoji: "⭐",
-      key: "professional" as const,
-      bg: "bg-[#FFF3E6]",
-      color: "text-[#F5922A]",
-    },
-    {
-      emoji: "⚡",
-      key: "fast" as const,
-      bg: "bg-[#E8F5EE]",
-      color: "text-[#1B7A3C]",
-    },
-    {
-      emoji: "💎",
-      key: "transparent" as const,
-      bg: "bg-[#FFF3E6]",
-      color: "text-[#F5922A]",
-    },
+    { icon: Shield, key: "reliable" as const, bg: "bg-[#E8F5EE]", color: "text-[#1B7A3C]", iconColor: "#1B7A3C" },
+    { icon: Star,   key: "professional" as const, bg: "bg-[#FFF3E6]", color: "text-[#F5922A]", iconColor: "#F5922A" },
+    { icon: Zap,    key: "fast" as const, bg: "bg-[#E8F5EE]", color: "text-[#1B7A3C]", iconColor: "#1B7A3C" },
+    { icon: Gem,    key: "transparent" as const, bg: "bg-[#FFF3E6]", color: "text-[#F5922A]", iconColor: "#F5922A" },
   ];
 
   return (
@@ -54,7 +35,7 @@ export default async function AboutPage() {
       <section className="bg-gradient-to-br from-gray-50 to-white py-16 lg:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-[#E8F5EE] text-[#1B7A3C] text-sm font-semibold px-4 py-2 rounded-full mb-6">
-            🚕 Moveo Taxi
+            Moveo Taxi
           </div>
           <h1 className="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
             {t("about.title")}
@@ -111,10 +92,8 @@ export default async function AboutPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {values.map((v) => (
               <div key={v.key} className="bg-white rounded-2xl p-6 shadow-sm text-center">
-                <div
-                  className={`w-14 h-14 ${v.bg} rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4`}
-                >
-                  {v.emoji}
+                <div className={`w-14 h-14 ${v.bg} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                  <v.icon size={24} color={v.iconColor} />
                 </div>
                 <h3 className={`font-bold mb-2 ${v.color}`}>
                   {t(`about.value_${v.key}`)}

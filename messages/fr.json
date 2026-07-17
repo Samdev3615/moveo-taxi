@@ -15,8 +15,8 @@
     "badge": "Transferts aéroport & inter-villes",
     "titleLine1": "Vos trajets,",
     "titleGreen": "notre priorité",
-    "titleOrange": "Aéroport & Inter-villes",
-    "subtitle": "Réservez votre taxi avec des chauffeurs professionnels au meilleur prix.",
+    "titleOrange": "Ben Gourion & trajets interurbains dans tout Israël",
+    "subtitle": "Transferts aéroport et trajets interurbains dans tout Israël",
     "cta": "Réserver maintenant",
     "ctaSecondary": "WhatsApp",
     "stat_service": "Service",
@@ -28,8 +28,8 @@
     "drivers_desc": "Vérifiés, assurés et expérimentés",
     "prices": "Prix fixes sans surprise",
     "prices_desc": "Tarif confirmé avant votre départ",
-    "payment": "Paiement sécurisé",
-    "payment_desc": "Transactions sécurisées",
+    "payment": "Paiement flexible",
+    "payment_desc": "Payez directement au chauffeur à la fin du trajet",
     "support": "Support 24/7",
     "support_desc": "Nous sommes là pour vous",
     "bar": {
@@ -55,14 +55,16 @@
     "title": "Réserver un trajet",
     "widget_title": "Réservez votre trajet",
     "widget_cta": "Voir les prix et réserver",
-    "instant_confirmation": "Réponse dans les 30 minutes",
+    "instant_confirmation": "Prix immédiat · Confirmation sous 30 min",
     "mode": {
       "oneway": "Aller simple",
       "roundtrip": "Aller-retour"
     },
     "tabs": {
       "airport": "Aéroport",
-      "intercity": "Inter-ville"
+      "intercity": "Inter-ville",
+      "flight": "Vol",
+      "contact": "Contact"
     },
     "form": {
       "from": "Départ",
@@ -80,12 +82,26 @@
       "name": "Nom complet",
       "phone": "Numéro de téléphone",
       "email": "Email (optionnel)",
+      "pickup_address": "Adresse exacte de prise en charge",
+      "suitcases": "Valises",
+      "trolleys": "Trolleys",
+      "pickup_address_placeholder": "Ex. : 12 rue Herzl, Tel Aviv",
       "notes": "Notes",
+      "continue": "Continuer",
+      "back": "Retour",
+      "error_from": "Veuillez sélectionner une ville de départ.",
+      "error_to": "Veuillez sélectionner une destination.",
+      "error_date": "Veuillez choisir une date de trajet.",
+      "error_time": "Veuillez choisir une heure de départ.",
+      "error_name": "Veuillez entrer votre nom complet.",
+      "error_phone": "Veuillez entrer votre numéro de téléphone.",
       "submit": "Réserver",
       "calculating": "Calcul en cours...",
+      "vehicle_auto_4": "Taxi 4 places (1–4 passagers)",
+      "vehicle_auto_6": "Taxi 6 places (5–6 passagers)",
       "vehicles": {
-        "sedan": "Taxi privé (1-4 passagers)",
-        "minibus": "Minibus (5-8 passagers)"
+        "sedan": "Taxi 4 places",
+        "minibus": "Taxi 6 places"
       },
       "cities": {
         "tel_aviv": "Tel Aviv",
@@ -97,18 +113,55 @@
         "ashdod": "Ashdod",
         "rishon": "Rishon LeZion",
         "petah_tikva": "Petah Tikva",
-        "ben_gurion": "Aéroport Ben Gourion (TLV)"
+        "ben_gurion": "Aéroport Ben Gourion (TLV)",
+        "herzliya": "Herzliya",
+        "raanana": "Ra'anana",
+        "kfar_saba": "Kfar Saba",
+        "modiin": "Modi'in",
+        "rehovot": "Rehovot",
+        "ashkelon": "Ashkelon",
+        "nahariya": "Nahariya",
+        "acre": "Akko (Saint-Jean-d'Acre)",
+        "tiberias": "Tibériade",
+        "nazareth": "Nazareth",
+        "afula": "Afula",
+        "kiryat_shmona": "Kiryat Shmona",
+        "dimona": "Dimona",
+        "bat_yam": "Bat Yam",
+        "holon": "Holon",
+        "bnei_brak": "Bné Brak",
+        "lod": "Lod",
+        "ramla": "Ramla",
+        "beit_shemesh": "Beit Shemesh",
+        "hadera": "Hadera",
+        "nes_ziona": "Nes Ziona",
+        "ramat_gan": "Ramat Gan",
+        "kiryat_gat": "Kiryat Gat",
+        "tzfat": "Safed (Tzfat)",
+        "rosh_hayin": "Rosh HaAyin",
+        "hod_hasharon": "Hod HaSharon",
+        "ramat_hasharon": "Ramat HaSharon",
+        "yavne": "Yavne",
+        "kiryat_ata": "Kiryat Ata",
+        "bet_shean": "Beit She'an",
+        "sderot": "Sderot",
+        "arad": "Arad"
       }
     },
     "price": {
       "estimate": "Estimation du prix",
       "currency": "₪",
-      "note": "Prix fixe confirmé à la réservation. Supplément uniquement sur demande (arrêt ou détour)."
+      "note": "Prix fixe confirmé à la réservation. Supplément uniquement sur demande (arrêt ou détour).",
+      "on_request": "Nous n'avons pas encore de tarif pour ce trajet. Nous vous recontacterons rapidement après votre réservation."
     }
   },
   "driversBadge": {
     "title": "Chauffeurs professionnels",
     "desc": "Anciens militaires certifiés avec formations périodiques continues"
+  },
+  "priceBadge": {
+    "title": "Plus de 30 % moins cher",
+    "desc": "Nos tarifs sont inférieurs aux prix officiels du ministère des Transports israélien"
   },
   "howItWorks": {
     "title": "Comment ça marche ?",
@@ -122,12 +175,12 @@
   "faq": {
     "title": "Questions fréquentes",
     "items": [
-      { "q": "Que se passe-t-il si mon vol est retardé ?", "a": "Notre chauffeur suit votre vol en temps réel. En cas de retard, il ajuste son heure d'arrivée sans frais supplémentaires." },
-      { "q": "Comment retrouver mon chauffeur à l'aéroport ?", "a": "Il vous attendra à la sortie des arrivées avec une pancarte à votre nom, et vous recevrez son numéro de téléphone avant le trajet." },
+      { "q": "Que se passe-t-il si mon vol est retardé ?", "a": "Notre chauffeur suit votre vol en temps réel jusqu'à votre atterrissage en Israël. En cas de retard, il ajuste son heure d'arrivée automatiquement, sans frais supplémentaires." },
+      { "q": "Comment retrouver mon chauffeur à l'aéroport ?", "a": "Vous recevrez le numéro de téléphone de votre chauffeur avant le trajet. Il vous attendra au niveau 2 du terminal 3, porte 23." },
       { "q": "Puis-je voyager avec des bagages supplémentaires ?", "a": "Oui. Nos véhicules peuvent accueillir les bagages standards. Pour un volume exceptionnel, précisez-le dans les notes de réservation." },
-      { "q": "Quand et comment dois-je payer ?", "a": "Le paiement s'effectue directement au chauffeur à la fin du trajet, en espèces ou par carte. Aucun prépaiement en ligne." },
+      { "q": "Quand et comment dois-je payer ?", "a": "Le paiement s'effectue directement au chauffeur à la fin du trajet, en espèces uniquement. Aucun prépaiement en ligne." },
       { "q": "Puis-je annuler ma réservation ?", "a": "Oui. Annulation gratuite jusqu'à 2 heures avant le départ. Contactez-nous par WhatsApp ou téléphone." },
-      { "q": "Les sièges bébé sont-ils disponibles ?", "a": "Oui. Précisez-le dans les notes lors de la réservation et nous l'organiserons sans frais supplémentaires." }
+      { "q": "Les sièges bébé sont-ils disponibles ?", "a": "Oui. Précisez-le dans les notes lors de la réservation. Des frais supplémentaires peuvent s'appliquer." }
     ]
   },
   "features": {
@@ -164,7 +217,9 @@
   },
   "footer": {
     "tagline": "Service de taxi fiable dans tout Israël",
-    "rights": "Tous droits réservés"
+    "rights": "Tous droits réservés",
+    "privacyLink": "Confidentialité",
+    "termsLink": "Conditions générales"
   },
   "confirmation": {
     "title": "Réservation reçue !",
@@ -234,6 +289,21 @@
     "section3_title": "Contact",
     "section3_text": "Pour toute question relative à la confidentialité, veuillez nous contacter via",
     "section3_link": "notre page de contact"
+  },
+  "terms": {
+    "title": "Conditions générales d'utilisation",
+    "intro": "En utilisant le service de réservation Moveo Taxi, vous acceptez les conditions suivantes.",
+    "booking_title": "Réservation et annulation",
+    "booking_text": "Les réservations sont confirmées après contact de notre équipe. Vous pouvez annuler jusqu'à 2 heures avant le départ sans frais. Les annulations tardives peuvent entraîner des frais.",
+    "pricing_title": "Tarifs",
+    "pricing_text": "Tous les prix sont des tarifs fixes en nouveaux shekels israéliens (₪), confirmés à la réservation. Ils ne changent pas sauf modification de votre itinéraire.",
+    "payment_title": "Paiement",
+    "payment_text": "Le paiement s'effectue directement au chauffeur à la fin du trajet, en espèces ou par carte. Aucun prépaiement en ligne n'est requis.",
+    "liability_title": "Responsabilité",
+    "liability_text": "Moveo Taxi ne peut être tenu responsable des retards dus à la circulation, aux conditions météorologiques ou à d'autres circonstances indépendantes de notre volonté.",
+    "contact_title": "Contact",
+    "contact_text": "Pour toute question relative aux présentes conditions, veuillez",
+    "contact_link": "nous contacter"
   },
   "meta": {
     "home": {

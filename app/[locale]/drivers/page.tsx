@@ -1,4 +1,5 @@
 import { getTranslations, getLocale } from "next-intl/server";
+import { Banknote, Clock, Headphones, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -10,36 +11,16 @@ export default async function DriversPage() {
   const locale = await getLocale();
 
   const benefits = [
-    {
-      emoji: "💰",
-      key: "income" as const,
-      bg: "bg-[#E8F5EE]",
-      color: "text-[#1B7A3C]",
-    },
-    {
-      emoji: "🕐",
-      key: "flexible" as const,
-      bg: "bg-[#FFF3E6]",
-      color: "text-[#F5922A]",
-    },
-    {
-      emoji: "🎧",
-      key: "support" as const,
-      bg: "bg-[#E8F5EE]",
-      color: "text-[#1B7A3C]",
-    },
-    {
-      emoji: "🤝",
-      key: "partners" as const,
-      bg: "bg-[#FFF3E6]",
-      color: "text-[#F5922A]",
-    },
+    { icon: Banknote,   key: "income"   as const, bg: "bg-[#E8F5EE]", color: "text-[#1B7A3C]", iconColor: "#1B7A3C" },
+    { icon: Clock,      key: "flexible" as const, bg: "bg-[#FFF3E6]", color: "text-[#F5922A]", iconColor: "#F5922A" },
+    { icon: Headphones, key: "support"  as const, bg: "bg-[#E8F5EE]", color: "text-[#1B7A3C]", iconColor: "#1B7A3C" },
+    { icon: Users,      key: "partners" as const, bg: "bg-[#FFF3E6]", color: "text-[#F5922A]", iconColor: "#F5922A" },
   ];
 
   const steps = [
-    { num: "1", key: "join_step1" as const, icon: "💬" },
-    { num: "2", key: "join_step2" as const, icon: "📄" },
-    { num: "3", key: "join_step3" as const, icon: "🚀" },
+    { num: "1", key: "join_step1" as const },
+    { num: "2", key: "join_step2" as const },
+    { num: "3", key: "join_step3" as const },
   ];
 
   return (
@@ -50,7 +31,7 @@ export default async function DriversPage() {
       <section className="bg-gradient-to-br from-[#1B7A3C] to-[#145F2E] py-20 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-white/15 text-white text-sm font-semibold px-4 py-2 rounded-full mb-6">
-            🚕 Moveo Taxi
+            Moveo Taxi
           </div>
           <h1 className="text-4xl lg:text-5xl font-black mb-4 leading-tight">
             {t("driversPage.title")}
@@ -79,10 +60,8 @@ export default async function DriversPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {benefits.map((b) => (
               <div key={b.key} className="bg-gray-50 rounded-2xl p-6 text-center">
-                <div
-                  className={`w-14 h-14 ${b.bg} rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4`}
-                >
-                  {b.emoji}
+                <div className={`w-14 h-14 ${b.bg} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                  <b.icon size={24} color={b.iconColor} />
                 </div>
                 <h3 className={`font-bold mb-2 ${b.color}`}>
                   {t(`driversPage.benefit_${b.key}`)}
@@ -111,7 +90,6 @@ export default async function DriversPage() {
                 <div className="flex-1 pt-1">
                   <p className="text-gray-700 font-medium">{t(`driversPage.${step.key}`)}</p>
                 </div>
-                <div className="text-2xl flex-shrink-0">{step.icon}</div>
               </div>
             ))}
           </div>
