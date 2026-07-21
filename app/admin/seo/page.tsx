@@ -403,9 +403,6 @@ export default function AdminSeoPage() {
               <div className="p-3 flex flex-col flex-1">
                 <p className="font-bold text-slate-900 text-sm leading-tight">{member.name}</p>
                 <p className="text-xs text-slate-400 mt-0.5 leading-tight">{member.role}</p>
-                {lastReport && (
-                  <p className="text-xs text-slate-500 mt-1.5 line-clamp-2 italic">{lastReport.summary.slice(0, 70)}…</p>
-                )}
                 <button
                   onClick={() => triggerAgent(agent)}
                   disabled={!!triggering || !!pendingRefresh}
@@ -439,14 +436,12 @@ export default function AdminSeoPage() {
             </div>
           ) : goodReports.map((r) => (
             <div key={r.id} className={`bg-white border rounded-xl overflow-hidden ${r.status === "unread" ? "border-blue-200 shadow-sm" : "border-slate-100"}`}>
-              <div className="flex items-start gap-4 p-4">
-                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full shrink-0 ${AGENT_COLORS[r.agent]}`}>
-                  {AGENT_ICONS[r.agent]} {AGENT_LABELS[r.agent]}
-                </span>
+              <div className="flex items-center gap-3 p-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={TEAM[r.agent]?.avatar} alt={TEAM[r.agent]?.name} className="w-10 h-10 rounded-full object-cover object-top shrink-0 border border-slate-200" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-900 text-sm">{r.title}</p>
-                  {!!r.summary && <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{r.summary}</p>}
-                  <p className="text-xs text-slate-400 mt-1">{new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                  <p className="font-semibold text-slate-900 text-sm leading-tight">{r.title}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{TEAM[r.agent]?.name} · {new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={() => setExpanded(expanded === r.id ? null : r.id)} className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
