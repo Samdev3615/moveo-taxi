@@ -29,7 +29,7 @@ export default function LanguageSwitcher() {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 text-sm hover:border-[#16A34A] hover:text-[#16A34A] transition-colors"
       >
         <img
-          src={`https://flagcdn.com/w20/${localeFlagCodes[locale]}.png`}
+          src={`/images/flags/${localeFlagCodes[locale]}.png`}
           width={20}
           height={15}
           alt={localeLabels[locale]}
