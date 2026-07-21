@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { serperSearch, formatResults } from "@/lib/serper";
 
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
@@ -9,48 +10,95 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const [siteIndex, brandEn, brandFr, competitors, airportMarket, heMarket] = await Promise.all([
+      serperSearch("site:moveotaxi.com", { gl: "il", hl: "en", num: 10 }),
+      serperSearch("moveotaxi.com taxi Israel", { gl: "il", hl: "en", num: 5 }),
+      serperSearch("Moveo Taxi Israël", { gl: "il", hl: "fr", num: 5 }),
+      serperSearch("taxi private transfer Ben Gurion airport Israel", { gl: "il", hl: "en", num: 8 }),
+      serperSearch("airport taxi Israel book online", { gl: "il", hl: "en", num: 5 }),
+      serperSearch("הזמנת מונית אונליין ישראל", { gl: "il", hl: "iw", num: 5 }),
+    ]);
+
+    const searchContext = `
+=== DONNÉES GOOGLE RÉELLES SUR MOVEO TAXI ===
+
+[Pages indexées par Google - site:moveotaxi.com]
+${formatResults(siteIndex)}
+
+[Moveo Taxi sur Google.il en anglais]
+${formatResults(brandEn)}
+
+[Moveo Taxi sur Google en français]
+${formatResults(brandFr)}
+
+[Marché concurrentiel: taxi Ben Gurion]
+${formatResults(competitors)}
+
+[Marché: airport taxi Israel book online]
+${formatResults(airportMarket)}
+
+[Marché hébreu: הזמנת מונית אונליין]
+${formatResults(heMarket)}
+`;
+
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [{
         role: "user",
-        content: `You are an SEO auditor for Moveo Taxi (moveotaxi.com), an Israeli private taxi service.
+        content: `Tu es un auditeur SEO expert pour Moveo Taxi (moveotaxi.com).
 
-Current site structure:
-- Homepage (/) — booking widget, hero section, features, testimonials
-- /airport — Ben Gurion airport transfers page
-- /routes — price grid for intercity routes (Tel Aviv, Jerusalem, Haifa, Beer Sheva, Eilat, Netanya, Ashdod, Rishon)
-- /contact — WhatsApp + phone contact
-- /about — company info
-- /drivers — driver recruitment
-- /[locale]/route/[slug] — individual route pages (e.g., tel-aviv-jerusalem)
-- 5 languages: he, en, fr, ru, es (hreflang implemented, canonicals set)
-- Sitemap.xml submitted to Google Search Console
+Voici les VRAIES données Google actuelles sur Moveo Taxi et son marché :
 
-What IS implemented:
-- Canonical URLs, hreflang tags, meta titles/descriptions
-- Sitemap.xml
-- WhatsApp pre-filled messages in 5 languages
-- Booking form with price calculator
-- noindex on /confirmation/* pages
+${searchContext}
 
-What is MISSING:
-- Schema.org JSON-LD (LocalBusiness + TaxiService)
-- Blog/content section
-- Google Business Profile optimization tips
-- Internal linking between route pages
+Structure actuelle du site (implémentée) :
+- Homepage avec widget de réservation
+- /airport — transferts aéroport Ben Gurion
+- /routes — grille de prix intercités
+- /contact, /about, /drivers
+- /[locale]/route/[slug] — pages routes individuelles
+- 5 langues: he, en, fr, ru, es (hreflang + canonicals)
+- Sitemap.xml soumis à Google Search Console
+- noindex sur /confirmation/*
 
-Provide a detailed SEO audit. Return ONLY valid JSON:
+CE QUI MANQUE (identifié précédemment) :
+- Schema.org JSON-LD (LocalBusiness + TaxiService + FAQPage)
+- Blog / section contenu
+- Google Business Profile
+- Liens internes entre pages routes
+
+En te basant sur les VRAIES données Google fournies, fais un audit SEO complet.
+
+Retourne UNIQUEMENT un JSON valide en français :
 {
-  "critical_issues": [{ "issue": "problème en français", "page": "", "fix": "correction en français", "impact": "high|medium|low" }],
-  "quick_wins": [{ "action": "action en français", "effort": "1h|4h|1d", "impact": "high|medium|low" }],
-  "long_term": [{ "action": "action en français", "effort": "1w|1m", "expected_result": "résultat attendu en français" }],
-  "schema_markup": { "recommended": ["LocalBusiness", "TaxiService", "FAQPage"], "priority": "CRITIQUE" },
-  "content_gaps": ["page ou sujet manquant en français", "gap 2"],
-  "score": { "current": "1-100", "potential": "1-100", "main_blocker": "principal obstacle en français" }
-}
-
-Write ALL text values in French.`,
+  "indexation": {
+    "pages_trouvees": "nombre de pages indexées observées",
+    "problemes": ["problème d'indexation observé 1"],
+    "bon_points": ["point positif observé dans les résultats"]
+  },
+  "visibilite_actuelle": "comment Moveo Taxi apparaît actuellement sur Google d'après les données réelles",
+  "critical_issues": [
+    { "issue": "problème critique en français", "page": "page concernée", "fix": "correction précise", "impact": "high|medium|low" }
+  ],
+  "quick_wins": [
+    { "action": "action rapide en français", "effort": "1h|4h|1d", "impact": "high|medium|low", "reason": "pourquoi basé sur les données réelles" }
+  ],
+  "long_term": [
+    { "action": "action long terme", "effort": "1w|1m", "expected_result": "résultat attendu" }
+  ],
+  "schema_markup": {
+    "recommended": ["LocalBusiness", "TaxiService", "FAQPage"],
+    "priority": "CRITIQUE",
+    "reason": "impact attendu sur les résultats Google"
+  },
+  "content_gaps": ["page ou sujet manquant identifié d'après les résultats concurrents"],
+  "score": {
+    "current": 0,
+    "potential": 0,
+    "main_blocker": "principal obstacle identifié dans les données Google"
+  }
+}`,
       }],
     });
 
@@ -62,7 +110,7 @@ Write ALL text values in French.`,
     await supabaseAdmin.from("seo_reports").insert({
       agent: "auditor",
       title: `Audit SEO — Score ${content.score?.current ?? "?"}/100 → potentiel ${content.score?.potential ?? "?"}/100`,
-      summary: `${content.critical_issues?.length ?? 0} problèmes critiques. ${content.quick_wins?.length ?? 0} gains rapides identifiés.`,
+      summary: `${content.critical_issues?.length ?? 0} problèmes critiques. ${content.quick_wins?.length ?? 0} gains rapides. Bloquant: ${content.score?.main_blocker ?? ""}`,
       content,
     });
 
