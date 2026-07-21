@@ -5,6 +5,7 @@ import AdminAuthLayout from "@/components/AdminAuthLayout";
 export const metadata: Metadata = {
   title: "Admin — Moveo Taxi",
   robots: "noindex",
+  manifest: "/admin-manifest.json",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,25 @@
+{
+  "name": "Moveo Taxi Admin",
+  "short_name": "Moveo Admin",
+  "description": "Panneau d'administration Moveo Taxi",
+  "start_url": "/admin/bookings",
+  "scope": "/admin",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f2445",
+  "theme_color": "#0f2445",
+  "icons": [
+    {
+      "src": "/images/moveo-taxi-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/moveo-taxi-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
