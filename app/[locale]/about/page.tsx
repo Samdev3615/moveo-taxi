@@ -9,7 +9,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
-  return { title: t("about.title"), description: t("about.description") };
+  return {
+    title: t("about.title"),
+    description: t("about.description"),
+    alternates: { canonical: `https://www.moveotaxi.com/${locale}/about` },
+  };
 }
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

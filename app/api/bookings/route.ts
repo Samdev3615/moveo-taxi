@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { sendBookingNotification, sendClientConfirmation } from "@/lib/email";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,12 +31,16 @@ export async function POST(req: NextRequest) {
           vehicle_type: body.vehicle_type === "car6" ? "minibus" : "sedan",
           price_estimate: body.price_estimate || null,
           notes: [
+            body._source ? `Source: ${body._source}` : null,
+            body._client_lang ? `Langue: ${body._client_lang}` : null,
+            body._driver_type === "me" ? `Chauffeur: moi` : null,
+            body._driver_name ? `Chauffeur: ${body._driver_name}${body._driver_phone ? ` | ${body._driver_phone}` : ""}` : null,
             body.pickup_address ? `Adresse: ${body.pickup_address}` : null,
             body.suitcases > 0 ? `Valises: ${body.suitcases}` : null,
             body.trolleys > 0 ? `Trolleys: ${body.trolleys}` : null,
             body.notes || null,
           ].filter(Boolean).join("\n") || null,
-          status: "pending",
+          status: (body.status as string) || "pending",
         },
       ])
       .select("id")
@@ -69,6 +74,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const authed = await isAdminAuthenticated();
+  if (!authed) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
 

@@ -161,7 +161,8 @@
       "estimate": "Estimation du prix",
       "currency": "₪",
       "note": "Prix fixe confirmé à la réservation. Supplément uniquement sur demande (arrêt ou détour).",
-      "on_request": "Nous n'avons pas encore de tarif pour ce trajet. Nous vous recontacterons rapidement après votre réservation."
+      "on_request": "Nous n'avons pas encore de tarif pour ce trajet. Nous vous recontacterons rapidement après votre réservation.",
+      "quote": "Sur devis"
     }
   },
   "driversBadge": {
@@ -381,6 +382,10 @@
     "contact": {
       "title": "Contactez Moveo Taxi — Téléphone, WhatsApp, 24h/24",
       "description": "Contactez Moveo Taxi par téléphone ou WhatsApp pour réserver votre taxi en Israël. Service disponible 24h/24, 7j/7."
+    },
+    "drivers": {
+      "title": "Rejoignez Moveo Taxi — Devenir Chauffeur Partenaire en Israël",
+      "description": "Devenez chauffeur partenaire Moveo Taxi. Revenus flexibles, liberté de travail, support 24h/24. Rejoignez notre réseau de chauffeurs professionnels en Israël."
     }
   },
   "routePage": {

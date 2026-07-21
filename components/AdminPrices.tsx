@@ -56,16 +56,20 @@ export default function AdminPrices() {
 
   async function saveRow(row: EditableRow) {
     setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, saving: true } : r)));
-    await supabase
-      .from("route_prices")
-      .update({
+    const res = await fetch(`/api/admin/prices/${row.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         car4_day: row.car4_day,
         car4_night: row.car4_night,
         car6_day: row.car6_day,
         car6_night: row.car6_night,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", row.id);
+      }),
+    });
+    if (!res.ok) {
+      setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, saving: false } : r)));
+      return;
+    }
     setRows((prev) =>
       prev.map((r) => r.id === row.id ? { ...r, saving: false, dirty: false, saved: true } : r)
     );
@@ -76,7 +80,8 @@ export default function AdminPrices() {
 
   async function deleteRow(id: string) {
     if (!confirm("Supprimer ce trajet ?")) return;
-    await supabase.from("route_prices").delete().eq("id", id);
+    const res = await fetch(`/api/admin/prices/${id}`, { method: "DELETE" });
+    if (!res.ok) return;
     setRows((prev) => prev.filter((r) => r.id !== id));
   }
 
@@ -92,8 +97,14 @@ export default function AdminPrices() {
       from_city: addFrom, to_city: addTo,
       car4_day: 0, car4_night: 0, car6_day: 0, car6_night: 0,
     };
-    const { data } = await supabase.from("route_prices").insert(insert).select().single();
-    if (data) setRows((prev) => [...prev, data as EditableRow]);
+    const res = await fetch("/api/admin/prices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(insert),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    setRows((prev) => [...prev, data as EditableRow]);
   }
 
   const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");

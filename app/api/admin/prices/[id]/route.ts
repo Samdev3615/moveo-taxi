@@ -12,37 +12,18 @@ export async function PATCH(
   const { id } = await params;
   const body = await req.json();
 
-  // Full update (edit mode) vs status-only update
-  const isFullUpdate = body._full_update === true;
-
-  const update = isFullUpdate
-    ? {
-        trip_type:     body.trip_type,
-        direction:     body.direction || null,
-        from_city:     body.from_city,
-        to_city:       body.to_city,
-        date:          body.date,
-        time:          body.time,
-        flight_number: body.flight_number || null,
-        terminal:      body.terminal || null,
-        name:          body.name,
-        phone:         body.phone,
-        email:         body.email || null,
-        passengers:    body.passengers || 1,
-        vehicle_type:  body.vehicle_type === "car6" ? "minibus" : "sedan",
-        price_estimate: body.price_estimate ? Number(body.price_estimate) : null,
-        status:        body.status || "pending",
-        notes:         body.notes || null,
-      }
-    : { status: body.status };
-
   const { error } = await supabaseAdmin
-    .from("bookings")
-    .update(update)
+    .from("route_prices")
+    .update({
+      car4_day: body.car4_day,
+      car4_night: body.car4_night,
+      car6_day: body.car6_day,
+      car6_night: body.car6_night,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
   return NextResponse.json({ success: true });
 }
 
@@ -56,11 +37,10 @@ export async function DELETE(
   const { id } = await params;
 
   const { error } = await supabaseAdmin
-    .from("bookings")
+    .from("route_prices")
     .delete()
     .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
   return NextResponse.json({ success: true });
 }

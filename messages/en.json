@@ -161,7 +161,8 @@
       "estimate": "Price Estimate",
       "currency": "₪",
       "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested.",
-      "on_request": "We don't have a set price for this route yet. We'll get back to you shortly after your booking."
+      "on_request": "We don't have a set price for this route yet. We'll get back to you shortly after your booking.",
+      "quote": "On quote"
     }
   },
   "driversBadge": {
@@ -381,6 +382,10 @@
     "contact": {
       "title": "Contact Moveo Taxi — Phone, WhatsApp, 24/7",
       "description": "Contact Moveo Taxi by phone or WhatsApp to book your taxi in Israel. Service available 24/7."
+    },
+    "drivers": {
+      "title": "Join Moveo Taxi — Become a Partner Driver in Israel",
+      "description": "Become a Moveo Taxi partner driver. Flexible income, free working hours, 24/7 support. Join our network of professional drivers in Israel."
     }
   },
   "routePage": {

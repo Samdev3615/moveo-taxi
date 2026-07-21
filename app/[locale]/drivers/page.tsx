@@ -1,5 +1,20 @@
+import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
 import { Banknote, Clock, Headphones, Users } from "lucide-react";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return {
+    title: t("drivers.title"),
+    description: t("drivers.description"),
+    alternates: { canonical: `https://www.moveotaxi.com/${locale}/drivers` },
+  };
+}
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";

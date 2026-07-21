@@ -4,7 +4,7 @@ export async function GET(req: NextRequest) {
   const input = req.nextUrl.searchParams.get("input");
   if (!input || input.length < 2) return NextResponse.json({ predictions: [] });
 
-  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const key = process.env.GOOGLE_MAPS_API_KEY;
   if (!key) return NextResponse.json({ predictions: [] });
 
   const res = await fetch("https://places.googleapis.com/v1/places:autocomplete", {

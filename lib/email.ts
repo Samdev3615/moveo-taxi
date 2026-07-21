@@ -9,11 +9,56 @@ const transporter = nodemailer.createTransport({
 });
 
 const cityNames: Record<string, Record<string, string>> = {
-  he: { tel_aviv: "תל אביב", jerusalem: "ירושלים", haifa: "חיפה", beer_sheva: "באר שבע", eilat: "אילת", netanya: "נתניה", ashdod: "אשדוד", rishon: "ראשון לציון", petah_tikva: "פתח תקווה", ben_gurion: "נמל תעופה בן גוריון" },
-  en: { tel_aviv: "Tel Aviv", jerusalem: "Jerusalem", haifa: "Haifa", beer_sheva: "Beer Sheva", eilat: "Eilat", netanya: "Netanya", ashdod: "Ashdod", rishon: "Rishon LeZion", petah_tikva: "Petah Tikva", ben_gurion: "Ben Gurion Airport" },
-  fr: { tel_aviv: "Tel Aviv", jerusalem: "Jérusalem", haifa: "Haïfa", beer_sheva: "Beer Sheva", eilat: "Eilat", netanya: "Netanya", ashdod: "Ashdod", rishon: "Rishon LeZion", petah_tikva: "Petah Tikva", ben_gurion: "Aéroport Ben Gourion" },
-  ru: { tel_aviv: "Тель-Авив", jerusalem: "Иерусалим", haifa: "Хайфа", beer_sheva: "Беэр-Шева", eilat: "Эйлат", netanya: "Нетания", ashdod: "Ашдод", rishon: "Ришон-ле-Цион", petah_tikva: "Петах-Тиква", ben_gurion: "Аэропорт Бен-Гурион" },
-  es: { tel_aviv: "Tel Aviv", jerusalem: "Jerusalén", haifa: "Haifa", beer_sheva: "Beer Sheva", eilat: "Eilat", netanya: "Netanya", ashdod: "Ashdod", rishon: "Rishon LeZion", petah_tikva: "Petah Tikva", ben_gurion: "Aeropuerto Ben Gurión" },
+  he: {
+    tel_aviv: "תל אביב", jerusalem: "ירושלים", haifa: "חיפה", beer_sheva: "באר שבע",
+    eilat: "אילת", netanya: "נתניה", ashdod: "אשדוד", rishon: "ראשון לציון",
+    petah_tikva: "פתח תקווה", ben_gurion: "נמל תעופה בן גוריון",
+    herzliya: "הרצליה", raanana: "רעננה", kfar_saba: "כפר סבא", modiin: "מודיעין",
+    rehovot: "רחובות", ashkelon: "אשקלון", nahariya: "נהריה", acre: "עכו",
+    tiberias: "טבריה", nazareth: "נצרת", afula: "עפולה", kiryat_shmona: "קריית שמונה",
+    dimona: "דימונה", bat_yam: "בת ים", holon: "חולון", bnei_brak: "בני ברק",
+    lod: "לוד", ramla: "רמלה", beit_shemesh: "בית שמש", hadera: "חדרה",
+  },
+  en: {
+    tel_aviv: "Tel Aviv", jerusalem: "Jerusalem", haifa: "Haifa", beer_sheva: "Beer Sheva",
+    eilat: "Eilat", netanya: "Netanya", ashdod: "Ashdod", rishon: "Rishon LeZion",
+    petah_tikva: "Petah Tikva", ben_gurion: "Ben Gurion Airport",
+    herzliya: "Herzliya", raanana: "Ra'anana", kfar_saba: "Kfar Saba", modiin: "Modi'in",
+    rehovot: "Rehovot", ashkelon: "Ashkelon", nahariya: "Nahariya", acre: "Acre",
+    tiberias: "Tiberias", nazareth: "Nazareth", afula: "Afula", kiryat_shmona: "Kiryat Shmona",
+    dimona: "Dimona", bat_yam: "Bat Yam", holon: "Holon", bnei_brak: "Bnei Brak",
+    lod: "Lod", ramla: "Ramla", beit_shemesh: "Beit Shemesh", hadera: "Hadera",
+  },
+  fr: {
+    tel_aviv: "Tel Aviv", jerusalem: "Jérusalem", haifa: "Haïfa", beer_sheva: "Beer Sheva",
+    eilat: "Eilat", netanya: "Netanya", ashdod: "Ashdod", rishon: "Rishon LeZion",
+    petah_tikva: "Petah Tikva", ben_gurion: "Aéroport Ben Gourion",
+    herzliya: "Herzliya", raanana: "Ra'anana", kfar_saba: "Kfar Saba", modiin: "Modi'in",
+    rehovot: "Rehovot", ashkelon: "Ashkelon", nahariya: "Nahariya", acre: "Acre",
+    tiberias: "Tibériade", nazareth: "Nazareth", afula: "Afula", kiryat_shmona: "Kiryat Shmona",
+    dimona: "Dimona", bat_yam: "Bat Yam", holon: "Holon", bnei_brak: "Bnei Brak",
+    lod: "Lod", ramla: "Ramla", beit_shemesh: "Beit Shemesh", hadera: "Hadera",
+  },
+  ru: {
+    tel_aviv: "Тель-Авив", jerusalem: "Иерусалим", haifa: "Хайфа", beer_sheva: "Беэр-Шева",
+    eilat: "Эйлат", netanya: "Нетания", ashdod: "Ашдод", rishon: "Ришон-ле-Цион",
+    petah_tikva: "Петах-Тиква", ben_gurion: "Аэропорт Бен-Гурион",
+    herzliya: "Герцлия", raanana: "Раанана", kfar_saba: "Кфар-Саба", modiin: "Модиин",
+    rehovot: "Реховот", ashkelon: "Ашкелон", nahariya: "Нагария", acre: "Акко",
+    tiberias: "Тверия", nazareth: "Назарет", afula: "Афула", kiryat_shmona: "Кирьят-Шмона",
+    dimona: "Димона", bat_yam: "Бат-Ям", holon: "Холон", bnei_brak: "Бней-Брак",
+    lod: "Лод", ramla: "Рамла", beit_shemesh: "Бейт-Шемеш", hadera: "Хадера",
+  },
+  es: {
+    tel_aviv: "Tel Aviv", jerusalem: "Jerusalén", haifa: "Haifa", beer_sheva: "Beer Sheva",
+    eilat: "Eilat", netanya: "Netanya", ashdod: "Ashdod", rishon: "Rishon LeZion",
+    petah_tikva: "Petah Tikva", ben_gurion: "Aeropuerto Ben Gurión",
+    herzliya: "Herzliya", raanana: "Ra'anana", kfar_saba: "Kfar Saba", modiin: "Modiin",
+    rehovot: "Rehovot", ashkelon: "Ashkelon", nahariya: "Nahariya", acre: "Acre",
+    tiberias: "Tiberias", nazareth: "Nazaret", afula: "Afula", kiryat_shmona: "Kiryat Shmona",
+    dimona: "Dimona", bat_yam: "Bat Yam", holon: "Holon", bnei_brak: "Bnei Brak",
+    lod: "Lod", ramla: "Ramla", beit_shemesh: "Beit Shemesh", hadera: "Hadera",
+  },
 };
 
 const confirmationTemplates: Record<string, {

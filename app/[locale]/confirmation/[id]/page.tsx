@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CheckCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  robots: "noindex, nofollow",
+};
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";

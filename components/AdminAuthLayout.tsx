@@ -3,15 +3,14 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Tag, LogOut, ExternalLink } from "lucide-react";
-
-const PASS = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "moveo2024";
+import { LayoutDashboard, Tag, CalendarDays, LogOut, ExternalLink, Menu, X } from "lucide-react";
 
 export default function AdminAuthLayout({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
   const [ready, setReady] = useState(false);
   const [pw, setPw] = useState("");
   const [error, setError] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -19,8 +18,17 @@ export default function AdminAuthLayout({ children }: { children: React.ReactNod
     setReady(true);
   }, []);
 
-  function login() {
-    if (pw === PASS) {
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  async function login() {
+    const res = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pw }),
+    });
+    if (res.ok) {
       sessionStorage.setItem("admin_authed", "1");
       setAuthed(true);
     } else {
@@ -29,7 +37,8 @@ export default function AdminAuthLayout({ children }: { children: React.ReactNod
     }
   }
 
-  function logout() {
+  async function logout() {
+    await fetch("/api/admin/logout", { method: "POST" });
     sessionStorage.removeItem("admin_authed");
     setAuthed(false);
     setPw("");
@@ -80,65 +89,110 @@ export default function AdminAuthLayout({ children }: { children: React.ReactNod
 
   const nav = [
     { href: "/admin/bookings", icon: LayoutDashboard, label: "Réservations" },
-    { href: "/admin/prices", icon: Tag, label: "Tarifs" },
+    { href: "/admin/calendar", icon: CalendarDays,    label: "Agenda" },
+    { href: "/admin/prices",   icon: Tag,             label: "Tarifs" },
   ];
+
+  const SidebarContent = () => (
+    <>
+      <div className="px-5 py-6 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-amber-400 rounded-xl flex items-center justify-center shadow">
+            <span className="text-sm font-black text-[#1a3c6e]">M</span>
+          </div>
+          <div>
+            <div className="font-black text-white text-sm leading-tight">Moveo Taxi</div>
+            <div className="text-white/40 text-xs">Admin</div>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
+        {nav.map(({ href, icon: Icon, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              pathname === href
+                ? "bg-white/15 text-white shadow-sm"
+                : "text-white/55 hover:text-white hover:bg-white/8"
+            }`}
+          >
+            <Icon size={15} strokeWidth={2} />
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="px-3 py-4 border-t border-white/10 space-y-1">
+        <Link
+          href="/"
+          target="_blank"
+          className="flex items-center gap-2 text-white/40 hover:text-white/80 text-xs transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/5"
+        >
+          <ExternalLink size={13} />
+          Voir le site
+        </Link>
+        <button
+          onClick={logout}
+          className="flex items-center gap-2 text-white/40 hover:text-white/80 text-xs transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/5"
+        >
+          <LogOut size={13} />
+          Déconnexion
+        </button>
+      </div>
+    </>
+  );
+
+  const currentLabel = nav.find(n => n.href === pathname)?.label ?? "Admin";
 
   return (
     <div className="min-h-screen flex bg-slate-100">
-      {/* Sidebar */}
-      <aside className="w-52 bg-[#0f2445] shrink-0 flex flex-col">
-        <div className="px-5 py-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-amber-400 rounded-xl flex items-center justify-center shadow">
-              <span className="text-sm font-black text-[#1a3c6e]">M</span>
-            </div>
-            <div>
-              <div className="font-black text-white text-sm leading-tight">Moveo Taxi</div>
-              <div className="text-white/40 text-xs">Admin</div>
-            </div>
-          </div>
-        </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {nav.map(({ href, icon: Icon, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                pathname === href
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-white/55 hover:text-white hover:bg-white/8"
-              }`}
-            >
-              <Icon size={15} strokeWidth={2} />
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="px-3 py-4 border-t border-white/10 space-y-1">
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center gap-2 text-white/40 hover:text-white/80 text-xs transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/5"
-          >
-            <ExternalLink size={13} />
-            Voir le site
-          </Link>
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 text-white/40 hover:text-white/80 text-xs transition-colors w-full px-3 py-2 rounded-xl hover:bg-white/5"
-          >
-            <LogOut size={13} />
-            Déconnexion
-          </button>
-        </div>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-52 bg-[#0f2445] shrink-0 flex-col">
+        <SidebarContent />
       </aside>
 
-      {/* Content */}
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile slide-over sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0f2445] flex flex-col md:hidden transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="absolute top-4 right-4 text-white/50 hover:text-white"
+        >
+          <X size={20} />
+        </button>
+        <SidebarContent />
+      </aside>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-w-0">
+
+        {/* Mobile top bar */}
+        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-[#0f2445] shrink-0">
+          <button onClick={() => setSidebarOpen(true)} className="text-white/70 hover:text-white">
+            <Menu size={22} />
+          </button>
+          <span className="text-white font-bold text-sm">{currentLabel}</span>
+          <div className="w-6" />
+        </header>
+
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

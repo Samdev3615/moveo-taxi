@@ -9,6 +9,7 @@ const pages = [
   { path: "/airport", changeFrequency: "weekly" as const, priority: 0.9 },
   { path: "/routes", changeFrequency: "weekly" as const, priority: 0.9 },
   { path: "/booking", changeFrequency: "weekly" as const, priority: 0.8 },
+  { path: "/drivers", changeFrequency: "monthly" as const, priority: 0.7 },
   { path: "/about", changeFrequency: "monthly" as const, priority: 0.6 },
   { path: "/contact", changeFrequency: "monthly" as const, priority: 0.6 },
 ];

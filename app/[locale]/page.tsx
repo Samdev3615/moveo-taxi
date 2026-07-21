@@ -397,7 +397,7 @@ function RouteCard({
           <div className="flex items-center gap-1">
             {route.price !== null
               ? <span className="text-lg font-black text-[#F97316]">₪{route.price}</span>
-              : <span className="text-xs text-gray-600 italic">Sur devis</span>
+              : <span className="text-xs text-gray-600 italic">{t("booking.price.quote")}</span>
             }
             <div className="bg-[#16A34A] rounded-full p-1 group-hover:bg-[#15803D] transition-colors">
               <span className="text-white text-xs font-bold px-0.5 rtl:hidden">→</span>

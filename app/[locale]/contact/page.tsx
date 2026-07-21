@@ -8,7 +8,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
-  return { title: t("contact.title"), description: t("contact.description") };
+  return {
+    title: t("contact.title"),
+    description: t("contact.description"),
+    alternates: { canonical: `https://www.moveotaxi.com/${locale}/contact` },
+  };
 }
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
