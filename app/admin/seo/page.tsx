@@ -45,6 +45,13 @@ const AGENT_LABELS: Record<string, string> = {
   keywords: "Mots-clés",
 };
 
+const TEAM: Record<string, { name: string; role: string; avatar: string; color: string }> = {
+  writer:     { name: "Sophie Laurent",  role: "Rédactrice SEO Multilingue",     avatar: "/images/team-sophie.png", color: "border-blue-200" },
+  competitor: { name: "Alex Benhamou",   role: "Analyste Concurrentielle",        avatar: "/images/team-alex.png",   color: "border-orange-200" },
+  auditor:    { name: "Maya Cohen",      role: "Auditrice SEO Technique",         avatar: "/images/team-maya.png",   color: "border-purple-200" },
+  keywords:   { name: "Rafi Shapira",    role: "Expert Mots-clés & Tendances",   avatar: "/images/team-rafi.png",   color: "border-green-200" },
+};
+
 const FLAG: Record<string, string> = {
   he: "🇮🇱", en: "🇬🇧", fr: "🇫🇷", ru: "🇷🇺", es: "🇪🇸",
   hébreu: "🇮🇱", anglais: "🇬🇧", français: "🇫🇷", russe: "🇷🇺", espagnol: "🇪🇸",
@@ -379,22 +386,37 @@ export default function AdminSeoPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {["writer", "competitor", "auditor", "keywords"].map((agent) => (
-          <button
-            key={agent}
-            onClick={() => triggerAgent(agent)}
-            disabled={!!triggering || !!pendingRefresh}
-            className="flex flex-col items-center gap-2 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all disabled:opacity-50"
-          >
-            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full ${AGENT_COLORS[agent]}`}>
-              {AGENT_ICONS[agent]} {AGENT_LABELS[agent]}
-            </span>
-            <span className="text-xs text-slate-500">
-              {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~60s)" : "Lancer maintenant"}
-            </span>
-          </button>
-        ))}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        {(["writer", "competitor", "auditor", "keywords"] as const).map((agent) => {
+          const member = TEAM[agent];
+          const lastReport = goodReports.find((r) => r.agent === agent);
+          const isActive = triggering === agent || pendingRefresh === agent;
+          return (
+            <div key={agent} className={`bg-white border-2 ${member.color} rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all`}>
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={member.avatar} alt={member.name} className="w-full aspect-square object-cover object-top" />
+                <span className={`absolute top-2 right-2 inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${AGENT_COLORS[agent]}`}>
+                  {AGENT_ICONS[agent]}
+                </span>
+              </div>
+              <div className="p-3">
+                <p className="font-bold text-slate-900 text-sm leading-tight">{member.name}</p>
+                <p className="text-xs text-slate-400 mt-0.5 leading-tight">{member.role}</p>
+                {lastReport && (
+                  <p className="text-xs text-slate-500 mt-1.5 line-clamp-1 italic">{lastReport.summary.slice(0, 60)}…</p>
+                )}
+                <button
+                  onClick={() => triggerAgent(agent)}
+                  disabled={!!triggering || !!pendingRefresh}
+                  className={`mt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : "bg-slate-900 text-white hover:bg-slate-700"}`}
+                >
+                  {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~60s)" : "Lancer"}
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
