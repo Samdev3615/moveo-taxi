@@ -37,10 +37,11 @@ Return ONLY valid JSON:
     { "keyword": "Hebrew keyword in Hebrew script", "transliteration": "", "intent": "" }
   ],
   "top_5_priority": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
-  "insight": "1 key strategic insight for Moveo Taxi SEO"
+  "insight": "1 insight stratégique clé pour le SEO de Moveo Taxi (en français)"
 }
 
-Include at least 5 keywords per category, mixing all 5 languages.`,
+Include at least 5 keywords per category, mixing all 5 languages.
+Write the "insight" field in French.`,
       }],
     });
 

@@ -42,13 +42,15 @@ What is MISSING:
 
 Provide a detailed SEO audit. Return ONLY valid JSON:
 {
-  "critical_issues": [{ "issue": "", "page": "", "fix": "", "impact": "high|medium|low" }],
-  "quick_wins": [{ "action": "", "effort": "1h|4h|1d", "impact": "high|medium|low" }],
-  "long_term": [{ "action": "", "effort": "1w|1m", "expected_result": "" }],
-  "schema_markup": { "recommended": ["LocalBusiness", "TaxiService", "FAQPage"], "priority": "CRITICAL" },
-  "content_gaps": ["missing page or topic 1", "gap 2"],
-  "score": { "current": "1-100", "potential": "1-100", "main_blocker": "" }
-}`,
+  "critical_issues": [{ "issue": "problème en français", "page": "", "fix": "correction en français", "impact": "high|medium|low" }],
+  "quick_wins": [{ "action": "action en français", "effort": "1h|4h|1d", "impact": "high|medium|low" }],
+  "long_term": [{ "action": "action en français", "effort": "1w|1m", "expected_result": "résultat attendu en français" }],
+  "schema_markup": { "recommended": ["LocalBusiness", "TaxiService", "FAQPage"], "priority": "CRITIQUE" },
+  "content_gaps": ["page ou sujet manquant en français", "gap 2"],
+  "score": { "current": "1-100", "potential": "1-100", "main_blocker": "principal obstacle en français" }
+}
+
+Write ALL text values in French.`,
       }],
     });
 

@@ -35,13 +35,15 @@ Return ONLY a valid JSON object:
       "seo_positioning": "how they rank online"
     }
   ],
-  "gaps": ["SEO gap 1", "gap 2", "gap 3"],
-  "content_topics": ["topic competitors rank for that we should target"],
+  "gaps": ["gap SEO 1 en français", "gap 2", "gap 3"],
+  "content_topics": ["sujet que les concurrents rankent et que nous devrions cibler"],
   "recommendations": [
-    { "priority": "high|medium|low", "action": "what to do", "reason": "why" }
+    { "priority": "high|medium|low", "action": "action à faire en français", "reason": "raison en français" }
   ],
-  "opportunity_score": "1-10 rating for Moveo Taxi's market opportunity"
-}`,
+  "opportunity_score": "note 1-10 pour l'opportunité marché de Moveo Taxi"
+}
+
+Write ALL text values in French (except competitor names and keyword strings).`,
       }],
     });
 
