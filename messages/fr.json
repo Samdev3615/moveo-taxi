@@ -411,5 +411,12 @@
     "meta_title": "Taxi {from} → {to} | Prix fixe | Moveo Taxi",
     "meta_desc": "Réservez un taxi privé de {from} à {to}. Prix fixe garanti, chauffeurs professionnels, disponible 24h/24. Réservation en ligne simple.",
     "km": "km"
+  },
+  "install": {
+    "title": "Moveo Taxi",
+    "subtitle": "Installez l'app pour un accès rapide",
+    "ios_hint": "Appuyez sur Partager puis \"Sur l'écran d'accueil\"",
+    "install": "Installer",
+    "later": "Plus tard"
   }
 }

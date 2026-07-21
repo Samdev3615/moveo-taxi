@@ -411,5 +411,12 @@
     "meta_title": "Taxi {from} to {to} | Fixed Price | Moveo Taxi",
     "meta_desc": "Book a private taxi from {from} to {to}. Guaranteed fixed price, professional drivers, available 24/7. Easy online booking.",
     "km": "km"
+  },
+  "install": {
+    "title": "Moveo Taxi",
+    "subtitle": "Install the app for quick access",
+    "ios_hint": "Tap Share then \"Add to Home Screen\"",
+    "install": "Install",
+    "later": "Later"
   }
 }
