@@ -68,7 +68,7 @@ ${formatResults(heMarket)}
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 3000,
+      max_tokens: 16000,
       messages: [{
         role: "user",
         content: `Tu es un auditeur SEO expert pour Moveo Taxi (moveotaxi.com).

@@ -51,7 +51,7 @@ ${formatResults(longTailRu)}
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 3000,
+      max_tokens: 16000,
       messages: [{
         role: "user",
         content: `Tu es un expert en recherche de mots-clés pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël.

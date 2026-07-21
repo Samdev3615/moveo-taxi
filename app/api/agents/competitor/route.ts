@@ -69,7 +69,7 @@ ${formatResults(esAirport)}
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 3000,
+      max_tokens: 16000,
       messages: [{
         role: "user",
         content: `Tu es un analyste SEO. Analyse ces résultats Google pour le marché taxi en Israël et identifie les concurrents de Moveo Taxi (moveotaxi.com).
@@ -104,8 +104,19 @@ Format requis:
       throw new Error(`No JSON. Blocks=[${blockTypes}] TextLen=${text.length}`);
     }
 
-    const content = JSON.parse(jsonStr);
-    const nbConcurrents = content.competitors?.length ?? 0;
+    let content: Record<string, unknown>;
+    try {
+      content = JSON.parse(jsonStr);
+    } catch (parseErr) {
+      await supabaseAdmin.from("seo_reports").insert({
+        agent: "competitor",
+        title: "Erreur JSON tronqué",
+        summary: `JSON coupé à ${jsonStr.length} chars. Erreur: ${String(parseErr).slice(0, 100)}`,
+        content: { error: true, partial_json: jsonStr.slice(0, 2000) },
+      });
+      throw parseErr;
+    }
+    const nbConcurrents = (content.competitors as unknown[])?.length ?? 0;
 
     await supabaseAdmin.from("seo_reports").insert({
       agent: "competitor",
