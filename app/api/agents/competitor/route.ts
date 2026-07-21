@@ -72,51 +72,34 @@ ${formatResults(esAirport)}
       max_tokens: 3000,
       messages: [{
         role: "user",
-        content: `Tu es un analyste SEO expert pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël couvrant aéroport Ben Gurion + trajets intercités.
-
-Voici les vrais résultats Google en 5 langues pour les recherches taxi en Israël :
+        content: `Tu es un analyste SEO. Analyse ces résultats Google pour le marché taxi en Israël et identifie les concurrents de Moveo Taxi (moveotaxi.com).
 
 ${searchContext}
 
-Identifie TOUS les concurrents qui apparaissent dans ces résultats (pas seulement Gett/Yango — cherche aussi les agences de voyage, services locaux, agrégateurs, sites spécialisés...).
+IMPORTANT: Réponds UNIQUEMENT avec du JSON brut, sans texte avant ni après, sans balises markdown.
 
-Réponds UNIQUEMENT avec un JSON valide en français :
-{
-  "competitors": [
-    {
-      "name": "nom du service",
-      "url": "url",
-      "type": "appli|site-local|agence-voyage|agregateur|autre",
-      "langues_presentes": ["he","en","fr","ru","es"],
-      "mots_cles_seo": ["mots-clés visibles dans leurs titres/snippets"],
-      "forces": ["avantage principal"],
-      "faiblesses": ["point faible"]
-    }
-  ],
-  "opportunites": [
-    { "langue": "langue", "action": "ce que Moveo Taxi doit faire", "priorite": "high|medium|low" }
-  ],
-  "langue_moins_concurrentielle": "langue avec le moins de concurrents",
-  "recommandation": "la chose la plus urgente à faire"
-}`,
+Format requis:
+{"competitors":[{"name":"string","url":"string","type":"string","langues":["string"],"mots_cles":["string"],"force":"string"}],"opportunites":[{"langue":"string","action":"string","priorite":"high|medium|low"}],"langue_moins_competitive":"string","recommandation":"string"}`,
       }],
     });
 
     const text = msg.content[0].type === "text" ? msg.content[0].text : "";
-    const match = text.match(/\{[\s\S]*\}/);
 
-    if (!match) {
-      // Sauvegarde l'erreur pour debug dans le panel admin
+    // Essaie d'extraire le JSON (avec ou sans bloc markdown ```json```)
+    const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
+    const jsonStr = match ? (match[1] ?? match[0]) : null;
+
+    if (!jsonStr) {
       await supabaseAdmin.from("seo_reports").insert({
         agent: "competitor",
-        title: "Erreur — Claude n'a pas retourné de JSON",
-        summary: `Réponse brute: ${text.slice(0, 300)}`,
-        content: { error: true, raw: text.slice(0, 1000) },
+        title: "Debug — réponse brute de Claude",
+        summary: `Longueur: ${text.length} chars. Début: ${text.slice(0, 150)}`,
+        content: { error: true, raw_full: text, raw_length: text.length },
       });
-      throw new Error(`No JSON in response. Raw: ${text.slice(0, 200)}`);
+      throw new Error(`No JSON. Length=${text.length}. Start: ${text.slice(0, 100)}`);
     }
 
-    const content = JSON.parse(match[0]);
+    const content = JSON.parse(jsonStr);
     const nbConcurrents = content.competitors?.length ?? 0;
 
     await supabaseAdmin.from("seo_reports").insert({
