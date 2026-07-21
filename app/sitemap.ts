@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
+import { ROUTE_PAGES } from "@/lib/route-pages";
 
 const BASE_URL = "https://www.moveotaxi.com";
 
@@ -22,6 +23,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: new Date("2026-07-07"),
         changeFrequency: page.changeFrequency,
         priority: page.priority,
+      });
+    }
+
+    for (const route of ROUTE_PAGES) {
+      entries.push({
+        url: `${BASE_URL}/${locale}/route/${route.slug}`,
+        lastModified: new Date("2026-07-07"),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
       });
     }
   }

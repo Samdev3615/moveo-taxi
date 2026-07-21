@@ -10,12 +10,16 @@ interface TimePickerProps {
   onChange: (value: string) => void;
   required?: boolean;
   inputClassName?: string;
+  hoursLabel?: string;
+  minutesLabel?: string;
 }
 
 export default function TimePicker({
   value,
   onChange,
   inputClassName = "",
+  hoursLabel = "Hours",
+  minutesLabel = "Minutes",
 }: TimePickerProps) {
   const hours = value ? value.split(":")[0] : "06";
   const minutes = value ? (value.split(":")[1] ?? "00") : "00";
@@ -29,6 +33,7 @@ export default function TimePicker({
         />
         <select
           value={hours}
+          aria-label={hoursLabel}
           onChange={(e) => onChange(`${e.target.value}:${minutes}`)}
           className="w-full ps-9 pe-2 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A] bg-white"
         >
@@ -41,6 +46,7 @@ export default function TimePicker({
       </div>
       <select
         value={minutes}
+        aria-label={minutesLabel}
         onChange={(e) => onChange(`${hours}:${e.target.value}`)}
         className="w-20 px-2 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A] bg-white text-center"
       >

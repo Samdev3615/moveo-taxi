@@ -1,330 +1,415 @@
-{
-  "nav": {
-    "home": "Home",
-    "booking": "Book a Ride",
-    "airport": "Airport",
-    "intercity": "Intercity",
-    "routes": "Routes",
-    "drivers": "For Drivers",
-    "about": "About",
-    "contact": "Contact",
-    "login": "Sign In",
-    "book": "Book Now"
-  },
-  "hero": {
-    "badge": "Airport & Intercity Transfers",
-    "titleLine1": "Your trips,",
-    "titleGreen": "our priority",
-    "titleOrange": "Ben Gurion & intercity trips across Israel",
-    "subtitle": "Airport transfers and intercity trips across Israel",
-    "cta": "Book Now",
-    "ctaSecondary": "Chat on WhatsApp",
-    "stat_service": "Service",
-    "stat_customers": "Happy Clients",
-    "stat_years": "Years Experience"
-  },
-  "trust": {
-    "drivers": "Licensed Drivers",
-    "drivers_desc": "Verified, insured and experienced",
-    "prices": "Fixed Prices",
-    "prices_desc": "Price confirmed before your trip",
-    "payment": "Flexible Payment",
-    "payment_desc": "Pay directly to the driver at the end of your trip",
-    "support": "24/7 Support",
-    "support_desc": "We're here to help",
-    "bar": {
-      "commission": "only",
-      "commission_desc": "The lowest commission on the market",
-      "advance": "Advance Booking",
-      "advance_desc": "Up to 30 days in advance",
-      "drivers": "Reliable Drivers",
-      "drivers_desc": "Professional and experienced drivers",
-      "price": "Best Price Guarantee",
-      "price_desc": "Find it cheaper and we'll match the price",
-      "support": "24/7 Support",
-      "support_desc": "We're here to help you"
-    }
-  },
-  "stats": {
-    "drivers": "Partner Drivers",
-    "available": "Available 24/7",
-    "languages": "Languages Available",
-    "noHiddenFees": "Hidden Fees"
-  },
-  "booking": {
-    "title": "Book a Ride",
-    "widget_title": "Book Your Trip",
-    "widget_cta": "View Prices & Book",
-    "instant_confirmation": "Instant price · Driver confirmed within 30 min",
-    "mode": {
-      "oneway": "One Way",
-      "roundtrip": "Round Trip"
-    },
-    "tabs": {
-      "airport": "Airport",
-      "intercity": "Intercity",
-      "flight": "Flight",
-      "contact": "Contact"
-    },
-    "form": {
-      "from": "From",
-      "to": "To",
-      "date": "Date",
-      "time": "Time",
-      "passengers": "Passengers",
-      "luggage": "Luggage",
-      "vehicle": "Vehicle Type",
-      "direction": "Direction",
-      "toAirport": "To Airport",
-      "fromAirport": "From Airport",
-      "flightNumber": "Flight Number (optional)",
-      "terminal": "Terminal",
-      "name": "Full Name",
-      "phone": "Phone Number",
-      "email": "Email (optional)",
-      "pickup_address": "Exact pickup address",
-      "suitcases": "Suitcases",
-      "trolleys": "Trolleys",
-      "pickup_address_placeholder": "e.g. 12 Herzl St, Tel Aviv",
-      "notes": "Notes",
-      "continue": "Continue",
-      "back": "Back",
-      "error_from": "Please select a departure city.",
-      "error_to": "Please select a destination.",
-      "error_date": "Please choose a travel date.",
-      "error_time": "Please choose a departure time.",
-      "error_name": "Please enter your full name.",
-      "error_phone": "Please enter your phone number.",
-      "submit": "Book Now",
-      "calculating": "Calculating...",
-      "vehicle_auto_4": "4-seater taxi (1–4 passengers)",
-      "vehicle_auto_6": "6-seater taxi (5–6 passengers)",
-      "vehicles": {
-        "sedan": "4-seater taxi",
-        "minibus": "6-seater taxi"
-      },
-      "cities": {
-        "tel_aviv": "Tel Aviv",
-        "jerusalem": "Jerusalem",
-        "haifa": "Haifa",
-        "beer_sheva": "Beer Sheva",
-        "eilat": "Eilat",
-        "netanya": "Netanya",
-        "ashdod": "Ashdod",
-        "rishon": "Rishon LeZion",
-        "petah_tikva": "Petah Tikva",
-        "ben_gurion": "Ben Gurion Airport (TLV)",
-        "herzliya": "Herzliya",
-        "raanana": "Ra'anana",
-        "kfar_saba": "Kfar Saba",
-        "modiin": "Modi'in",
-        "rehovot": "Rehovot",
-        "ashkelon": "Ashkelon",
-        "nahariya": "Nahariya",
-        "acre": "Akko (Acre)",
-        "tiberias": "Tiberias",
-        "nazareth": "Nazareth",
-        "afula": "Afula",
-        "kiryat_shmona": "Kiryat Shmona",
-        "dimona": "Dimona",
-        "bat_yam": "Bat Yam",
-        "holon": "Holon",
-        "bnei_brak": "Bnei Brak",
-        "lod": "Lod",
-        "ramla": "Ramla",
-        "beit_shemesh": "Beit Shemesh",
-        "hadera": "Hadera",
-        "nes_ziona": "Nes Ziona",
-        "ramat_gan": "Ramat Gan",
-        "kiryat_gat": "Kiryat Gat",
-        "tzfat": "Safed (Tzfat)",
-        "rosh_hayin": "Rosh HaAyin",
-        "hod_hasharon": "Hod HaSharon",
-        "ramat_hasharon": "Ramat HaSharon",
-        "yavne": "Yavne",
-        "kiryat_ata": "Kiryat Ata",
-        "bet_shean": "Beit She'an",
-        "sderot": "Sderot",
-        "arad": "Arad"
-      }
-    },
-    "price": {
-      "estimate": "Price Estimate",
-      "currency": "₪",
-      "note": "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested.",
-      "on_request": "We don't have a set price for this route yet. We'll get back to you shortly after your booking."
-    }
-  },
-  "driversBadge": {
-    "title": "Professional drivers",
-    "desc": "IDF veterans with certified ongoing training"
-  },
-  "priceBadge": {
-    "title": "Over 30% cheaper",
-    "desc": "Our fares are below the official rates set by Israel's Ministry of Transport"
-  },
-  "howItWorks": {
-    "title": "How it works",
-    "steps": [
-      { "num": "1", "title": "Get your price", "desc": "Enter your trip details and instantly receive a guaranteed fixed price." },
-      { "num": "2", "title": "Confirm your booking", "desc": "Fill in your contact details. Confirmation sent by email or WhatsApp." },
-      { "num": "3", "title": "Receive your driver's info", "desc": "Before departure, you receive your driver's name and phone number." },
-      { "num": "4", "title": "Your driver is waiting", "desc": "Your driver meets you at the agreed spot with your name. Support available throughout the trip." }
-    ]
-  },
-  "faq": {
-    "title": "Frequently asked questions",
-    "items": [
-      { "q": "What happens if my flight is delayed?", "a": "Your driver tracks your flight in real time until your landing in Israel. If delayed, they adjust their arrival time automatically at no extra charge." },
-      { "q": "How do I find my driver at the airport?", "a": "You'll receive your driver's phone number before the trip. They will wait for you on level 2 of terminal 3, gate 23." },
-      { "q": "Can I travel with extra luggage?", "a": "Yes. Our vehicles accommodate standard suitcases and bags. For exceptional volume, note it when booking." },
-      { "q": "When and how do I pay?", "a": "Payment is made directly to the driver at the end of the trip, in cash only. No online prepayment required." },
-      { "q": "Can I cancel my booking?", "a": "Yes. Free cancellation up to 2 hours before departure. Contact us by WhatsApp or phone." },
-      { "q": "Are baby seats available?", "a": "Yes. Mention it in the booking notes. An additional charge may apply." }
-    ]
-  },
-  "features": {
-    "title": "Why Choose Moveo Taxi?",
-    "items": {
-      "reliable": { "title": "Reliable & Safe", "description": "Professional drivers with extensive experience and valid licenses" },
-      "available": { "title": "Available 24/7", "description": "Service at any hour, day or night, including holidays" },
-      "fixed": { "title": "Fixed Prices", "description": "No surprises — the price is set in advance and never changes" },
-      "comfort": { "title": "Comfortable & Spacious", "description": "Modern, comfortable vehicles for long-distance travel" }
-    }
-  },
-  "routes": {
-    "title": "Popular Routes",
-    "subtitle": "Fixed prices for intercity trips",
-    "viewAll": "View all routes",
-    "from": "From",
-    "to": "To",
-    "book": "Book"
-  },
-  "airport": {
-    "title": "Airport Transfers",
-    "subtitle": "Fast and reliable transfers to Ben Gurion Airport",
-    "terminals": "Terminals 1 & 3",
-    "flightMonitoring": "Real-time flight tracking",
-    "waitingTime": "Waiting time at no extra charge"
-  },
-  "contact": {
-    "title": "Contact Us",
-    "whatsapp": "Send WhatsApp Message",
-    "call": "Call Now",
-    "email": "Send Email",
-    "hours": "Working Hours",
-    "hoursValue": "24/7 — All year round"
-  },
-  "footer": {
-    "tagline": "Reliable taxi service across Israel",
-    "rights": "All rights reserved",
-    "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Service"
-  },
-  "confirmation": {
-    "title": "Booking Received!",
-    "subtitle": "We'll get back to you shortly to confirm your ride",
-    "bookingId": "Booking ID",
-    "details": "Ride Details",
-    "whatsapp": "Confirm on WhatsApp",
-    "newBooking": "New Booking"
-  },
-  "admin": {
-    "title": "Admin Dashboard",
-    "login": "Login",
-    "password": "Password",
-    "bookings": "Bookings",
-    "today": "Today",
-    "week": "This Week",
-    "all": "All",
-    "pending": "Pending",
-    "confirmed": "Confirmed",
-    "completed": "Completed",
-    "cancelled": "Cancelled",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "export": "Export CSV"
-  },
-  "about": {
-    "title": "About Moveo Taxi",
-    "subtitle": "Professional taxi service across Israel since 2015",
-    "mission_title": "Our Mission",
-    "mission_text": "To provide reliable, comfortable and affordable transportation for all intercity trips and airport transfers across Israel.",
-    "values_title": "Our Values",
-    "value_reliable": "Reliability",
-    "value_reliable_desc": "Always on time, always professional",
-    "value_professional": "Professionalism",
-    "value_professional_desc": "Experienced and courteous drivers",
-    "value_fast": "Speed",
-    "value_fast_desc": "Optimized routes for your comfort",
-    "value_transparent": "Transparency",
-    "value_transparent_desc": "Fixed prices, no surprises"
-  },
-  "driversPage": {
-    "title": "Join Our Fleet",
-    "subtitle": "Become a Moveo Taxi partner driver",
-    "cta": "Join Now",
-    "benefits_title": "Why Join Us?",
-    "benefit_income": "Attractive Income",
-    "benefit_income_desc": "Earn more with the lowest commission on the market",
-    "benefit_flexible": "Flexible Hours",
-    "benefit_flexible_desc": "Work whenever you want",
-    "benefit_support": "Dedicated Support",
-    "benefit_support_desc": "Our team supports you 7 days a week",
-    "benefit_partners": "Partner Network",
-    "benefit_partners_desc": "Join 800+ professional drivers",
-    "join_title": "How to Join?",
-    "join_step1": "Send your application on WhatsApp",
-    "join_step2": "Verification of your driving license",
-    "join_step3": "Training and integration into our network",
-    "join_cta": "Apply on WhatsApp"
-  },
-  "privacy": {
-    "title": "Privacy Policy",
-    "intro": "Moveo Taxi respects your privacy. This policy explains how we collect and use personal information when you use our taxi booking service.",
-    "section1_title": "Information We Collect",
-    "section1_text": "We collect your name, phone number, email (optional), and trip details when you make a booking. This information is used solely to confirm and fulfill your reservation.",
-    "section2_title": "Data Storage",
-    "section2_text": "Your booking information is stored securely and is only accessible to our team. We do not sell or share your data with third parties.",
-    "section3_title": "Contact",
-    "section3_text": "For any privacy-related questions, please contact us via",
-    "section3_link": "our contact page"
-  },
-  "terms": {
-    "title": "Terms of Service",
-    "intro": "By using Moveo Taxi's booking service, you agree to the following terms.",
-    "booking_title": "Booking & Cancellation",
-    "booking_text": "Bookings are confirmed upon contact from our team. You may cancel up to 2 hours before pickup without charge. Late cancellations may incur a fee.",
-    "pricing_title": "Pricing",
-    "pricing_text": "All prices shown are fixed rates in New Israeli Shekel (₪), confirmed at the time of booking. Prices will not change unless your route changes.",
-    "payment_title": "Payment",
-    "payment_text": "Payment is made directly to the driver at the end of the trip, in cash or by card. No online prepayment is required.",
-    "liability_title": "Liability",
-    "liability_text": "Moveo Taxi is not responsible for delays caused by traffic, weather, or other circumstances beyond our control.",
-    "contact_title": "Contact",
-    "contact_text": "For questions about these terms, please",
-    "contact_link": "contact us"
-  },
-  "meta": {
-    "home": {
-      "title": "Moveo Taxi — Ben Gurion Airport Transfers & Intercity Taxi Israel",
-      "description": "Book your taxi in Israel. Ben Gurion airport transfers, intercity trips Tel Aviv, Jerusalem, Haifa. Professional drivers, fixed prices, available 24/7."
-    },
-    "airport": {
-      "title": "Ben Gurion Airport Transfer (TLV) | Moveo Taxi Israel",
-      "description": "Taxi to and from Ben Gurion Airport. Easy online booking, guaranteed fixed price, punctual driver. Moveo Taxi — available 24/7."
-    },
-    "routes": {
-      "title": "Intercity Taxi Israel — Prices & Booking | Moveo Taxi",
-      "description": "All intercity routes in Israel with fixed prices. Tel Aviv, Jerusalem, Haifa, Beer Sheva. Fast online booking with Moveo Taxi."
-    },
-    "about": {
-      "title": "About Moveo Taxi | Premium Taxi Service in Israel",
-      "description": "Moveo Taxi — professional taxi service in Israel since 2015. 800+ licensed drivers, 50,000+ trips, guaranteed fixed prices."
-    },
-    "contact": {
-      "title": "Contact Moveo Taxi — Phone, WhatsApp, 24/7",
-      "description": "Contact Moveo Taxi by phone or WhatsApp to book your taxi in Israel. Service available 24/7."
-    }
-  }
+﻿{
+    "nav":  {
+                "home":  "Home",
+                "booking":  "Book a Ride",
+                "airport":  "Airport",
+                "intercity":  "Intercity",
+                "routes":  "Routes",
+                "drivers":  "For Drivers",
+                "about":  "About",
+                "contact":  "Contact",
+                "login":  "Sign In",
+                "book":  "Book Now",
+                "open_menu":  "Open menu",
+                "close_menu":  "Close menu"
+            },
+    "hero":  {
+                 "badge":  "Airport \u0026 Intercity Transfers",
+                 "titleLine1":  "Your trips,",
+                 "titleGreen":  "our priority",
+                 "titleOrange":  "Ben Gurion \u0026 intercity trips across Israel",
+                 "subtitle":  "Airport transfers and intercity trips across Israel",
+                 "cta":  "Book Now",
+                 "ctaSecondary":  "Chat on WhatsApp",
+                 "stat_service":  "Service",
+                 "stat_customers":  "Happy Clients",
+                 "stat_years":  "Years Experience"
+             },
+    "trust":  {
+                  "drivers":  "Licensed Drivers",
+                  "drivers_desc":  "Verified, insured and experienced",
+                  "prices":  "Fixed Prices",
+                  "prices_desc":  "Price confirmed before your trip",
+                  "payment":  "Flexible Payment",
+                  "payment_desc":  "Pay directly to the driver at the end of your trip",
+                  "support":  "24/7 Support",
+                  "support_desc":  "We\u0027re here to help",
+                  "bar":  {
+                              "commission":  "only",
+                              "commission_desc":  "The lowest commission on the market",
+                              "advance":  "Advance Booking",
+                              "advance_desc":  "Up to 30 days in advance",
+                              "drivers":  "Reliable Drivers",
+                              "drivers_desc":  "Professional and experienced drivers",
+                              "price":  "Best Price Guarantee",
+                              "price_desc":  "Find it cheaper and we\u0027ll match the price",
+                              "support":  "24/7 Support",
+                              "support_desc":  "We\u0027re here to help you"
+                          }
+              },
+    "stats":  {
+                  "drivers":  "Partner Drivers",
+                  "available":  "Available 24/7",
+                  "languages":  "Languages Available",
+                  "noHiddenFees":  "Hidden Fees"
+              },
+    "booking":  {
+                    "title":  "Book a Ride",
+                    "widget_title":  "Book Your Trip",
+                    "widget_cta":  "View Prices \u0026 Book",
+                    "instant_confirmation":  "Instant price · Driver confirmed within 30 min",
+                    "mode":  {
+                                 "oneway":  "One Way",
+                                 "roundtrip":  "Round Trip"
+                             },
+                    "tabs":  {
+                                 "airport":  "Airport",
+                                 "intercity":  "Intercity",
+                                 "flight":  "Flight",
+                                 "contact":  "Contact"
+                             },
+                    "form":  {
+                                 "from":  "From",
+                                 "to":  "To",
+                                 "date":  "Date",
+                                 "time":  "Time",
+                                 "passengers":  "Passengers",
+                                 "luggage":  "Luggage",
+                                 "vehicle":  "Vehicle Type",
+                                 "direction":  "Direction",
+                                 "toAirport":  "To Airport",
+                                 "fromAirport":  "From Airport",
+                                 "flightNumber":  "Flight Number (optional)",
+                                 "terminal":  "Terminal",
+                                 "name":  "Full Name",
+                                 "phone":  "Phone Number",
+                                 "email":  "Email (optional)",
+                                 "pickup_address":  "Exact pickup address",
+                                 "suitcases":  "Suitcases",
+                                 "trolleys":  "Trolleys",
+                                 "luggage_warning_title":  "Trunk capacity exceeded",
+                                 "luggage_warning_body":  "A 4-seat taxi trunk fits a maximum of 4 suitcases (or equivalent: 3 suitcases + 2 trolleys). Your luggage requires a 6-seat taxi — the fare will be adjusted accordingly.",
+                                 "luggage_warning_accept":  "Accept — 6-seat taxi",
+                                 "luggage_warning_correct":  "Adjust my luggage",
+                                 "pickup_address_placeholder":  "e.g. 12 Herzl St, Tel Aviv",
+                                 "notes":  "Notes",
+                                 "continue":  "Continue",
+                                 "back":  "Back",
+                                 "error_from":  "Please select a departure city.",
+                                 "error_to":  "Please select a destination.",
+                                 "error_date":  "Please choose a travel date.",
+                                 "error_time":  "Please choose a departure time.",
+                                 "error_name":  "Please enter your full name.",
+                                 "error_phone":  "Please enter your phone number.",
+                                 "submit":  "Book Now",
+                                 "calculating":  "Calculating...",
+                                 "vehicle_auto_4":  "4-seater taxi (1–4 passengers)",
+                                 "vehicle_auto_6":  "6-seater taxi (5–6 passengers)",
+                                 "vehicles":  {
+                                                  "sedan":  "4-seater taxi",
+                                                  "minibus":  "6-seater taxi"
+                                              },
+                                 "cities":  {
+                                                "tel_aviv":  "Tel Aviv",
+                                                "jerusalem":  "Jerusalem",
+                                                "haifa":  "Haifa",
+                                                "beer_sheva":  "Beer Sheva",
+                                                "eilat":  "Eilat",
+                                                "netanya":  "Netanya",
+                                                "ashdod":  "Ashdod",
+                                                "rishon":  "Rishon LeZion",
+                                                "petah_tikva":  "Petah Tikva",
+                                                "ben_gurion":  "Ben Gurion Airport (TLV)",
+                                                "herzliya":  "Herzliya",
+                                                "raanana":  "Ra\u0027anana",
+                                                "kfar_saba":  "Kfar Saba",
+                                                "modiin":  "Modi\u0027in",
+                                                "rehovot":  "Rehovot",
+                                                "ashkelon":  "Ashkelon",
+                                                "nahariya":  "Nahariya",
+                                                "acre":  "Akko (Acre)",
+                                                "tiberias":  "Tiberias",
+                                                "nazareth":  "Nazareth",
+                                                "afula":  "Afula",
+                                                "kiryat_shmona":  "Kiryat Shmona",
+                                                "dimona":  "Dimona",
+                                                "bat_yam":  "Bat Yam",
+                                                "holon":  "Holon",
+                                                "bnei_brak":  "Bnei Brak",
+                                                "lod":  "Lod",
+                                                "ramla":  "Ramla",
+                                                "beit_shemesh":  "Beit Shemesh",
+                                                "hadera":  "Hadera",
+                                                "nes_ziona":  "Nes Ziona",
+                                                "ramat_gan":  "Ramat Gan",
+                                                "kiryat_gat":  "Kiryat Gat",
+                                                "tzfat":  "Safed (Tzfat)",
+                                                "rosh_hayin":  "Rosh HaAyin",
+                                                "hod_hasharon":  "Hod HaSharon",
+                                                "ramat_hasharon":  "Ramat HaSharon",
+                                                "yavne":  "Yavne",
+                                                "kiryat_ata":  "Kiryat Ata",
+                                                "bet_shean":  "Beit She\u0027an",
+                                                "sderot":  "Sderot",
+                                                "arad":  "Arad"
+                                            },
+                                 "swap":  "Swap origin and destination",
+                                 "hours":  "Hours",
+                                 "minutes":  "Minutes"
+                             },
+                    "price":  {
+                                  "estimate":  "Price Estimate",
+                                  "currency":  "₪",
+                                  "note":  "Fixed price confirmed at booking. Surcharge only if extra stop or detour requested.",
+                                  "on_request":  "We don\u0027t have a set price for this route yet. We\u0027ll get back to you shortly after your booking."
+                              }
+                },
+    "driversBadge":  {
+                         "title":  "Professional drivers",
+                         "desc":  "IDF veterans with certified ongoing training"
+                     },
+    "priceBadge":  {
+                       "title":  "Over 30% cheaper",
+                       "desc":  "Our fares are below the official rates set by Israel\u0027s Ministry of Transport"
+                   },
+    "howItWorks":  {
+                       "title":  "How it works",
+                       "steps":  [
+                                     {
+                                         "num":  "1",
+                                         "title":  "Get your price",
+                                         "desc":  "Enter your trip details and instantly receive a guaranteed fixed price."
+                                     },
+                                     {
+                                         "num":  "2",
+                                         "title":  "Confirm your booking",
+                                         "desc":  "Fill in your contact details. Confirmation sent by email or WhatsApp."
+                                     },
+                                     {
+                                         "num":  "3",
+                                         "title":  "Receive your driver\u0027s info",
+                                         "desc":  "Before departure, you receive your driver\u0027s name and phone number."
+                                     },
+                                     {
+                                         "num":  "4",
+                                         "title":  "Your driver is waiting",
+                                         "desc":  "Your driver meets you at the agreed spot with your name. Support available throughout the trip."
+                                     }
+                                 ]
+                   },
+    "faq":  {
+                "title":  "Frequently asked questions",
+                "items":  [
+                              {
+                                  "q":  "What happens if my flight is delayed?",
+                                  "a":  "Your driver tracks your flight in real time until your landing in Israel. If delayed, they adjust their arrival time automatically at no extra charge."
+                              },
+                              {
+                                  "q":  "How do I find my driver at the airport?",
+                                  "a":  "You\u0027ll receive your driver\u0027s phone number before the trip. They will wait for you on level 2 of terminal 3, gate 23."
+                              },
+                              {
+                                  "q":  "Can I travel with extra luggage?",
+                                  "a":  "Yes. Our vehicles accommodate standard suitcases and bags. For exceptional volume, note it when booking."
+                              },
+                              {
+                                  "q":  "When and how do I pay?",
+                                  "a":  "Payment is made directly to the driver at the end of the trip, in cash only. No online prepayment required."
+                              },
+                              {
+                                  "q":  "Can I cancel my booking?",
+                                  "a":  "Yes. Free cancellation up to 2 hours before departure. Contact us by WhatsApp or phone."
+                              },
+                              {
+                                  "q":  "Are baby seats available?",
+                                  "a":  "Yes. Mention it in the booking notes. An additional charge may apply."
+                              }
+                          ]
+            },
+    "features":  {
+                     "title":  "Why Choose Moveo Taxi?",
+                     "items":  {
+                                   "reliable":  {
+                                                    "title":  "Reliable \u0026 Safe",
+                                                    "description":  "Professional drivers with extensive experience and valid licenses"
+                                                },
+                                   "available":  {
+                                                     "title":  "Available 24/7",
+                                                     "description":  "Service at any hour, day or night, including holidays"
+                                                 },
+                                   "fixed":  {
+                                                 "title":  "Fixed Prices",
+                                                 "description":  "No surprises — the price is set in advance and never changes"
+                                             },
+                                   "comfort":  {
+                                                   "title":  "Comfortable \u0026 Spacious",
+                                                   "description":  "Modern, comfortable vehicles for long-distance travel"
+                                               }
+                               }
+                 },
+    "routes":  {
+                   "title":  "Popular Routes",
+                   "subtitle":  "Fixed prices for intercity trips",
+                   "viewAll":  "View all routes",
+                   "from":  "From",
+                   "to":  "To",
+                   "book":  "Book",
+                   "more_info":  "More info"
+               },
+    "airport":  {
+                    "title":  "Airport Transfers",
+                    "subtitle":  "Fast and reliable transfers to Ben Gurion Airport",
+                    "terminals":  "Terminals 1 \u0026 3",
+                    "flightMonitoring":  "Real-time flight tracking",
+                    "waitingTime":  "Waiting time at no extra charge"
+                },
+    "contact":  {
+                    "title":  "Contact Us",
+                    "whatsapp":  "Send WhatsApp Message",
+                    "call":  "Call Now",
+                    "email":  "Send Email",
+                    "hours":  "Working Hours",
+                    "hoursValue":  "24/7 — All year round"
+                },
+    "footer":  {
+                   "tagline":  "Reliable taxi service across Israel",
+                   "rights":  "All rights reserved",
+                   "privacyLink":  "Privacy Policy",
+                   "termsLink":  "Terms of Service"
+               },
+    "confirmation":  {
+                         "title":  "Booking Received!",
+                         "subtitle":  "We\u0027ll get back to you shortly to confirm your ride",
+                         "bookingId":  "Booking ID",
+                         "details":  "Ride Details",
+                         "whatsapp":  "Confirm on WhatsApp",
+                         "newBooking":  "New Booking"
+                     },
+    "admin":  {
+                  "title":  "Admin Dashboard",
+                  "login":  "Login",
+                  "password":  "Password",
+                  "bookings":  "Bookings",
+                  "today":  "Today",
+                  "week":  "This Week",
+                  "all":  "All",
+                  "pending":  "Pending",
+                  "confirmed":  "Confirmed",
+                  "completed":  "Completed",
+                  "cancelled":  "Cancelled",
+                  "confirm":  "Confirm",
+                  "cancel":  "Cancel",
+                  "export":  "Export CSV"
+              },
+    "about":  {
+                  "title":  "About Moveo Taxi",
+                  "subtitle":  "Professional taxi service across Israel since 2015",
+                  "mission_title":  "Our Mission",
+                  "mission_text":  "To provide reliable, comfortable and affordable transportation for all intercity trips and airport transfers across Israel.",
+                  "values_title":  "Our Values",
+                  "value_reliable":  "Reliability",
+                  "value_reliable_desc":  "Always on time, always professional",
+                  "value_professional":  "Professionalism",
+                  "value_professional_desc":  "Experienced and courteous drivers",
+                  "value_fast":  "Speed",
+                  "value_fast_desc":  "Optimized routes for your comfort",
+                  "value_transparent":  "Transparency",
+                  "value_transparent_desc":  "Fixed prices, no surprises"
+              },
+    "driversPage":  {
+                        "title":  "Join Our Fleet",
+                        "subtitle":  "Become a Moveo Taxi partner driver",
+                        "cta":  "Join Now",
+                        "benefits_title":  "Why Join Us?",
+                        "benefit_income":  "Attractive Income",
+                        "benefit_income_desc":  "Earn more with the lowest commission on the market",
+                        "benefit_flexible":  "Flexible Hours",
+                        "benefit_flexible_desc":  "Work whenever you want",
+                        "benefit_support":  "Dedicated Support",
+                        "benefit_support_desc":  "Our team supports you 7 days a week",
+                        "benefit_partners":  "Partner Network",
+                        "benefit_partners_desc":  "Join 800+ professional drivers",
+                        "join_title":  "How to Join?",
+                        "join_step1":  "Send your application on WhatsApp",
+                        "join_step2":  "Verification of your driving license",
+                        "join_step3":  "Training and integration into our network",
+                        "join_cta":  "Apply on WhatsApp"
+                    },
+    "privacy":  {
+                    "title":  "Privacy Policy",
+                    "intro":  "Moveo Taxi respects your privacy. This policy explains how we collect and use personal information when you use our taxi booking service.",
+                    "section1_title":  "Information We Collect",
+                    "section1_text":  "We collect your name, phone number, email (optional), and trip details when you make a booking. This information is used solely to confirm and fulfill your reservation.",
+                    "section2_title":  "Data Storage",
+                    "section2_text":  "Your booking information is stored securely and is only accessible to our team. We do not sell or share your data with third parties.",
+                    "section3_title":  "Contact",
+                    "section3_text":  "For any privacy-related questions, please contact us via",
+                    "section3_link":  "our contact page"
+                },
+    "terms":  {
+                  "title":  "Terms of Service",
+                  "intro":  "By using Moveo Taxi\u0027s booking service, you agree to the following terms.",
+                  "booking_title":  "Booking \u0026 Cancellation",
+                  "booking_text":  "Bookings are confirmed upon contact from our team. You may cancel up to 2 hours before pickup without charge. Late cancellations may incur a fee.",
+                  "pricing_title":  "Pricing",
+                  "pricing_text":  "All prices shown are fixed rates in New Israeli Shekel (₪), confirmed at the time of booking. Prices will not change unless your route changes.",
+                  "payment_title":  "Payment",
+                  "payment_text":  "Payment is made directly to the driver at the end of the trip, in cash or by card. No online prepayment is required.",
+                  "liability_title":  "Liability",
+                  "liability_text":  "Moveo Taxi is not responsible for delays caused by traffic, weather, or other circumstances beyond our control.",
+                  "contact_title":  "Contact",
+                  "contact_text":  "For questions about these terms, please",
+                  "contact_link":  "contact us"
+              },
+    "meta":  {
+                 "home":  {
+                              "title":  "Moveo Taxi — Ben Gurion Airport Transfers \u0026 Intercity Taxi Israel",
+                              "description":  "Book your taxi in Israel. Ben Gurion airport transfers, intercity trips Tel Aviv, Jerusalem, Haifa. Professional drivers, fixed prices, available 24/7."
+                          },
+                 "airport":  {
+                                 "title":  "Ben Gurion Airport Transfer (TLV) | Moveo Taxi Israel",
+                                 "description":  "Taxi to and from Ben Gurion Airport. Easy online booking, guaranteed fixed price, punctual driver. Moveo Taxi — available 24/7."
+                             },
+                 "routes":  {
+                                "title":  "Intercity Taxi Israel — Prices \u0026 Booking | Moveo Taxi",
+                                "description":  "All intercity routes in Israel with fixed prices. Tel Aviv, Jerusalem, Haifa, Beer Sheva. Fast online booking with Moveo Taxi."
+                            },
+                 "about":  {
+                               "title":  "About Moveo Taxi | Premium Taxi Service in Israel",
+                               "description":  "Moveo Taxi — professional taxi service in Israel since 2015. 800+ licensed drivers, 50,000+ trips, guaranteed fixed prices."
+                           },
+                 "contact":  {
+                                 "title":  "Contact Moveo Taxi — Phone, WhatsApp, 24/7",
+                                 "description":  "Contact Moveo Taxi by phone or WhatsApp to book your taxi in Israel. Service available 24/7."
+                             }
+             },
+    "routePage":  {
+                      "hero_title":  "Taxi from {from} to {to}",
+                      "hero_subtitle":  "Professional private transfer | Fixed price | Available 24/7",
+                      "price_from":  "From",
+                      "per_trip":  "per trip",
+                      "duration_label":  "Journey time",
+                      "distance_label":  "Distance",
+                      "book_route":  "Book this route now",
+                      "fixed_price":  "Guaranteed fixed price",
+                      "fixed_price_desc":  "No meter, no surprises — price agreed in advance",
+                      "pro_drivers":  "Professional drivers",
+                      "pro_drivers_desc":  "Licensed, experienced and courteous drivers",
+                      "available":  "Available 24/7",
+                      "available_desc":  "Round-the-clock service, including weekends and holidays",
+                      "multilingual":  "Multilingual service",
+                      "multilingual_desc":  "Hebrew, French, English, Russian and Spanish",
+                      "faq_title":  "Frequently asked questions",
+                      "faq_q1":  "How much does a taxi from {from} to {to} cost?",
+                      "faq_a1":  "The price for the trip from {from} to {to} is calculated based on distance and vehicle type. Get an instant price on the website — no hidden fees.",
+                      "faq_q2":  "How long does the trip from {from} to {to} take?",
+                      "faq_a2":  "The average journey time from {from} to {to} is {duration}, depending on traffic.",
+                      "faq_q3":  "How do I book a taxi from {from} to {to}?",
+                      "faq_a3":  "Simply fill in the form on the website, choose your date and time, and get instant confirmation. You can also book via WhatsApp or phone.",
+                      "faq_q4":  "Is there a night surcharge?",
+                      "faq_a4":  "Yes, a night rate applies between 21:00 and 06:00. The exact price appears in the booking form.",
+                      "meta_title":  "Taxi {from} to {to} | Fixed Price | Moveo Taxi",
+                      "meta_desc":  "Book a private taxi from {from} to {to}. Guaranteed fixed price, professional drivers, available 24/7. Easy online booking.",
+                      "km":  "km"
+                  }
 }

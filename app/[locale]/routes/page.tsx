@@ -14,7 +14,8 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { CITIES, getPrice, type CityKey } from "@/lib/prices";
+import { getPrice, type CityKey } from "@/lib/prices";
+import { ROUTE_PAGES } from "@/lib/route-pages";
 
 const ROUTE_PAIRS: { from: CityKey; to: CityKey; duration: string }[] = [
   { from: "tel_aviv", to: "jerusalem", duration: "1h 10min" },
@@ -63,11 +64,17 @@ export default async function RoutesPage() {
               const minibusPrice = getPrice(route.from, route.to, "minibus");
               if (!sedanPrice) return null;
 
-              const params = new URLSearchParams({
+              const bookingParams = new URLSearchParams({
                 type: route.to === "ben_gurion" || route.from === "ben_gurion" ? "airport" : "intercity",
                 from: route.from,
                 to: route.to,
               });
+
+              const landingPage = ROUTE_PAGES.find(
+                (r) =>
+                  (r.from === route.from && r.to === route.to) ||
+                  (r.from === route.to && r.to === route.from)
+              );
 
               return (
                 <div
@@ -106,12 +113,23 @@ export default async function RoutesPage() {
                     )}
                   </div>
 
-                  <Link
-                    href={`/${locale}/booking?${params.toString()}`}
-                    className="block w-full bg-[#1B7A3C] text-white text-center py-2.5 rounded-xl text-sm font-semibold hover:bg-[#145F2E] transition-colors"
-                  >
-                    {t("routes.book")}
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/${locale}/booking?${bookingParams.toString()}`}
+                      className="flex-1 bg-[#1B7A3C] text-white text-center py-2.5 rounded-xl text-sm font-semibold hover:bg-[#145F2E] transition-colors"
+                    >
+                      {t("routes.book")}
+                    </Link>
+                    {landingPage && (
+                      <Link
+                        href={`/${locale}/route/${landingPage.slug}`}
+                        className="px-3 py-2.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:border-[#1B7A3C] hover:text-[#1B7A3C] transition-colors"
+                        title={t("routes.more_info")}
+                      >
+                        +
+                      </Link>
+                    )}
+                  </div>
                 </div>
               );
             })}

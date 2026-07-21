@@ -87,7 +87,12 @@ export default function Navbar() {
           {/* Mobile */}
           <div className="lg:hidden flex items-center gap-2">
             <LanguageSwitcher />
-            <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-gray-600">
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? t("close_menu") : t("open_menu")}
+              aria-expanded={mobileOpen}
+              className="p-2 text-gray-600"
+            >
               {mobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>

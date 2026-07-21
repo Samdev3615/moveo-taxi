@@ -60,13 +60,16 @@ export default function BookingWidget() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const isAirport = to === "ben_gurion" || from === "ben_gurion";
+    const direction = isAirport ? (to === "ben_gurion" ? "to_airport" : "from_airport") : undefined;
     const params = new URLSearchParams({
-      type: to === "ben_gurion" || from === "ben_gurion" ? "airport" : "intercity",
+      type: isAirport ? "airport" : "intercity",
       from: from,
       to: to,
       date,
       time,
       passengers: String(passengers),
+      ...(direction ? { direction } : {}),
     });
     router.push(`/${locale}/booking?${params.toString()}`);
   }
@@ -97,6 +100,7 @@ export default function BookingWidget() {
               <select
                 value={from}
                 required
+                aria-label={t("form.from")}
                 onChange={(e) => handleFrom(e.target.value as CityKey)}
                 className="w-full ps-9 pe-4 py-3 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A] text-gray-800"
               >
@@ -112,9 +116,10 @@ export default function BookingWidget() {
               <button
                 type="button"
                 onClick={swap}
+                aria-label={t("form.swap")}
                 className="bg-white border border-gray-200 rounded-full p-1.5 hover:bg-gray-50 hover:border-[#16A34A] transition-colors shadow-sm"
               >
-                <ArrowRight size={14} className="text-gray-500 rotate-90" />
+                <ArrowRight size={14} className="text-gray-600 rotate-90" />
               </button>
             </div>
 
@@ -126,6 +131,7 @@ export default function BookingWidget() {
               <select
                 value={to}
                 required
+                aria-label={t("form.to")}
                 onChange={(e) => handleTo(e.target.value as CityKey)}
                 className="w-full ps-9 pe-4 py-3 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/30 focus:border-[#16A34A] text-gray-800"
               >
@@ -141,7 +147,7 @@ export default function BookingWidget() {
         {/* Date / Time */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
               {t("form.date")}
             </label>
             <DatePicker
@@ -153,19 +159,21 @@ export default function BookingWidget() {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">
               {t("form.time")}
             </label>
             <TimePicker
               value={time}
               onChange={setTime}
+              hoursLabel={t("form.hours")}
+              minutesLabel={t("form.minutes")}
             />
           </div>
         </div>
 
         {/* Passengers */}
         <div>
-          <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+          <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
             {t("form.passengers")}
           </label>
           <div className="flex gap-2">
@@ -174,6 +182,8 @@ export default function BookingWidget() {
                 key={n}
                 type="button"
                 onClick={() => setPassengers(n)}
+                aria-label={`${n} ${t("form.passengers")}`}
+                aria-pressed={passengers === n}
                 className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${
                   passengers === n
                     ? n <= 4
@@ -186,7 +196,7 @@ export default function BookingWidget() {
               </button>
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-1.5">
+          <p className="text-xs text-gray-600 mt-1.5">
             {passengers <= 4
               ? t("form.vehicle_auto_4")
               : t("form.vehicle_auto_6")}
@@ -220,7 +230,7 @@ export default function BookingWidget() {
         </button>
 
         {/* Confirmation badge */}
-        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400">
+        <div className="flex items-center justify-center gap-1.5 text-xs text-gray-600">
           <ShieldCheck size={13} className="text-[#16A34A]" />
           {t("instant_confirmation")}
         </div>

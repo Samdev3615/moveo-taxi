@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle, Loader2 } from "lucide-react";
+import { CheckCircle, Loader2, AlertTriangle } from "lucide-react";
 import DatePicker from "@/components/DatePicker";
 import TimePicker from "@/components/TimePicker";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
@@ -45,6 +45,9 @@ function BookingFormInner() {
   const [noPrice, setNoPrice] = useState(false);
   const [error, setError] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [luggageWarning, setLuggageWarning] = useState(false);
+  const [luggageForced, setLuggageForced] = useState(false);
+  const [preWarningLuggage, setPreWarningLuggage] = useState({ suitcases: 0, trolleys: 0 });
 
   const [form, setForm] = useState<FormData>({
     trip_type: (searchParams.get("type") as "airport" | "intercity") || "airport",
@@ -96,17 +99,43 @@ function BookingFormInner() {
     if (!priceData) { setForm((f) => ({ ...f, price_estimate: null })); return; }
     const hour = form.time ? parseInt(form.time.split(":")[0]) : 10;
     const isNight = hour >= 21 || hour < 6;
-    const isCar6 = form.passengers > 4;
-    // auto-set vehicle type
+    const isCar6 = form.passengers > 4 || luggageForced;
     const vehicle: "car4" | "car6" = isCar6 ? "car6" : "car4";
     const price = isCar6
       ? (isNight ? priceData.car6_night : priceData.car6_day)
       : (isNight ? priceData.car4_night : priceData.car4_day);
     setForm((f) => ({ ...f, vehicle_type: vehicle, price_estimate: price }));
-  }, [priceData, form.passengers, form.time]);
+  }, [priceData, form.passengers, form.time, luggageForced]);
+
+  useEffect(() => {
+    if (luggageForced && form.suitcases * 2 + form.trolleys <= 8) {
+      setLuggageForced(false);
+    }
+  }, [form.suitcases, form.trolleys, luggageForced]);
 
   function update(field: keyof FormData, value: string | number | null) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  function handleLuggageIncrement(field: "suitcases" | "trolleys") {
+    const newVal = Math.min(9, (form[field] as number) + 1);
+    const newSuitcases = field === "suitcases" ? newVal : form.suitcases;
+    const newTrolleys = field === "trolleys" ? newVal : form.trolleys;
+    setForm((f) => ({ ...f, [field]: newVal }));
+    if (newSuitcases * 2 + newTrolleys > 8 && form.passengers <= 4 && !luggageForced) {
+      setPreWarningLuggage({ suitcases: form.suitcases, trolleys: form.trolleys });
+      setLuggageWarning(true);
+    }
+  }
+
+  function handleLuggageAccept() {
+    setLuggageForced(true);
+    setLuggageWarning(false);
+  }
+
+  function handleLuggageCorrect() {
+    setForm((f) => ({ ...f, suitcases: preWarningLuggage.suitcases, trolleys: preWarningLuggage.trolleys }));
+    setLuggageWarning(false);
   }
 
   async function handleSubmit() {
@@ -131,6 +160,36 @@ function BookingFormInner() {
   const cities = CITIES.filter((c) => c !== "ben_gurion");
 
   return (
+    <>
+    {luggageWarning && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={22} className="text-amber-500 mt-0.5 shrink-0" />
+            <div>
+              <h3 className="font-bold text-gray-900 text-base">{t("form.luggage_warning_title")}</h3>
+              <p className="text-sm text-gray-600 mt-1.5 leading-relaxed">{t("form.luggage_warning_body")}</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 pt-1">
+            <button
+              type="button"
+              onClick={handleLuggageAccept}
+              className="w-full bg-[#F97316] text-white font-bold py-3 rounded-xl hover:bg-[#ea6a05] transition-colors"
+            >
+              {t("form.luggage_warning_accept")}
+            </button>
+            <button
+              type="button"
+              onClick={handleLuggageCorrect}
+              className="w-full border border-gray-200 text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              {t("form.luggage_warning_correct")}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       {/* Step indicator */}
       <div className="flex border-b border-gray-100">
@@ -255,6 +314,8 @@ function BookingFormInner() {
                 <TimePicker
                   value={form.time}
                   onChange={(v) => update("time", v)}
+                  hoursLabel={t("form.hours")}
+                  minutesLabel={t("form.minutes")}
                 />
               </div>
             </div>
@@ -291,7 +352,7 @@ function BookingFormInner() {
                 ))}
               </div>
               <p className="text-xs text-gray-400 mt-1.5">
-                {form.passengers <= 4
+                {(form.passengers <= 4 && !luggageForced)
                   ? t("form.vehicle_auto_4")
                   : t("form.vehicle_auto_6")}
               </p>
@@ -311,7 +372,7 @@ function BookingFormInner() {
                     <span className="flex-1 text-center text-sm font-bold text-gray-800">{form[field] as number}</span>
                     <button
                       type="button"
-                      onClick={() => update(field, Math.min(9, (form[field] as number) + 1))}
+                      onClick={() => handleLuggageIncrement(field)}
                       className="w-9 h-9 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors flex items-center justify-center"
                     >+</button>
                   </div>
@@ -489,6 +550,7 @@ function BookingFormInner() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

@@ -92,6 +92,7 @@ export default async function HomePage() {
             : "/images/hero-taxi-ltr.png"}
           alt="Moveo Taxi — Transferts aéroport Ben Gurion Israël"
           fill
+          sizes="100vw"
           className="object-cover object-center"
           priority
         />
@@ -174,7 +175,7 @@ export default async function HomePage() {
                   </div>
                   <div>
                     <div className={`text-sm font-semibold ${item.color}`}>{t(item.labelKey)}</div>
-                    <div className="text-xs text-gray-400 leading-tight">{t(item.descKey)}</div>
+                    <div className="text-xs text-gray-600 leading-tight">{t(item.descKey)}</div>
                   </div>
                 </div>
               );
@@ -195,7 +196,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <p className="text-white font-bold text-base sm:text-lg leading-tight">{tDB("title")}</p>
-                <p className="text-gray-400 text-sm mt-0.5">{tDB("desc")}</p>
+                <p className="text-gray-600 text-sm mt-0.5">{tDB("desc")}</p>
               </div>
             </div>
 
@@ -206,7 +207,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <p className="text-white font-bold text-base sm:text-lg leading-tight">{tPB("title")}</p>
-                <p className="text-gray-400 text-sm mt-0.5">{tPB("desc")}</p>
+                <p className="text-gray-600 text-sm mt-0.5">{tPB("desc")}</p>
               </div>
             </div>
 
@@ -271,7 +272,7 @@ export default async function HomePage() {
                       <div className={`text-[22px] font-black ${stat.color} leading-none`} dir="ltr">
                         {stat.value}
                       </div>
-                      <div className="text-sm text-gray-500 font-medium mt-0.5">
+                      <div className="text-sm text-gray-600 font-medium mt-0.5">
                         {t(stat.labelKey)}
                       </div>
                     </div>
@@ -323,7 +324,7 @@ function HowItWorksStep({
       </div>
       <div>
         <h3 className="font-bold text-gray-900 text-base mb-1">{step.title}</h3>
-        <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
+        <p className="text-sm text-gray-600 leading-relaxed">{step.desc}</p>
       </div>
     </div>
   );
@@ -334,13 +335,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
     <details className="group border border-gray-200 rounded-2xl bg-white overflow-hidden">
       <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none select-none font-semibold text-gray-900 text-sm hover:bg-gray-50 transition-colors">
         <span>{q}</span>
-        <span className="flex-shrink-0 w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 group-open:text-[#16A34A] group-open:border-[#16A34A]/30 group-open:bg-[#16A34A]/5 transition-colors">
+        <span className="flex-shrink-0 w-6 h-6 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 group-open:text-[#16A34A] group-open:border-[#16A34A]/30 group-open:bg-[#16A34A]/5 transition-colors">
           <svg className="w-3 h-3 transition-transform group-open:rotate-180" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M2 4l4 4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </span>
       </summary>
-      <div className="px-5 pb-4 pt-1 text-sm text-gray-500 leading-relaxed border-t border-gray-100">
+      <div className="px-5 pb-4 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
         {a}
       </div>
     </details>
@@ -373,6 +374,8 @@ function RouteCard({
           src={route.image}
           alt={t(`booking.form.cities.${route.from}`)}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          loading="lazy"
           className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-2 start-2">
@@ -385,16 +388,16 @@ function RouteCard({
         <h3 className="font-bold text-gray-900 text-sm leading-tight mb-0.5">
           {t(`booking.form.cities.${route.from}`)}
         </h3>
-        <p className="text-xs text-gray-400">{t(`booking.form.cities.${route.to}`)}</p>
+        <p className="text-xs text-gray-600">{t(`booking.form.cities.${route.to}`)}</p>
         <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-1 text-gray-400 text-xs">
+          <div className="flex items-center gap-1 text-gray-600 text-xs">
             <Car size={12} />
             {route.duration}
           </div>
           <div className="flex items-center gap-1">
             {route.price !== null
               ? <span className="text-lg font-black text-[#F97316]">₪{route.price}</span>
-              : <span className="text-xs text-gray-400 italic">Sur devis</span>
+              : <span className="text-xs text-gray-600 italic">Sur devis</span>
             }
             <div className="bg-[#16A34A] rounded-full p-1 group-hover:bg-[#15803D] transition-colors">
               <span className="text-white text-xs font-bold px-0.5 rtl:hidden">→</span>
