@@ -198,7 +198,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <p className="text-white font-bold text-base sm:text-lg leading-tight">{tDB("title")}</p>
-                <p className="text-gray-600 text-sm mt-0.5">{tDB("desc")}</p>
+                <p className="text-gray-400 text-sm mt-0.5">{tDB("desc")}</p>
               </div>
             </div>
 
@@ -209,7 +209,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <p className="text-white font-bold text-base sm:text-lg leading-tight">{tPB("title")}</p>
-                <p className="text-gray-600 text-sm mt-0.5">{tPB("desc")}</p>
+                <p className="text-gray-400 text-sm mt-0.5">{tPB("desc")}</p>
               </div>
             </div>
 
