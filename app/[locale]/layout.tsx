@@ -167,8 +167,8 @@ export default async function LocaleLayout({
         />
         <NextIntlClientProvider messages={messages}>
           {children}
+          <InstallPrompt />
         </NextIntlClientProvider>
-        <InstallPrompt />
       </body>
     </html>
   );
