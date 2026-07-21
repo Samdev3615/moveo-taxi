@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
+import { getTopQueries, getTopPages, getCountries, getDevices, formatGscData } from "@/lib/gsc";
 
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
@@ -10,14 +11,36 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [siteIndex, brandEn, brandFr, competitors, airportMarket, heMarket] = await Promise.all([
+    const gscEnabled = !!process.env.GSC_SERVICE_ACCOUNT_JSON;
+
+    const [siteIndex, brandEn, brandFr, competitors, airportMarket, heMarket, gscQueries, gscPages, gscCountries, gscDevices] = await Promise.all([
       serperSearch("site:moveotaxi.com", { gl: "il", hl: "en", num: 10 }),
       serperSearch("moveotaxi.com taxi Israel", { gl: "il", hl: "en", num: 5 }),
       serperSearch("Moveo Taxi Israël", { gl: "il", hl: "fr", num: 5 }),
       serperSearch("taxi private transfer Ben Gurion airport Israel", { gl: "il", hl: "en", num: 8 }),
       serperSearch("airport taxi Israel book online", { gl: "il", hl: "en", num: 5 }),
       serperSearch("הזמנת מונית אונליין ישראל", { gl: "il", hl: "iw", num: 5 }),
+      gscEnabled ? getTopQueries(28, 20) : Promise.resolve(null),
+      gscEnabled ? getTopPages(28, 15) : Promise.resolve(null),
+      gscEnabled ? getCountries(28) : Promise.resolve(null),
+      gscEnabled ? getDevices(28) : Promise.resolve(null),
     ]);
+
+    const gscContext = gscQueries ? `
+=== DONNÉES GOOGLE SEARCH CONSOLE (28 derniers jours) ===
+
+TOP 20 REQUÊTES (vraies recherches qui amènent du trafic):
+${formatGscData(gscQueries)}
+
+TOP 15 PAGES (pages les plus visitées):
+${formatGscData(gscPages ?? [])}
+
+PAYS (origine du trafic):
+${formatGscData(gscCountries ?? [])}
+
+APPAREILS:
+${formatGscData(gscDevices ?? [])}
+` : "\n[Google Search Console non connecté — données Serper uniquement]\n";
 
     const searchContext = `
 === DONNÉES GOOGLE RÉELLES SUR MOVEO TAXI ===
@@ -50,6 +73,7 @@ ${formatResults(heMarket)}
 
 Voici les VRAIES données Google actuelles sur Moveo Taxi et son marché :
 
+${gscContext}
 ${searchContext}
 
 Structure actuelle du site (implémentée) :
