@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
+export const revalidate = 3600;
+
 export async function generateMetadata({
   params,
 }: {

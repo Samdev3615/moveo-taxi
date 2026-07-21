@@ -9,6 +9,7 @@ import TimePicker from "@/components/TimePicker";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { cn } from "@/lib/utils";
 import { CITIES, type CityKey } from "@/lib/prices";
+import { usePriceData } from "@/lib/hooks/usePriceData";
 
 type Step = 1 | 2 | 3;
 
@@ -41,8 +42,6 @@ function BookingFormInner() {
 
   const [step, setStep] = useState<Step>(1);
   const [loading, setLoading] = useState(false);
-  const [loadingPrice, setLoadingPrice] = useState(false);
-  const [noPrice, setNoPrice] = useState(false);
   const [error, setError] = useState("");
   const [validationError, setValidationError] = useState("");
   const [luggageWarning, setLuggageWarning] = useState(false);
@@ -70,30 +69,7 @@ function BookingFormInner() {
     price_estimate: null,
   });
 
-  const [priceData, setPriceData] = useState<{
-    car4_day: number; car4_night: number; car6_day: number; car6_night: number;
-  } | null>(null);
-
-  useEffect(() => {
-    if (!form.from_city || !form.to_city || form.from_city === form.to_city) {
-      setPriceData(null);
-      setNoPrice(false);
-      return;
-    }
-    const controller = new AbortController();
-    setLoadingPrice(true);
-    setPriceData(null);
-    setNoPrice(false);
-    fetch(`/api/price?from=${form.from_city}&to=${form.to_city}`, { signal: controller.signal })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.car4_day) { setPriceData(data); setNoPrice(false); }
-        else if (data.no_price) { setNoPrice(true); setPriceData(null); }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingPrice(false));
-    return () => controller.abort();
-  }, [form.from_city, form.to_city]);
+  const { priceData, loadingPrice, noPrice } = usePriceData(form.from_city, form.to_city);
 
   useEffect(() => {
     if (!priceData) { setForm((f) => ({ ...f, price_estimate: null })); return; }
@@ -193,7 +169,7 @@ function BookingFormInner() {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
       {/* Step indicator */}
       <div className="flex border-b border-gray-100">
-        {[1, 2, 3].map((s) => (
+        {(isAirport ? [1, 2, 3] : [1, 2]).map((s) => (
           <div
             key={s}
             className={cn(
@@ -203,7 +179,10 @@ function BookingFormInner() {
             )}
           >
             {s < step ? <CheckCircle size={16} className="inline me-1" /> : null}
-            {s === 1 ? t("tabs.airport") : s === 2 ? t("tabs.flight") : t("tabs.contact")}
+            {isAirport
+              ? (s === 1 ? t("tabs.airport") : s === 2 ? t("tabs.flight") : t("tabs.contact"))
+              : (s === 1 ? t("tabs.airport") : t("tabs.contact"))
+            }
           </div>
         ))}
       </div>
@@ -537,6 +516,7 @@ function BookingFormInner() {
               onClick={() => {
                 if (!form.name) { setValidationError(t("form.error_name")); return; }
                 if (!form.phone) { setValidationError(t("form.error_phone")); return; }
+                if (!/^\+?[\d\s\-\(\)]{7,20}$/.test(form.phone)) { setValidationError(t("form.error_phone")); return; }
                 setValidationError("");
                 handleSubmit();
               }}

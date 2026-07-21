@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+import { notFound } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -9,6 +10,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { supabaseAdmin } from "@/lib/supabase-server";
 
 const WHATSAPP_NUMBER = "972543100044";
 
@@ -18,6 +20,14 @@ export default async function ConfirmationPage({
   params: Promise<{ id: string; locale: string }>;
 }) {
   const { id } = await params;
+
+  const { data } = await supabaseAdmin
+    .from("bookings")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!data) notFound();
   const t = await getTranslations("confirmation");
   const locale = await getLocale();
 

@@ -8,6 +8,7 @@ import DatePicker from "@/components/DatePicker";
 import TimePicker from "@/components/TimePicker";
 import { cn } from "@/lib/utils";
 import { CITIES, type CityKey } from "@/lib/prices";
+import { usePriceData } from "@/lib/hooks/usePriceData";
 
 export default function BookingWidget() {
   const t = useTranslations("booking");
@@ -19,11 +20,7 @@ export default function BookingWidget() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("06:00");
   const [passengers, setPassengers] = useState(1);
-  const [priceData, setPriceData] = useState<{
-    car4_day: number; car4_night: number; car6_day: number; car6_night: number;
-  } | null>(null);
-  const [loadingPrice, setLoadingPrice] = useState(false);
-  const [noPrice, setNoPrice] = useState(false);
+  const { priceData, loadingPrice, noPrice } = usePriceData(from, to);
 
   const hour = time ? parseInt(time.split(":")[0]) : 10;
   const isNight = hour >= 21 || hour < 6;
@@ -32,23 +29,6 @@ export default function BookingWidget() {
     ? (isCar6 ? (isNight ? priceData.car6_night : priceData.car6_day)
                : (isNight ? priceData.car4_night : priceData.car4_day))
     : null;
-
-  useEffect(() => {
-    if (!from || !to || from === to) { setPriceData(null); setNoPrice(false); return; }
-    const controller = new AbortController();
-    setLoadingPrice(true);
-    setPriceData(null);
-    setNoPrice(false);
-    fetch(`/api/price?from=${from}&to=${to}`, { signal: controller.signal })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.car4_day) { setPriceData(data); setNoPrice(false); }
-        else if (data.no_price) { setNoPrice(true); setPriceData(null); }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingPrice(false));
-    return () => controller.abort();
-  }, [from, to]);
 
   function swap() {
     setFrom(to);

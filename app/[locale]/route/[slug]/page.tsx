@@ -35,6 +35,14 @@ export async function generateMetadata({
     description: tp("meta_desc", { from: fromName, to: toName }),
     alternates: {
       canonical: `${BASE_URL}/${locale}/route/${slug}`,
+      languages: {
+        he: `${BASE_URL}/he/route/${slug}`,
+        en: `${BASE_URL}/en/route/${slug}`,
+        fr: `${BASE_URL}/fr/route/${slug}`,
+        ru: `${BASE_URL}/ru/route/${slug}`,
+        es: `${BASE_URL}/es/route/${slug}`,
+        "x-default": `${BASE_URL}/he/route/${slug}`,
+      },
     },
   };
 }
