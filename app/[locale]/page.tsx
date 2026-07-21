@@ -52,7 +52,7 @@ const POPULAR_ROUTE_DEFS = [
   },
 ];
 
-type TFunc = (key: string) => string;
+type TFunc = Awaited<ReturnType<typeof getTranslations>>;
 
 export default async function HomePage() {
   const locale = await getLocale();

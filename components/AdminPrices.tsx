@@ -33,6 +33,8 @@ export default function AdminPrices() {
   const PAGE_SIZE = 10;
   const [addFrom, setAddFrom] = useState<CityKey>("ben_gurion");
   const [addTo, setAddTo] = useState<CityKey>("tel_aviv");
+  const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => { fetchPrices(); }, []);
 
@@ -80,7 +82,9 @@ export default function AdminPrices() {
 
   async function deleteRow(id: string) {
     if (!confirm("Supprimer ce trajet ?")) return;
+    setDeletingId(id);
     const res = await fetch(`/api/admin/prices/${id}`, { method: "DELETE" });
+    setDeletingId(null);
     if (!res.ok) return;
     setRows((prev) => prev.filter((r) => r.id !== id));
   }
@@ -97,11 +101,13 @@ export default function AdminPrices() {
       from_city: addFrom, to_city: addTo,
       car4_day: 0, car4_night: 0, car6_day: 0, car6_night: 0,
     };
+    setAdding(true);
     const res = await fetch("/api/admin/prices", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(insert),
     });
+    setAdding(false);
     if (!res.ok) return;
     const data = await res.json();
     setRows((prev) => [...prev, data as EditableRow]);
@@ -177,9 +183,10 @@ export default function AdminPrices() {
         </div>
         <button
           onClick={addRow}
-          className="flex items-center gap-2 px-4 py-2 bg-[#1a3c6e] text-white text-sm font-bold rounded-xl hover:bg-[#112a50] transition-colors shadow-sm"
+          disabled={adding}
+          className="flex items-center gap-2 px-4 py-2 bg-[#1a3c6e] text-white text-sm font-bold rounded-xl hover:bg-[#112a50] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Plus size={15} />
+          {adding ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
           Ajouter
         </button>
       </div>
@@ -252,9 +259,12 @@ export default function AdminPrices() {
                         )}
                         <button
                           onClick={() => deleteRow(row.id)}
-                          className="p-1.5 text-gray-200 hover:text-red-400 transition-colors"
+                          disabled={deletingId === row.id}
+                          className="p-1.5 text-gray-200 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Trash2 size={13} />
+                          {deletingId === row.id
+                            ? <Loader2 size={13} className="animate-spin text-red-400" />
+                            : <Trash2 size={13} />}
                         </button>
                       </div>
                     </td>

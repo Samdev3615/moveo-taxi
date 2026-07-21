@@ -73,7 +73,8 @@ function BookingFormInner() {
 
   useEffect(() => {
     if (!priceData) { setForm((f) => ({ ...f, price_estimate: null })); return; }
-    const hour = form.time ? parseInt(form.time.split(":")[0]) : 10;
+    if (!form.time) { setForm((f) => ({ ...f, price_estimate: null })); return; }
+    const hour = parseInt(form.time.split(":")[0]);
     const isNight = hour >= 21 || hour < 6;
     const isCar6 = form.passengers > 4 || luggageForced;
     const vehicle: "car4" | "car6" = isCar6 ? "car6" : "car4";
