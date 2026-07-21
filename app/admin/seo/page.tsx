@@ -53,6 +53,7 @@ export default function AdminSeoPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
+  const [pendingRefresh, setPendingRefresh] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   async function load() {
@@ -71,8 +72,13 @@ export default function AdminSeoPage() {
   async function triggerAgent(agent: string) {
     setTriggering(agent);
     await fetch(`/api/admin/trigger-agent?agent=${agent}`, { method: "POST" });
-    await load();
     setTriggering(null);
+    // L'agent tourne en arrière-plan — auto-refresh après 45s
+    setPendingRefresh(agent);
+    setTimeout(async () => {
+      await load();
+      setPendingRefresh(null);
+    }, 45000);
   }
 
   async function markRead(id: string) {
@@ -113,7 +119,11 @@ export default function AdminSeoPage() {
               {AGENT_ICONS[agent]} {AGENT_LABELS[agent]}
             </span>
             <span className="text-xs text-slate-500">
-              {triggering === agent ? "En cours…" : "Lancer maintenant"}
+              {triggering === agent
+                ? "Lancement…"
+                : pendingRefresh === agent
+                ? "En génération… (~30s)"
+                : "Lancer maintenant"}
             </span>
           </button>
         ))}

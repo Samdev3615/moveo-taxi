@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+
+export const maxDuration = 60;
 
 const VALID_AGENTS = ["writer", "competitor", "auditor", "keywords"];
 
@@ -21,10 +24,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
   }
 
-  const res = await fetch(`${baseUrl}/api/agents/${agent}`, {
-    headers: { Authorization: `Bearer ${cronSecret}` },
+  // Réponse immédiate au navigateur — l'agent tourne en arrière-plan
+  after(async () => {
+    await fetch(`${baseUrl}/api/agents/${agent}`, {
+      headers: { Authorization: `Bearer ${cronSecret}` },
+    });
   });
 
-  const data = await res.json();
-  return NextResponse.json(data, { status: res.status });
+  return NextResponse.json({ triggered: true });
 }

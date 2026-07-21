@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
 import { getTopQueries, getTopPages, getCountries, getDevices, formatGscData } from "@/lib/gsc";
 
+export const maxDuration = 60;
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -11,7 +13,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const gscEnabled = !!process.env.GSC_SERVICE_ACCOUNT_JSON;
+    const gscEnabled = !!process.env.GSC_REFRESH_TOKEN;
 
     const [siteIndex, brandEn, brandFr, competitors, airportMarket, heMarket, gscQueries, gscPages, gscCountries, gscDevices] = await Promise.all([
       serperSearch("site:moveotaxi.com", { gl: "il", hl: "en", num: 10 }),
