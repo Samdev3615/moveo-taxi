@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { locales, rtlLocales, type Locale } from "@/i18n/config";
 import { Heebo } from "next/font/google";
-import Script from "next/script";
 import "../globals.css";
 
 const GA_ID = "G-FZTXM5V6G5";
@@ -143,15 +142,21 @@ export default async function LocaleLayout({
       dir={isRTL ? "rtl" : "ltr"}
       className={`h-full scroll-smooth ${heebo.variable}`}
     >
+      <head>
+        {/* Google Analytics GA4 */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
+          }}
+        />
+      </head>
       <body className={`min-h-full flex flex-col antialiased ${heebo.className}`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-        <Script id="ga4" strategy="afterInteractive">
-          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
-        </Script>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
