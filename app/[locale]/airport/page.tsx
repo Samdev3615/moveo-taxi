@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export async function generateMetadata({
   params,
@@ -74,7 +75,7 @@ export default async function AirportPage() {
 
               <div className="flex flex-wrap gap-3">
                 <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  href={getWhatsAppUrl(locale)}
                   className="inline-flex items-center gap-2 bg-[#1B7A3C] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#145F2E] transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -178,7 +179,7 @@ export default async function AirportPage() {
               {t("nav.book")}
             </Link>
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              href={getWhatsAppUrl(locale)}
               className="bg-[#25D366] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#1da851] transition-colors"
             >
               WhatsApp

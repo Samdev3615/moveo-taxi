@@ -1,11 +1,14 @@
 "use client";
 
-const WHATSAPP_NUMBER = "972543100044";
+import { useLocale } from "next-intl";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function WhatsAppButton() {
+  const locale = useLocale();
+
   return (
     <a
-      href={`https://wa.me/${WHATSAPP_NUMBER}`}
+      href={getWhatsAppUrl(locale)}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 end-6 z-50 flex items-center gap-2 bg-[#25D366] text-white px-4 py-3.5 rounded-full shadow-xl hover:bg-[#1da851] transition-all hover:scale-105 group"

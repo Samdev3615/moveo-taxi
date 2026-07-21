@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 const PHONE = "+972-54-310-0044";
-const WHATSAPP_NUMBER = "972543100044";
 
 export default function Footer() {
   const t = useTranslations();
@@ -37,7 +37,7 @@ export default function Footer() {
             <p className="text-gray-400 text-sm leading-relaxed">{t("footer.tagline")}</p>
             <div className="flex gap-3 mt-4">
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                href={getWhatsAppUrl(locale)}
                 aria-label="WhatsApp"
                 className="bg-[#25D366] p-2 rounded-lg hover:bg-[#1da851] transition-colors"
               >
@@ -74,7 +74,7 @@ export default function Footer() {
               <a href={`tel:${PHONE}`} className="flex items-center gap-2 hover:text-white transition-colors">
                 {PHONE}
               </a>
-              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} className="flex items-center gap-2 hover:text-white transition-colors">
+              <a href={getWhatsAppUrl(locale)} className="flex items-center gap-2 hover:text-white transition-colors">
                 WhatsApp
               </a>
               <p className="text-xs mt-3">

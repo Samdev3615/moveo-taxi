@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -207,7 +208,7 @@ export default async function RouteSlugPage({
               {tp("book_route")}
             </Link>
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              href={getWhatsAppUrl(locale)}
               className="bg-[#25D366] text-white px-8 py-3 rounded-xl font-bold hover:bg-[#1da851] transition-colors"
             >
               WhatsApp

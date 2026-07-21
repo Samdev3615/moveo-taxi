@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { Banknote, Clock, Headphones, Users } from "lucide-react";
 
 export async function generateMetadata({
@@ -53,7 +54,7 @@ export default async function DriversPage() {
           </h1>
           <p className="text-[#B8DFCA] text-xl mb-8">{t("driversPage.subtitle")}</p>
           <a
-            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            href={getWhatsAppUrl(locale)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[#1da851] transition-colors shadow-xl"
@@ -111,7 +112,7 @@ export default async function DriversPage() {
 
           <div className="mt-8 text-center">
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              href={getWhatsAppUrl(locale)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-[#25D366] text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[#1da851] transition-colors"

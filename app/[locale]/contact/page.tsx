@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export async function generateMetadata({
   params,
@@ -24,6 +25,7 @@ const WHATSAPP_NUMBER = "972543100044";
 
 export default async function ContactPage() {
   const t = await getTranslations();
+  const locale = await getLocale();
 
   const channels = [
     {
@@ -35,7 +37,7 @@ export default async function ContactPage() {
       bg: "bg-[#25D366]",
       label: t("contact.whatsapp"),
       value: "WhatsApp",
-      href: `https://wa.me/${WHATSAPP_NUMBER}`,
+      href: getWhatsAppUrl(locale),
       external: true,
     },
     {
