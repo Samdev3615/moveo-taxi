@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { locales, rtlLocales, type Locale } from "@/i18n/config";
 import { Heebo } from "next/font/google";
+import InstallPrompt from "@/components/InstallPrompt";
 import "../globals.css";
 
 const GA_ID = "G-FZTXM5V6G5";
@@ -143,6 +144,13 @@ export default async function LocaleLayout({
       className={`h-full scroll-smooth ${heebo.variable}`}
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <meta name="theme-color" content="#16A34A" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Moveo Taxi" />
         {/* Google Analytics GA4 */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
@@ -160,6 +168,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
+        <InstallPrompt />
       </body>
     </html>
   );
