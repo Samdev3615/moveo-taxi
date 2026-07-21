@@ -392,7 +392,7 @@ export default function AdminSeoPage() {
           const lastReport = goodReports.find((r) => r.agent === agent);
           const isActive = triggering === agent || pendingRefresh === agent;
           return (
-            <div key={agent} className={`bg-white border-2 ${member.color} rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all`}>
+            <div key={agent} className={`bg-white border-2 ${member.color} rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col`}>
               <div className="relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={member.avatar} alt={member.name} className="w-full aspect-square object-cover object-top" />
@@ -400,16 +400,16 @@ export default function AdminSeoPage() {
                   {AGENT_ICONS[agent]}
                 </span>
               </div>
-              <div className="p-3">
+              <div className="p-3 flex flex-col flex-1">
                 <p className="font-bold text-slate-900 text-sm leading-tight">{member.name}</p>
                 <p className="text-xs text-slate-400 mt-0.5 leading-tight">{member.role}</p>
                 {lastReport && (
-                  <p className="text-xs text-slate-500 mt-1.5 line-clamp-1 italic">{lastReport.summary.slice(0, 60)}…</p>
+                  <p className="text-xs text-slate-500 mt-1.5 line-clamp-2 italic">{lastReport.summary.slice(0, 70)}…</p>
                 )}
                 <button
                   onClick={() => triggerAgent(agent)}
                   disabled={!!triggering || !!pendingRefresh}
-                  className={`mt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : "bg-slate-900 text-white hover:bg-slate-700"}`}
+                  className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                 >
                   {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~60s)" : "Lancer"}
                 </button>
