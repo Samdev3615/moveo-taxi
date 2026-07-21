@@ -83,7 +83,12 @@ Format requis:
       }],
     });
 
-    const text = msg.content[0].type === "text" ? msg.content[0].text : "";
+    // Claude Sonnet 5 peut retourner un bloc "thinking" avant le texte — on cherche le bon bloc
+    const textBlock = msg.content.find((b) => b.type === "text");
+    const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
+
+    // Log de debug: types de blocs reçus
+    const blockTypes = msg.content.map((b) => b.type).join(", ");
 
     // Essaie d'extraire le JSON (avec ou sans bloc markdown ```json```)
     const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
@@ -93,10 +98,10 @@ Format requis:
       await supabaseAdmin.from("seo_reports").insert({
         agent: "competitor",
         title: "Debug — réponse brute de Claude",
-        summary: `Longueur: ${text.length} chars. Début: ${text.slice(0, 150)}`,
-        content: { error: true, raw_full: text, raw_length: text.length },
+        summary: `Blocs: [${blockTypes}] | Longueur texte: ${text.length} | Début: ${text.slice(0, 120)}`,
+        content: { error: true, block_types: blockTypes, raw_full: text, raw_length: text.length },
       });
-      throw new Error(`No JSON. Length=${text.length}. Start: ${text.slice(0, 100)}`);
+      throw new Error(`No JSON. Blocks=[${blockTypes}] TextLen=${text.length}`);
     }
 
     const content = JSON.parse(jsonStr);

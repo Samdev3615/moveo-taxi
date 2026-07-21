@@ -85,7 +85,8 @@ Minimum 6 mots-clés par catégorie. Base-toi sur ce que tu vois RÉELLEMENT dan
       }],
     });
 
-    const text = msg.content[0].type === "text" ? msg.content[0].text : "";
+    const textBlock = msg.content.find((b) => b.type === "text");
+    const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("No JSON in response");
     const content = JSON.parse(match[0]);

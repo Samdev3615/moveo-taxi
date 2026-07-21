@@ -57,7 +57,8 @@ Requirements:
     }],
   });
 
-  const text = msg.content[0].type === "text" ? msg.content[0].text : "";
+  const textBlock = msg.content.find((b) => b.type === "text");
+  const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error(`No JSON for ${locale}`);
   const parsed = JSON.parse(match[0]);
