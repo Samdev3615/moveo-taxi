@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/agents/writer",
+      "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/agents/keywords",
+      "schedule": "0 8 * * 4"
+    },
+    {
+      "path": "/api/agents/competitor",
+      "schedule": "0 8 1 * *"
+    },
+    {
+      "path": "/api/agents/auditor",
+      "schedule": "0 8 15 * *"
+    }
+  ]
+}

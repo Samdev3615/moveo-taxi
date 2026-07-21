@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Tag, CalendarDays, LogOut, ExternalLink, Menu, X } from "lucide-react";
+import { LayoutDashboard, Tag, CalendarDays, LogOut, ExternalLink, Menu, X, TrendingUp } from "lucide-react";
 
 export default function AdminAuthLayout({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
@@ -91,6 +91,7 @@ export default function AdminAuthLayout({ children }: { children: React.ReactNod
     { href: "/admin/bookings", icon: LayoutDashboard, label: "Réservations" },
     { href: "/admin/calendar", icon: CalendarDays,    label: "Agenda" },
     { href: "/admin/prices",   icon: Tag,             label: "Tarifs" },
+    { href: "/admin/seo",      icon: TrendingUp,      label: "Agence SEO" },
   ];
 
   const SidebarContent = () => (
