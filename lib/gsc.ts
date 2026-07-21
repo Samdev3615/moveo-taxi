@@ -1,13 +1,14 @@
 import { google } from "googleapis";
 
 function getAuth() {
-  const raw = process.env.GSC_SERVICE_ACCOUNT_JSON;
-  if (!raw) throw new Error("GSC_SERVICE_ACCOUNT_JSON not configured");
-  const credentials = JSON.parse(raw);
-  return new google.auth.GoogleAuth({
-    credentials,
-    scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
+  const client = new google.auth.OAuth2(
+    process.env.GSC_CLIENT_ID,
+    process.env.GSC_CLIENT_SECRET,
+  );
+  client.setCredentials({
+    refresh_token: process.env.GSC_REFRESH_TOKEN,
   });
+  return client;
 }
 
 const SITE_URL = "https://www.moveotaxi.com/";
@@ -29,7 +30,6 @@ export async function getTopQueries(days = 28, limit = 20) {
       ...dateRange(days),
       dimensions: ["query"],
       rowLimit: limit,
-      dimensionFilterGroups: [],
     },
   });
   return res.data.rows ?? [];
