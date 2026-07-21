@@ -78,7 +78,7 @@ export default function AdminSeoPage() {
     setTimeout(async () => {
       await load();
       setPendingRefresh(null);
-    }, 45000);
+    }, 90000);
   }
 
   async function markRead(id: string) {
@@ -122,7 +122,7 @@ export default function AdminSeoPage() {
               {triggering === agent
                 ? "Lancement…"
                 : pendingRefresh === agent
-                ? "En génération… (~30s)"
+                ? "En génération… (~60s)"
                 : "Lancer maintenant"}
             </span>
           </button>

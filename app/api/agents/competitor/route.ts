@@ -3,7 +3,7 @@ import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
@@ -12,171 +12,132 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Recherches en 5 langues — aéroport + intercités + général
-    const searches = await Promise.all([
-      // 🇮🇱 HÉBREU
+    // 10 recherches ciblées en 5 langues — parallèles (~3-5s)
+    const [
+      heAirport, heIntercity,
+      enAirport, enIntercity, enTourism,
+      frAirport, frPrivate,
+      ruAirport,
+      esAirport,
+      heOnline,
+    ] = await Promise.all([
       serperSearch('מונית נתב"ג מחיר', { gl: "il", hl: "iw", num: 8 }),
       serperSearch("מונית פרטית תל אביב ירושלים", { gl: "il", hl: "iw", num: 8 }),
-      serperSearch("הזמנת מונית ישראל אונליין", { gl: "il", hl: "iw", num: 8 }),
-      serperSearch("שירות מונית אילת תל אביב", { gl: "il", hl: "iw", num: 5 }),
-      serperSearch("מונית שדה התעופה בן גוריון", { gl: "il", hl: "iw", num: 5 }),
-
-      // 🇬🇧 ANGLAIS
-      serperSearch("private taxi Ben Gurion airport", { gl: "il", hl: "en", num: 8 }),
-      serperSearch("airport transfer Israel book online", { gl: "il", hl: "en", num: 8 }),
-      serperSearch("taxi Tel Aviv Jerusalem price", { gl: "il", hl: "en", num: 8 }),
-      serperSearch("intercity taxi Israel private", { gl: "il", hl: "en", num: 5 }),
-      serperSearch("Israel private transfer tourism", { gl: "il", hl: "en", num: 5 }),
-
-      // 🇫🇷 FRANÇAIS
-      serperSearch("taxi aéroport Ben Gourion", { gl: "il", hl: "fr", num: 8 }),
-      serperSearch("taxi privé Israël pas cher", { gl: "il", hl: "fr", num: 8 }),
-      serperSearch("transfert privé Tel Aviv Jérusalem", { gl: "il", hl: "fr", num: 5 }),
-
-      // 🇷🇺 RUSSE
-      serperSearch("такси аэропорт Бен Гурион цена", { gl: "il", hl: "ru", num: 8 }),
-      serperSearch("частное такси Израиль", { gl: "il", hl: "ru", num: 8 }),
-      serperSearch("трансфер из аэропорта Израиль", { gl: "il", hl: "ru", num: 5 }),
-
-      // 🇪🇸 ESPAGNOL
-      serperSearch("taxi aeropuerto Ben Gurion", { gl: "il", hl: "es", num: 8 }),
-      serperSearch("transfer privado Israel turismo", { gl: "il", hl: "es", num: 5 }),
+      serperSearch("private taxi Ben Gurion airport Israel", { gl: "il", hl: "en", num: 8 }),
+      serperSearch("taxi Tel Aviv Jerusalem intercity price", { gl: "il", hl: "en", num: 6 }),
+      serperSearch("Israel private transfer tourism", { gl: "il", hl: "en", num: 6 }),
+      serperSearch("taxi aéroport Ben Gourion Israel", { gl: "il", hl: "fr", num: 6 }),
+      serperSearch("taxi privé Israël tourisme", { gl: "il", hl: "fr", num: 6 }),
+      serperSearch("такси аэропорт Бен Гурион цена", { gl: "il", hl: "ru", num: 6 }),
+      serperSearch("taxi aeropuerto Ben Gurion Israel", { gl: "il", hl: "es", num: 6 }),
+      serperSearch("הזמנת מונית אונליין ישראל", { gl: "il", hl: "iw", num: 6 }),
     ]);
 
-    const [
-      heAirport, heIntercity, heOnline, heEilat, heTerminal,
-      enAirport, enTransfer, enIntercity, enPrivate, enTourism,
-      frAirport, frPrivate, frIntercity,
-      ruAirport, ruPrivate, ruTransfer,
-      esAirport, esTransfer,
-    ] = searches;
-
     const searchContext = `
-=== RÉSULTATS GOOGLE EN TEMPS RÉEL — ANALYSE CONCURRENTIELLE COMPLÈTE ===
+=== RÉSULTATS GOOGLE RÉELS — CONCURRENTS TAXI ISRAËL EN 5 LANGUES ===
 
---- 🇮🇱 HÉBREU ---
-[מונית נתב"ג מחיר]
+🇮🇱 HÉBREU — Aéroport
 ${formatResults(heAirport)}
 
-[מונית פרטית תל אביב ירושלים]
+🇮🇱 HÉBREU — Intercités
 ${formatResults(heIntercity)}
 
-[הזמנת מונית ישראל אונליין]
+🇮🇱 HÉBREU — Réservation online
 ${formatResults(heOnline)}
 
-[שירות מונית אילת תל אביב]
-${formatResults(heEilat)}
-
-[מונית שדה התעופה בן גוריון]
-${formatResults(heTerminal)}
-
---- 🇬🇧 ANGLAIS ---
-[private taxi Ben Gurion airport]
+🇬🇧 ANGLAIS — Aéroport Ben Gurion
 ${formatResults(enAirport)}
 
-[airport transfer Israel book online]
-${formatResults(enTransfer)}
-
-[taxi Tel Aviv Jerusalem price]
+🇬🇧 ANGLAIS — Intercités
 ${formatResults(enIntercity)}
 
-[intercity taxi Israel private]
-${formatResults(enPrivate)}
-
-[Israel private transfer tourism]
+🇬🇧 ANGLAIS — Tourisme
 ${formatResults(enTourism)}
 
---- 🇫🇷 FRANÇAIS ---
-[taxi aéroport Ben Gourion]
+🇫🇷 FRANÇAIS — Aéroport
 ${formatResults(frAirport)}
 
-[taxi privé Israël pas cher]
+🇫🇷 FRANÇAIS — Taxi privé
 ${formatResults(frPrivate)}
 
-[transfert privé Tel Aviv Jérusalem]
-${formatResults(frIntercity)}
-
---- 🇷🇺 RUSSE ---
-[такси аэропорт Бен Гурион цена]
+🇷🇺 RUSSE — Aéroport
 ${formatResults(ruAirport)}
 
-[частное такси Израиль]
-${formatResults(ruPrivate)}
-
-[трансфер из аэропорта Израиль]
-${formatResults(ruTransfer)}
-
---- 🇪🇸 ESPAGNOL ---
-[taxi aeropuerto Ben Gurion]
+🇪🇸 ESPAGNOL — Aéroport
 ${formatResults(esAirport)}
-
-[transfer privado Israel turismo]
-${formatResults(esTransfer)}
 `;
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 4000,
+      max_tokens: 3000,
       messages: [{
         role: "user",
-        content: `Tu es un analyste SEO expert pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël.
+        content: `Tu es un analyste SEO expert pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël couvrant aéroport Ben Gurion + trajets intercités.
 
-Voici les VRAIS résultats Google en 5 langues pour toutes les requêtes taxi/transfert en Israël :
+Voici les vrais résultats Google en 5 langues pour les recherches taxi en Israël :
 
 ${searchContext}
 
-Analyse tous ces résultats et identifie TOUS les concurrents réels qui apparaissent (pas seulement Gett/Yango — cherche tous les sites qui rankent : agences de voyage, services privés locaux, plateformes de réservation, sites en hébreu, en russe, en français...).
+Identifie TOUS les concurrents qui apparaissent dans ces résultats (pas seulement Gett/Yango — cherche aussi les agences de voyage, services locaux, agrégateurs, sites spécialisés...).
 
-Retourne UNIQUEMENT un JSON valide en français :
+Réponds UNIQUEMENT avec un JSON valide en français :
 {
   "competitors": [
     {
-      "name": "nom du site/service",
-      "url": "url du site",
-      "langues_presentes": ["he", "en", "fr", "ru", "es"],
+      "name": "nom du service",
+      "url": "url",
       "type": "appli|site-local|agence-voyage|agregateur|autre",
-      "requetes_ou_ils_rankent": ["requête 1", "requête 2"],
-      "angle_seo": "comment ils se positionnent SEO (ex: prix bas, luxe, touristes...)",
-      "mots_cles_utilises": ["mot-clé SEO identifié dans leurs titres/snippets"],
-      "forces": ["force 1", "force 2"],
-      "faiblesses": ["faiblesse 1"]
+      "langues_presentes": ["he","en","fr","ru","es"],
+      "mots_cles_seo": ["mots-clés visibles dans leurs titres/snippets"],
+      "forces": ["avantage principal"],
+      "faiblesses": ["point faible"]
     }
   ],
-  "carte_marche": {
-    "segments_couverts": ["segment avec beaucoup de concurrents"],
-    "segments_sous_exploites": ["segment avec peu de concurrents = opportunité"],
-    "langue_la_moins_concurrentielle": "langue avec moins de concurrents",
-    "langue_la_plus_concurrentielle": "langue la plus saturée"
-  },
-  "mots_cles_concurrents": [
-    { "mot_cle": "mot-clé identifié dans les snippets/titres concurrents", "locale": "langue", "concurrent_qui_ranke": "nom" }
-  ],
   "opportunites": [
-    { "opportunite": "description de l'opportunité", "langue": "langue", "action": "ce que Moveo Taxi doit faire", "priorite": "high|medium|low" }
+    { "langue": "langue", "action": "ce que Moveo Taxi doit faire", "priorite": "high|medium|low" }
   ],
-  "moveo_vs_concurrents": "analyse de la position actuelle de Moveo Taxi face à tous ces concurrents identifiés",
-  "recommandation_principale": "la 1 chose la plus urgente à faire pour surpasser les concurrents identifiés"
+  "langue_moins_concurrentielle": "langue avec le moins de concurrents",
+  "recommandation": "la chose la plus urgente à faire"
 }`,
       }],
     });
 
     const text = msg.content[0].type === "text" ? msg.content[0].text : "";
     const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON in response");
-    const content = JSON.parse(match[0]);
 
+    if (!match) {
+      // Sauvegarde l'erreur pour debug dans le panel admin
+      await supabaseAdmin.from("seo_reports").insert({
+        agent: "competitor",
+        title: "Erreur — Claude n'a pas retourné de JSON",
+        summary: `Réponse brute: ${text.slice(0, 300)}`,
+        content: { error: true, raw: text.slice(0, 1000) },
+      });
+      throw new Error(`No JSON in response. Raw: ${text.slice(0, 200)}`);
+    }
+
+    const content = JSON.parse(match[0]);
     const nbConcurrents = content.competitors?.length ?? 0;
 
     await supabaseAdmin.from("seo_reports").insert({
       agent: "competitor",
       title: `Analyse concurrentielle — ${nbConcurrents} concurrents identifiés en 5 langues`,
-      summary: content.recommandation_principale ?? `${nbConcurrents} concurrents analysés. Segment sous-exploité: ${content.carte_marche?.langue_la_moins_concurrentielle ?? "?"}`,
+      summary: content.recommandation ?? `${nbConcurrents} concurrents. Langue sous-exploitée: ${content.langue_moins_concurrentielle ?? "?"}`,
       content,
     });
 
     return NextResponse.json({ success: true, competitors: nbConcurrents });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
+    const msg = err instanceof Error ? err.message : String(err);
+    // Sauvegarde l'erreur dans Supabase — visible dans le panel admin
+    try {
+      await supabaseAdmin.from("seo_reports").insert({
+        agent: "competitor",
+        title: "Erreur agent concurrent",
+        summary: msg.slice(0, 300),
+        content: { error: true, message: msg },
+      });
+    } catch (_) { /* ignore secondary error */ }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

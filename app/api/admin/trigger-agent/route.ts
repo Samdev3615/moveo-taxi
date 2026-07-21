@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { after } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { supabaseAdmin } from "@/lib/supabase-server";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const VALID_AGENTS = ["writer", "competitor", "auditor", "keywords"];
 
@@ -24,11 +25,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
   }
 
-  // Réponse immédiate au navigateur — l'agent tourne en arrière-plan
+  // Lance l'agent en arrière-plan — réponse immédiate au navigateur
   after(async () => {
-    await fetch(`${baseUrl}/api/agents/${agent}`, {
-      headers: { Authorization: `Bearer ${cronSecret}` },
-    });
+    try {
+      const res = await fetch(`${baseUrl}/api/agents/${agent}`, {
+        headers: { Authorization: `Bearer ${cronSecret}` },
+      });
+      if (!res.ok) {
+        const body = await res.text();
+        await supabaseAdmin.from("seo_reports").insert({
+          agent,
+          title: `Erreur trigger — ${agent} (HTTP ${res.status})`,
+          summary: body.slice(0, 300),
+          content: { error: true, status: res.status, body: body.slice(0, 1000) },
+        });
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      await supabaseAdmin.from("seo_reports").insert({
+        agent,
+        title: `Erreur réseau — ${agent}`,
+        summary: msg.slice(0, 300),
+        content: { error: true, message: msg },
+      });
+    }
   });
 
   return NextResponse.json({ triggered: true });
