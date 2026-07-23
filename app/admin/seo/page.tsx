@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers } from "lucide-react";
+import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare } from "lucide-react";
 
 type Report = {
   id: string;
@@ -22,6 +22,12 @@ type BlogPost = {
   topic: string;
   status: "draft" | "published" | "archived";
   created_at: string;
+};
+
+type ChatMessage = {
+  id: string;
+  from: "writer" | "competitor" | "auditor" | "keywords" | "orchestrator";
+  text: string;
 };
 
 const AGENT_ICONS: Record<string, React.ReactNode> = {
@@ -49,11 +55,11 @@ const AGENT_LABELS: Record<string, string> = {
 };
 
 const TEAM: Record<string, { name: string; role: string; avatar: string; color: string }> = {
-  writer:       { name: "Sophie Laurent",  role: "Rédactrice SEO Multilingue",       avatar: "/images/team-sophie.png",       color: "border-blue-200" },
-  competitor:   { name: "Alex Benhamou",   role: "Analyste Concurrentielle",          avatar: "/images/team-alex.png",         color: "border-orange-200" },
-  auditor:      { name: "Maya Cohen",      role: "Auditrice SEO Technique",           avatar: "/images/team-maya.png",         color: "border-purple-200" },
-  keywords:     { name: "Rafi Shapira",    role: "Expert Mots-clés & Tendances",     avatar: "/images/team-rafi.png",         color: "border-green-200" },
-  orchestrator: { name: "David Levi",      role: "Orchestrateur Stratégique",         avatar: "/images/team-david.png",        color: "border-indigo-200" },
+  writer:       { name: "Sophie Laurent",  role: "Rédactrice SEO Multilingue",     avatar: "/images/team-sophie.png",   color: "border-blue-200" },
+  competitor:   { name: "Alex Benhamou",   role: "Analyste Concurrentielle",        avatar: "/images/team-alex.png",     color: "border-orange-200" },
+  auditor:      { name: "Maya Cohen",      role: "Auditrice SEO Technique",         avatar: "/images/team-maya.png",     color: "border-purple-200" },
+  keywords:     { name: "Rafi Shapira",    role: "Expert Mots-clés & Tendances",   avatar: "/images/team-rafi.png",     color: "border-green-200" },
+  orchestrator: { name: "David Levi",      role: "Orchestrateur Stratégique",       avatar: "/images/team-david.png",    color: "border-indigo-200" },
 };
 
 const FLAG: Record<string, string> = {
@@ -71,26 +77,176 @@ function s(v: unknown): string { return typeof v === "string" ? v : ""; }
 function a(v: unknown): unknown[] { return Array.isArray(v) ? v : []; }
 function asStr(v: unknown): Record<string, string> { return (v && typeof v === "object") ? v as Record<string, string> : {}; }
 
+// ── Construction de la conversation depuis les vrais rapports ─────────────────
+function buildConversation(reports: Report[]): ChatMessage[] {
+  const byAgent: Partial<Record<string, Report>> = {};
+  for (const r of reports) {
+    if (!byAgent[r.agent]) byAgent[r.agent] = r;
+  }
+
+  const messages: ChatMessage[] = [];
+  const hasOrch = !!byAgent.orchestrator;
+
+  // David ouvre
+  if (hasOrch) {
+    const c = byAgent.orchestrator!.content;
+    messages.push({ id: "david-open", from: "orchestrator", text: `Bonjour l'équipe. Voici le bilan de la semaine.\n\n${s(c.synthese)}` });
+  } else {
+    messages.push({ id: "david-open", from: "orchestrator", text: "Bonjour l'équipe. Je collecte vos rapports pour préparer notre plan stratégique de la semaine." });
+  }
+
+  // Alex répond
+  if (byAgent.competitor) {
+    const c = byAgent.competitor.content;
+    const nb = a(c.competitors).length;
+    const langue = s(c.langue_moins_competitive) || s(c.langue_moins_concurrentielle);
+    const reco = s(c.recommandation).slice(0, 140);
+    let txt = nb > 0 ? `J'ai identifié ${nb} concurrents actifs en 5 langues.` : "J'ai analysé le marché concurrentiel.";
+    if (langue) txt += ` Opportunité : marché ${langue} sous-exploité.`;
+    if (reco) txt += `\n\n${reco}`;
+    messages.push({ id: "alex", from: "competitor", text: txt });
+  }
+
+  // Rafi répond
+  if (byAgent.keywords) {
+    const c = byAgent.keywords.content;
+    const insight = s(c.insight).slice(0, 160);
+    const top5 = a(c.top_5_priority).map(s).slice(0, 3);
+    let txt = insight || "J'ai analysé les opportunités de mots-clés.";
+    if (top5.length > 0) txt += `\n\nTop priorités : ${top5.join(", ")}.`;
+    messages.push({ id: "rafi", from: "keywords", text: txt });
+  }
+
+  // Maya répond
+  if (byAgent.auditor) {
+    const c = byAgent.auditor.content;
+    const score = (c.score && typeof c.score === "object") ? c.score as Record<string, unknown> : {};
+    const blocker = s(score.main_blocker).slice(0, 100);
+    const qw = a(c.quick_wins).length;
+    let txt = `Score SEO actuel : ${score.current ?? "?"}/100 — potentiel ${score.potential ?? "?"}/100.`;
+    if (blocker) txt += `\n\nBloquant principal : ${blocker}`;
+    if (qw > 0) txt += `\n${qw} gains rapides identifiés.`;
+    messages.push({ id: "maya", from: "auditor", text: txt });
+  }
+
+  // Sophie répond
+  if (byAgent.writer) {
+    const c = byAgent.writer.content;
+    const posts = a(c.posts).map(asStr);
+    const titre = posts[0]?.title ?? s(c.topic);
+    const nb = posts.length;
+    let txt = titre ? `J'ai rédigé "${titre}"` : "J'ai rédigé un article cette semaine";
+    if (nb > 0) txt += ` en ${nb} langue${nb > 1 ? "s" : ""}.`;
+    txt += " Statut : brouillon, en attente de publication.";
+    messages.push({ id: "sophie", from: "writer", text: txt });
+  }
+
+  // David conclut
+  if (hasOrch) {
+    const c = byAgent.orchestrator!.content;
+    const prios = a(c.priorites).map(asStr).slice(0, 3);
+    const alerte = s(c.alerte);
+    let txt = "Merci à tous. Voici le plan de la semaine :";
+    if (prios.length > 0) txt += "\n\n" + prios.map((p, i) => `${i + 1}. ${p.action}`).join("\n");
+    if (alerte) txt += `\n\n⚠ Alerte : ${alerte}`;
+    messages.push({ id: "david-close", from: "orchestrator", text: txt });
+  } else {
+    const hasAny = messages.length > 1;
+    messages.push({
+      id: "david-close",
+      from: "orchestrator",
+      text: hasAny
+        ? "Merci à tous. Lance-moi pour que je synthétise tout ça en plan d'action stratégique."
+        : "Lance les agents pour que je puisse coordonner leur travail.",
+    });
+  }
+
+  return messages;
+}
+
+// ── Panel Chat ─────────────────────────────────────────────────────────────────
+function ChatPanel({ reports, chatKey }: { reports: Report[]; chatKey: number }) {
+  const messages = buildConversation(reports);
+  const [shown, setShown] = useState(0);
+  const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    setShown(0);
+    setTyping(false);
+  }, [chatKey]);
+
+  useEffect(() => {
+    if (shown >= messages.length) return;
+    setTyping(true);
+    const delay = shown === 0 ? 600 : 1400;
+    const t = setTimeout(() => {
+      setTyping(false);
+      setShown((c) => c + 1);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [shown, messages.length, chatKey]);
+
+  const nextAgent = shown < messages.length ? messages[shown].from : null;
+
+  if (reports.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+        <MessageSquare size={36} className="mb-3 opacity-30" />
+        <p className="text-sm">Lance un agent pour démarrer la conversation.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5 pb-4">
+      {messages.slice(0, shown).map((m) => {
+        const isOrch = m.from === "orchestrator";
+        const member = TEAM[m.from];
+        return (
+          <div key={m.id} className={`flex gap-3 items-end ${isOrch ? "flex-row-reverse" : ""}`}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={member.avatar} alt={member.name} className="w-9 h-9 rounded-full object-cover object-top shrink-0 border border-slate-200" />
+            <div className={`flex flex-col max-w-sm ${isOrch ? "items-end" : "items-start"}`}>
+              <span className="text-xs text-slate-400 mb-1 px-1">{member.name}</span>
+              <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-line shadow-sm ${isOrch ? "bg-indigo-600 text-white rounded-br-none" : "bg-white border border-slate-100 text-slate-800 rounded-bl-none"}`}>
+                {m.text}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {typing && nextAgent && (
+        <div className={`flex gap-3 items-end ${nextAgent === "orchestrator" ? "flex-row-reverse" : ""}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={TEAM[nextAgent].avatar} alt="" className="w-9 h-9 rounded-full object-cover object-top shrink-0 border border-slate-200" />
+          <div className={`rounded-2xl px-4 py-3 shadow-sm ${nextAgent === "orchestrator" ? "bg-indigo-100 rounded-br-none" : "bg-white border border-slate-100 rounded-bl-none"}`}>
+            <div className="flex gap-1 items-center">
+              <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
+              <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
+              <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Concurrent ────────────────────────────────────────────────────────────────
 function CompetitorDetail({ c }: { c: Record<string, unknown> }) {
   if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
-
   const recommandation = s(c.recommandation);
   const langueMoins = s(c.langue_moins_competitive) || s(c.langue_moins_concurrentielle);
   const competitors = a(c.competitors).map(asStr);
   const opportunites = a(c.opportunites).map(asStr);
-
   return (
     <div className="space-y-6">
       {!!recommandation && (
         <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
           <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-1">Recommandation principale</p>
           <p className="text-sm text-slate-800">{recommandation}</p>
-          {!!langueMoins && (
-            <p className="mt-2 text-xs text-orange-700">
-              Langue la moins concurrentielle : <strong>{FLAG[langueMoins] ?? ""} {langueMoins}</strong>
-            </p>
-          )}
+          {!!langueMoins && <p className="mt-2 text-xs text-orange-700">Langue la moins concurrentielle : <strong>{FLAG[langueMoins] ?? ""} {langueMoins}</strong></p>}
         </div>
       )}
       {opportunites.length > 0 && (
@@ -124,15 +280,9 @@ function CompetitorDetail({ c }: { c: Record<string, unknown> }) {
                     </div>
                     <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full flex-shrink-0">{comp.type}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1 mb-1">
-                    {langues.map((l) => <span key={l} title={l}>{FLAG[l] ?? l}</span>)}
-                  </div>
+                  <div className="flex flex-wrap gap-1 mb-1">{langues.map((l) => <span key={l} title={l}>{FLAG[l] ?? l}</span>)}</div>
                   {!!comp.force && <p className="text-xs text-slate-600 mb-1"><span className="font-medium">Force :</span> {comp.force}</p>}
-                  {mots.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {mots.map((k) => <span key={k} className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{k}</span>)}
-                    </div>
-                  )}
+                  {mots.length > 0 && <div className="flex flex-wrap gap-1">{mots.map((k) => <span key={k} className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{k}</span>)}</div>}
                 </div>
               );
             })}
@@ -146,7 +296,6 @@ function CompetitorDetail({ c }: { c: Record<string, unknown> }) {
 // ── Mots-clés ─────────────────────────────────────────────────────────────────
 function KeywordsDetail({ c }: { c: Record<string, unknown> }) {
   if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
-
   const insight = s(c.insight);
   const top5 = a(c.top_5_priority).map(s);
   const highIntent = a(c.high_intent).map(asStr);
@@ -154,82 +303,46 @@ function KeywordsDetail({ c }: { c: Record<string, unknown> }) {
   const longTail = a(c.long_tail).map(asStr);
   const hebrew = a(c.hebrew_specific).map(asStr);
   const gaps = a(c.gaps_identifies).map(s);
-
   return (
     <div className="space-y-5">
-      {!!insight && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-          <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">Insight stratégique</p>
-          <p className="text-sm text-slate-800">{insight}</p>
-        </div>
-      )}
-      {top5.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Top 5 priorités</h3>
-          <div className="flex flex-wrap gap-2">
-            {top5.map((k, i) => <span key={i} className="text-sm font-semibold bg-green-600 text-white px-3 py-1 rounded-full">#{i + 1} {k}</span>)}
-          </div>
-        </div>
-      )}
+      {!!insight && <div className="bg-green-50 border border-green-200 rounded-xl p-4"><p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-1">Insight stratégique</p><p className="text-sm text-slate-800">{insight}</p></div>}
+      {top5.length > 0 && <div><h3 className="text-sm font-bold text-slate-700 mb-2">Top 5 priorités</h3><div className="flex flex-wrap gap-2">{top5.map((k, i) => <span key={i} className="text-sm font-semibold bg-green-600 text-white px-3 py-1 rounded-full">#{i + 1} {k}</span>)}</div></div>}
       {highIntent.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Intention achat ({highIntent.length})</h3>
-          <div className="space-y-1">
-            {highIntent.map((k, i) => (
-              <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
-                <span>{FLAG[k.locale] ?? "🌐"}</span>
-                <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
-                {!!k.volume && <span className={`px-1.5 py-0.5 rounded ${k.volume === "high" ? "bg-red-100 text-red-600" : k.volume === "medium" ? "bg-amber-100 text-amber-600" : "bg-slate-100 text-slate-500"}`}>vol. {k.volume}</span>}
-                {!!k.opportunity && <span className="text-slate-500 flex-1">{k.opportunity}</span>}
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Intention achat ({highIntent.length})</h3>
+          <div className="space-y-1">{highIntent.map((k, i) => (
+            <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
+              <span>{FLAG[k.locale] ?? "🌐"}</span>
+              <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
+              {!!k.volume && <span className={`px-1.5 py-0.5 rounded ${k.volume === "high" ? "bg-red-100 text-red-600" : k.volume === "medium" ? "bg-amber-100 text-amber-600" : "bg-slate-100 text-slate-500"}`}>vol. {k.volume}</span>}
+              {!!k.opportunity && <span className="text-slate-500 flex-1">{k.opportunity}</span>}
+            </div>
+          ))}</div>
         </div>
       )}
       {informational.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Informationnels ({informational.length})</h3>
-          <div className="space-y-1">
-            {informational.map((k, i) => (
-              <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
-                <span>{FLAG[k.locale] ?? "🌐"}</span>
-                <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
-                {!!k.content_angle && <span className="text-slate-500 flex-1">{k.content_angle}</span>}
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Informationnels ({informational.length})</h3>
+          <div className="space-y-1">{informational.map((k, i) => (
+            <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
+              <span>{FLAG[k.locale] ?? "🌐"}</span>
+              <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
+              {!!k.content_angle && <span className="text-slate-500 flex-1">{k.content_angle}</span>}
+            </div>
+          ))}</div>
         </div>
       )}
-      {longTail.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Long tail ({longTail.length})</h3>
-          <div className="flex flex-wrap gap-2">
-            {longTail.map((k, i) => <span key={i} className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-lg">{FLAG[k.locale] ?? "🌐"} {k.keyword}</span>)}
-          </div>
-        </div>
-      )}
+      {longTail.length > 0 && <div><h3 className="text-sm font-bold text-slate-700 mb-2">Long tail ({longTail.length})</h3><div className="flex flex-wrap gap-2">{longTail.map((k, i) => <span key={i} className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-lg">{FLAG[k.locale] ?? "🌐"} {k.keyword}</span>)}</div></div>}
       {hebrew.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Hébreu 🇮🇱</h3>
-          <div className="space-y-1">
-            {hebrew.map((k, i) => (
-              <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
-                <span className="font-semibold text-slate-800" dir="rtl">{k.keyword}</span>
-                {!!k.transliteration && <span className="text-slate-400 italic">{k.transliteration}</span>}
-                {!!k.intent && <span className="text-slate-500 flex-1">{k.intent}</span>}
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Hébreu 🇮🇱</h3>
+          <div className="space-y-1">{hebrew.map((k, i) => (
+            <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
+              <span className="font-semibold text-slate-800" dir="rtl">{k.keyword}</span>
+              {!!k.transliteration && <span className="text-slate-400 italic">{k.transliteration}</span>}
+              {!!k.intent && <span className="text-slate-500 flex-1">{k.intent}</span>}
+            </div>
+          ))}</div>
         </div>
       )}
-      {gaps.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Lacunes de contenu</h3>
-          <ul className="space-y-1">
-            {gaps.map((g, i) => <li key={i} className="text-xs text-slate-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">⚠ {g}</li>)}
-          </ul>
-        </div>
-      )}
+      {gaps.length > 0 && <div><h3 className="text-sm font-bold text-slate-700 mb-2">Lacunes de contenu</h3><ul className="space-y-1">{gaps.map((g, i) => <li key={i} className="text-xs text-slate-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">⚠ {g}</li>)}</ul></div>}
     </div>
   );
 }
@@ -237,13 +350,11 @@ function KeywordsDetail({ c }: { c: Record<string, unknown> }) {
 // ── Auditeur ──────────────────────────────────────────────────────────────────
 function AuditorDetail({ c }: { c: Record<string, unknown> }) {
   if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
-
   const score = (c.score && typeof c.score === "object") ? c.score as Record<string, unknown> : {};
   const criticals = a(c.critical_issues).map(asStr);
   const quickWins = a(c.quick_wins).map(asStr);
   const longTerm = a(c.long_term).map(asStr);
   const visibilite = s(c.visibilite_actuelle);
-
   return (
     <div className="space-y-5">
       {(score.current != null || score.potential != null) && (
@@ -258,66 +369,41 @@ function AuditorDetail({ c }: { c: Record<string, unknown> }) {
           </div>
         </div>
       )}
-      {!!s(score.main_blocker) && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-          <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1">Principal bloquant</p>
-          <p className="text-sm text-slate-800">{s(score.main_blocker)}</p>
-        </div>
-      )}
-      {!!visibilite && (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Visibilité actuelle</p>
-          <p className="text-sm text-slate-700">{visibilite}</p>
-        </div>
-      )}
+      {!!s(score.main_blocker) && <div className="bg-red-50 border border-red-200 rounded-xl p-3"><p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1">Principal bloquant</p><p className="text-sm text-slate-800">{s(score.main_blocker)}</p></div>}
+      {!!visibilite && <div className="bg-slate-50 border border-slate-200 rounded-xl p-3"><p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Visibilité actuelle</p><p className="text-sm text-slate-700">{visibilite}</p></div>}
       {criticals.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-red-600 mb-2">Problèmes critiques ({criticals.length})</h3>
-          <div className="space-y-2">
-            {criticals.map((issue, i) => (
-              <div key={i} className="bg-white border border-red-100 rounded-lg p-3">
-                <div className="flex justify-between items-start gap-2 mb-1">
-                  <p className="text-xs font-semibold text-slate-800">{issue.issue}</p>
-                  {!!issue.impact && <span className={`text-xs px-2 py-0.5 rounded-full ${PRIORITY[issue.impact] ?? ""}`}>{issue.impact}</span>}
-                </div>
-                {!!issue.page && <p className="text-xs text-slate-400 mb-1">Page : {issue.page}</p>}
-                {!!issue.fix && <p className="text-xs text-green-700 bg-green-50 rounded px-2 py-1">Fix : {issue.fix}</p>}
+        <div><h3 className="text-sm font-bold text-red-600 mb-2">Problèmes critiques ({criticals.length})</h3>
+          <div className="space-y-2">{criticals.map((issue, i) => (
+            <div key={i} className="bg-white border border-red-100 rounded-lg p-3">
+              <div className="flex justify-between items-start gap-2 mb-1">
+                <p className="text-xs font-semibold text-slate-800">{issue.issue}</p>
+                {!!issue.impact && <span className={`text-xs px-2 py-0.5 rounded-full ${PRIORITY[issue.impact] ?? ""}`}>{issue.impact}</span>}
               </div>
-            ))}
-          </div>
+              {!!issue.page && <p className="text-xs text-slate-400 mb-1">Page : {issue.page}</p>}
+              {!!issue.fix && <p className="text-xs text-green-700 bg-green-50 rounded px-2 py-1">Fix : {issue.fix}</p>}
+            </div>
+          ))}</div>
         </div>
       )}
       {quickWins.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-green-700 mb-2">Gains rapides ({quickWins.length})</h3>
-          <div className="space-y-2">
-            {quickWins.map((w, i) => (
-              <div key={i} className="bg-white border border-green-100 rounded-lg p-3 flex gap-3 items-start">
-                {!!w.effort && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono shrink-0">{w.effort}</span>}
-                <div className="flex-1">
-                  <p className="text-xs font-semibold text-slate-800">{w.action}</p>
-                  {!!w.reason && <p className="text-xs text-slate-500 mt-0.5">{w.reason}</p>}
-                </div>
-                {!!w.impact && <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${PRIORITY[w.impact] ?? ""}`}>{w.impact}</span>}
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-green-700 mb-2">Gains rapides ({quickWins.length})</h3>
+          <div className="space-y-2">{quickWins.map((w, i) => (
+            <div key={i} className="bg-white border border-green-100 rounded-lg p-3 flex gap-3 items-start">
+              {!!w.effort && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono shrink-0">{w.effort}</span>}
+              <div className="flex-1"><p className="text-xs font-semibold text-slate-800">{w.action}</p>{!!w.reason && <p className="text-xs text-slate-500 mt-0.5">{w.reason}</p>}</div>
+              {!!w.impact && <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${PRIORITY[w.impact] ?? ""}`}>{w.impact}</span>}
+            </div>
+          ))}</div>
         </div>
       )}
       {longTerm.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Long terme ({longTerm.length})</h3>
-          <div className="space-y-1">
-            {longTerm.map((l, i) => (
-              <div key={i} className="bg-white border border-slate-100 rounded-lg p-3 flex gap-3 items-start">
-                {!!l.effort && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono shrink-0">{l.effort}</span>}
-                <div>
-                  <p className="text-xs font-semibold text-slate-800">{l.action}</p>
-                  {!!l.expected_result && <p className="text-xs text-slate-500 mt-0.5">{l.expected_result}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Long terme ({longTerm.length})</h3>
+          <div className="space-y-1">{longTerm.map((l, i) => (
+            <div key={i} className="bg-white border border-slate-100 rounded-lg p-3 flex gap-3 items-start">
+              {!!l.effort && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono shrink-0">{l.effort}</span>}
+              <div><p className="text-xs font-semibold text-slate-800">{l.action}</p>{!!l.expected_result && <p className="text-xs text-slate-500 mt-0.5">{l.expected_result}</p>}</div>
+            </div>
+          ))}</div>
         </div>
       )}
     </div>
@@ -327,7 +413,6 @@ function AuditorDetail({ c }: { c: Record<string, unknown> }) {
 // ── Orchestrateur ─────────────────────────────────────────────────────────────
 function OrchestratorDetail({ c }: { c: Record<string, unknown> }) {
   if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
-
   const synthese = s(c.synthese);
   const score = (c.score_global && typeof c.score_global === "object") ? c.score_global as Record<string, unknown> : {};
   const priorites = a(c.priorites).map(asStr);
@@ -336,16 +421,9 @@ function OrchestratorDetail({ c }: { c: Record<string, unknown> }) {
   const alerte = s(c.alerte);
   const plan = a(c.plan_30_jours).map(asStr);
   const aRelancer = a(c.agents_a_relancer).map(asStr);
-
   return (
     <div className="space-y-5">
-      {!!synthese && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-          <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Synthèse exécutive</p>
-          <p className="text-sm text-slate-800">{synthese}</p>
-        </div>
-      )}
-
+      {!!synthese && <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4"><p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Synthèse exécutive</p><p className="text-sm text-slate-800">{synthese}</p></div>}
       {(score.actuel != null || score.potentiel != null) && (
         <div className="flex gap-4">
           <div className="flex-1 bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-center">
@@ -359,91 +437,57 @@ function OrchestratorDetail({ c }: { c: Record<string, unknown> }) {
         </div>
       )}
       {!!s(score.note) && <p className="text-xs text-slate-500 italic">{s(score.note)}</p>}
-
-      {!!alerte && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex gap-2 items-start">
-          <span className="text-red-500 text-base shrink-0">⚠</span>
-          <div>
-            <p className="text-xs font-semibold text-red-600 mb-0.5">Alerte prioritaire</p>
-            <p className="text-xs text-slate-700">{alerte}</p>
-          </div>
-        </div>
-      )}
-
-      {!!opportunite && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex gap-2 items-start">
-          <span className="text-green-600 text-base shrink-0">⚡</span>
-          <div>
-            <p className="text-xs font-semibold text-green-700 mb-0.5">Quick win</p>
-            <p className="text-xs text-slate-700">{opportunite}</p>
-          </div>
-        </div>
-      )}
-
+      {!!alerte && <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex gap-2 items-start"><span className="text-red-500 text-base shrink-0">⚠</span><div><p className="text-xs font-semibold text-red-600 mb-0.5">Alerte prioritaire</p><p className="text-xs text-slate-700">{alerte}</p></div></div>}
+      {!!opportunite && <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex gap-2 items-start"><span className="text-green-600 text-base shrink-0">⚡</span><div><p className="text-xs font-semibold text-green-700 mb-0.5">Quick win</p><p className="text-xs text-slate-700">{opportunite}</p></div></div>}
       {priorites.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-3">Priorités de la semaine</h3>
-          <div className="space-y-2">
-            {priorites.map((p, i) => (
-              <div key={i} className="bg-white border border-slate-100 rounded-lg p-3">
-                <div className="flex gap-3 items-start">
-                  <span className="text-lg font-black text-indigo-300 leading-none shrink-0">#{p.rang ?? i + 1}</span>
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-slate-800 mb-1">{p.action}</p>
-                    {!!p.pourquoi && <p className="text-xs text-slate-500 mb-1">{p.pourquoi}</p>}
-                    <div className="flex gap-2 flex-wrap mt-1">
-                      {!!p.agent_source && <span className="text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">via {p.agent_source}</span>}
-                      {!!p.effort && <span className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono">{p.effort}</span>}
-                      {!!p.impact && <span className={`text-xs px-1.5 py-0.5 rounded ${PRIORITY[p.impact] ?? ""}`}>{p.impact}</span>}
-                    </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-3">Priorités de la semaine</h3>
+          <div className="space-y-2">{priorites.map((p, i) => (
+            <div key={i} className="bg-white border border-slate-100 rounded-lg p-3">
+              <div className="flex gap-3 items-start">
+                <span className="text-lg font-black text-indigo-300 leading-none shrink-0">#{p.rang ?? i + 1}</span>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-slate-800 mb-1">{p.action}</p>
+                  {!!p.pourquoi && <p className="text-xs text-slate-500 mb-1">{p.pourquoi}</p>}
+                  <div className="flex gap-2 flex-wrap mt-1">
+                    {!!p.agent_source && <span className="text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">via {p.agent_source}</span>}
+                    {!!p.effort && <span className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono">{p.effort}</span>}
+                    {!!p.impact && <span className={`text-xs px-1.5 py-0.5 rounded ${PRIORITY[p.impact] ?? ""}`}>{p.impact}</span>}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}</div>
         </div>
       )}
-
       {motsCles.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Mots-clés prioritaires</h3>
-          <div className="space-y-1">
-            {motsCles.map((k, i) => (
-              <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
-                <span>{FLAG[k.locale] ?? "🌐"}</span>
-                <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
-                {!!k.raison && <span className="text-slate-500 flex-1">{k.raison}</span>}
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Mots-clés prioritaires</h3>
+          <div className="space-y-1">{motsCles.map((k, i) => (
+            <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
+              <span>{FLAG[k.locale] ?? "🌐"}</span>
+              <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
+              {!!k.raison && <span className="text-slate-500 flex-1">{k.raison}</span>}
+            </div>
+          ))}</div>
         </div>
       )}
-
       {plan.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Plan 30 jours</h3>
-          <div className="space-y-1">
-            {plan.map((w, i) => (
-              <div key={i} className="flex gap-3 items-start text-xs bg-white border border-slate-100 rounded-lg p-3">
-                <span className="font-black text-indigo-400 shrink-0">S{w.semaine ?? i + 1}</span>
-                <p className="text-slate-700">{w.focus}</p>
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Plan 30 jours</h3>
+          <div className="space-y-1">{plan.map((w, i) => (
+            <div key={i} className="flex gap-3 items-start text-xs bg-white border border-slate-100 rounded-lg p-3">
+              <span className="font-black text-indigo-400 shrink-0">S{w.semaine ?? i + 1}</span>
+              <p className="text-slate-700">{w.focus}</p>
+            </div>
+          ))}</div>
         </div>
       )}
-
       {aRelancer.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold text-slate-700 mb-2">Agents à relancer</h3>
-          <div className="flex flex-wrap gap-2">
-            {aRelancer.map((a, i) => (
-              <div key={i} className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                <span className="font-semibold text-slate-700">{AGENT_LABELS[a.agent] ?? a.agent}</span>
-                {!!a.raison && <span className="text-slate-400 ml-1">— {a.raison}</span>}
-              </div>
-            ))}
-          </div>
+        <div><h3 className="text-sm font-bold text-slate-700 mb-2">Agents à relancer</h3>
+          <div className="flex flex-wrap gap-2">{aRelancer.map((ag, i) => (
+            <div key={i} className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+              <span className="font-semibold text-slate-700">{AGENT_LABELS[ag.agent] ?? ag.agent}</span>
+              {!!ag.raison && <span className="text-slate-400 ml-1">— {ag.raison}</span>}
+            </div>
+          ))}</div>
         </div>
       )}
     </div>
@@ -460,13 +504,14 @@ function ReportDetail({ report }: { report: Report }) {
 
 // ── Page principale ───────────────────────────────────────────────────────────
 export default function AdminSeoPage() {
-  const [tab, setTab] = useState<"reports" | "posts">("reports");
+  const [tab, setTab] = useState<"chat" | "reports" | "posts">("chat");
   const [reports, setReports] = useState<Report[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
   const [pendingRefresh, setPendingRefresh] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [chatKey, setChatKey] = useState(0);
 
   async function load() {
     setLoading(true);
@@ -515,6 +560,7 @@ export default function AdminSeoPage() {
         </button>
       </div>
 
+      {/* Cartes équipe */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
         {(["writer", "competitor", "auditor", "keywords", "orchestrator"] as const).map((agent) => {
           const member = TEAM[agent];
@@ -546,7 +592,11 @@ export default function AdminSeoPage() {
         })}
       </div>
 
+      {/* Onglets */}
       <div className="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6 w-fit">
+        <button onClick={() => setTab("chat")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "chat" ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
+          Chat
+        </button>
         <button onClick={() => setTab("reports")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "reports" ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
           Rapports {unreadCount > 0 && <span className="ml-1.5 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">{unreadCount}</span>}
         </button>
@@ -557,6 +607,19 @@ export default function AdminSeoPage() {
 
       {loading ? (
         <div className="text-center py-16 text-slate-400">Chargement…</div>
+      ) : tab === "chat" ? (
+        <div className="bg-slate-50 rounded-2xl p-5 min-h-[400px]">
+          <div className="flex items-center justify-between mb-5">
+            <p className="text-xs text-slate-400 font-medium uppercase tracking-wide">L&apos;équipe en réunion</p>
+            <button
+              onClick={() => setChatKey((k) => k + 1)}
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors"
+            >
+              <RotateCcw size={12} /> Rejouer
+            </button>
+          </div>
+          <ChatPanel reports={goodReports} chatKey={chatKey} />
+        </div>
       ) : tab === "reports" ? (
         <div className="space-y-3">
           {goodReports.length === 0 ? (
