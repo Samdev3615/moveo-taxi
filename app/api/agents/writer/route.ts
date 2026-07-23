@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
+import { anthropic, MODEL } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
@@ -37,8 +37,22 @@ function getWeekTopic() {
 
 async function generateForLocale(topic: string, slug: string, locale: string, lang: string) {
   const msg = await anthropic.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 1500,
+    model: MODEL,
+    max_tokens: 2000,
+    tools: [{
+      name: "save_article",
+      description: "Save the SEO blog article for Moveo Taxi",
+      input_schema: {
+        type: "object" as const,
+        properties: {
+          title: { type: "string", description: "SEO-optimized title, 50-60 characters" },
+          excerpt: { type: "string", description: "Meta description, 140-160 characters" },
+          content: { type: "string", description: "Full blog post in HTML using h2, p, ul, li tags (400-600 words)" },
+        },
+        required: ["title", "excerpt", "content"],
+      },
+    }],
+    tool_choice: { type: "any" as const },
     messages: [{
       role: "user",
       content: `You are Sophie Laurent, SEO content writer for Moveo Taxi. You know the company inside out.
@@ -57,28 +71,20 @@ STRICT RULES:
 - SEO-optimized with natural keyword usage
 - Practical, trustworthy, expert tone
 
-Return ONLY a valid JSON object (no markdown, no explanation):
-{
-  "title": "SEO-optimized title (50-60 characters)",
-  "excerpt": "Meta description (140-160 characters)",
-  "content": "Full blog post in HTML using <h2>, <p>, <ul>, <li> tags (400-600 words)"
-}`,
+Call the save_article tool with your response.`,
     }],
   });
 
-  const textBlock = msg.content.find((b) => b.type === "text");
-  const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
-  const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
-  const jsonStr = match ? (match[1] ?? match[0]) : null;
-  if (!jsonStr) throw new Error(`No JSON for ${locale}`);
-  const parsed = JSON.parse(jsonStr);
+  const toolUse = msg.content.find((b) => b.type === "tool_use");
+  if (!toolUse || toolUse.type !== "tool_use") throw new Error(`No tool_use block for ${locale}`);
+  const input = toolUse.input as { title: string; excerpt: string; content: string };
 
   return {
     slug: `${slug}-${locale}`,
     locale,
-    title: parsed.title as string,
-    excerpt: parsed.excerpt as string,
-    content: parsed.content as string,
+    title: input.title,
+    excerpt: input.excerpt,
+    content: input.content,
     topic,
     status: "draft",
   };
@@ -101,7 +107,11 @@ export async function GET(req: NextRequest) {
       .filter((r): r is PromiseFulfilledResult<ReturnType<typeof generateForLocale> extends Promise<infer T> ? T : never> => r.status === "fulfilled")
       .map((r) => r.value);
 
-    if (posts.length === 0) throw new Error("All locale generations failed");
+    if (posts.length === 0) {
+      const firstErr = results.find((r) => r.status === "rejected") as PromiseRejectedResult | undefined;
+      const reason = firstErr?.reason instanceof Error ? firstErr.reason.message : String(firstErr?.reason ?? "unknown");
+      throw new Error(`All locale generations failed. First error: ${reason}`);
+    }
 
     const { error } = await supabaseAdmin
       .from("blog_posts")
