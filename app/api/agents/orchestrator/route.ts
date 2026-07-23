@@ -50,7 +50,79 @@ export async function GET(req: NextRequest) {
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 16000,
+      max_tokens: 8192,
+      tools: [{
+        name: "save_strategy",
+        description: "Save the weekly SEO strategic plan for Moveo Taxi",
+        input_schema: {
+          type: "object" as const,
+          properties: {
+            synthese: { type: "string" as const },
+            score_global: {
+              type: "object" as const,
+              properties: {
+                actuel: { type: "number" as const },
+                potentiel: { type: "number" as const },
+                note: { type: "string" as const },
+              },
+              required: ["actuel", "potentiel", "note"],
+            },
+            priorites: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  rang: { type: "number" as const },
+                  action: { type: "string" as const },
+                  pourquoi: { type: "string" as const },
+                  agent_source: { type: "string" as const },
+                  impact: { type: "string" as const, enum: ["high", "medium", "low"] },
+                  effort: { type: "string" as const },
+                },
+                required: ["rang", "action", "pourquoi", "impact", "effort"],
+              },
+            },
+            mots_cles_prioritaires: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  keyword: { type: "string" as const },
+                  locale: { type: "string" as const },
+                  raison: { type: "string" as const },
+                },
+                required: ["keyword", "locale", "raison"],
+              },
+            },
+            opportunite_rapide: { type: "string" as const },
+            alerte: { type: "string" as const },
+            plan_30_jours: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  semaine: { type: "number" as const },
+                  focus: { type: "string" as const },
+                },
+                required: ["semaine", "focus"],
+              },
+            },
+            agents_a_relancer: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  agent: { type: "string" as const },
+                  raison: { type: "string" as const },
+                },
+                required: ["agent", "raison"],
+              },
+            },
+          },
+          required: ["synthese", "score_global", "priorites", "opportunite_rapide", "alerte", "plan_30_jours"],
+        },
+      }],
+      tool_choice: { type: "tool" as const, name: "save_strategy" },
       messages: [{
         role: "user",
         content: `Tu es David Levi, orchestrateur SEO stratégique de Moveo Taxi. Tu connais l'entreprise par cœur et coordonnes toute l'équipe.
@@ -64,54 +136,23 @@ Voici les derniers rapports disponibles (${sections.length} agent(s)) :
 ${availableReports}
 
 En croisant ces données, produis un plan d'action SEO stratégique pour les 7 prochains jours.
-
-Retourne UNIQUEMENT un JSON valide :
-{
-  "synthese": "résumé exécutif en 2-3 phrases de la situation SEO actuelle, basé sur les données croisées",
-  "score_global": { "actuel": 0, "potentiel": 0, "note": "explication du score" },
-  "priorites": [
-    {
-      "rang": 1,
-      "action": "action concrète et précise à faire cette semaine",
-      "pourquoi": "raison basée sur les données croisées des agents",
-      "agent_source": "concurrent|auditor|keywords|writer ou combinaison",
-      "impact": "high|medium|low",
-      "effort": "1h|4h|1d|1w"
-    }
-  ],
-  "mots_cles_prioritaires": [
-    { "keyword": "mot-clé exact", "locale": "fr|en|he|ru|es", "raison": "pourquoi le cibler maintenant d'après les données" }
-  ],
-  "opportunite_rapide": "la meilleure opportunité quick win identifiée en croisant tous les rapports",
-  "alerte": "le risque ou problème le plus urgent à adresser",
-  "plan_30_jours": [
-    { "semaine": 1, "focus": "objectif précis de la semaine 1" },
-    { "semaine": 2, "focus": "objectif précis de la semaine 2" },
-    { "semaine": 3, "focus": "objectif précis de la semaine 3" },
-    { "semaine": 4, "focus": "objectif précis de la semaine 4" }
-  ],
-  "agents_a_relancer": [
-    { "agent": "competitor|auditor|keywords|writer", "raison": "pourquoi relancer en priorité" }
-  ]
-}
-
-Minimum 5 priorités. Croise vraiment les données pour des insights uniques que chaque agent seul ne pourrait pas produire.`,
+Minimum 5 priorités. Croise vraiment les données pour des insights uniques que chaque agent seul ne pourrait pas produire.
+Appelle l'outil save_strategy avec tes résultats.`,
       }],
     });
 
-    const textBlock = msg.content.find((b) => b.type === "text");
-    const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
-    const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
-    const jsonStr = match ? (match[1] ?? match[0]) : null;
-    if (!jsonStr) throw new Error("No JSON in response");
-    const content = JSON.parse(jsonStr);
+    const toolUse = msg.content.find((b) => b.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") throw new Error("No tool_use block in orchestrator response");
+    const content = toolUse.input as Record<string, unknown>;
 
-    const nbPriorites = (content.priorites as unknown[])?.length ?? 0;
+    const priorites = content.priorites as unknown[] | undefined;
+    const scoreGlobal = content.score_global as Record<string, unknown> | undefined;
+    const nbPriorites = priorites?.length ?? 0;
 
     await supabaseAdmin.from("seo_reports").insert({
       agent: "orchestrator",
-      title: `Plan stratégique — ${nbPriorites} priorités · Score ${content.score_global?.actuel ?? "?"}/100`,
-      summary: content.synthese ?? content.opportunite_rapide ?? "Plan d'action SEO hebdomadaire",
+      title: `Plan stratégique — ${nbPriorites} priorités · Score ${scoreGlobal?.actuel ?? "?"}/100`,
+      summary: String(content.synthese ?? content.opportunite_rapide ?? "Plan d'action SEO hebdomadaire"),
       content,
     });
 

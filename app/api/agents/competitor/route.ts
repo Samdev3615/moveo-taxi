@@ -70,59 +70,66 @@ ${formatResults(esAirport)}
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 16000,
+      max_tokens: 4096,
+      tools: [{
+        name: "save_competitor_analysis",
+        description: "Save the competitive analysis for Moveo Taxi",
+        input_schema: {
+          type: "object" as const,
+          properties: {
+            competitors: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  name: { type: "string" as const },
+                  url: { type: "string" as const },
+                  type: { type: "string" as const },
+                  langues: { type: "array" as const, items: { type: "string" as const } },
+                  mots_cles: { type: "array" as const, items: { type: "string" as const } },
+                  force: { type: "string" as const },
+                },
+                required: ["name", "url", "type"],
+              },
+            },
+            opportunites: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  langue: { type: "string" as const },
+                  action: { type: "string" as const },
+                  priorite: { type: "string" as const, enum: ["high", "medium", "low"] },
+                },
+                required: ["langue", "action", "priorite"],
+              },
+            },
+            langue_moins_competitive: { type: "string" as const },
+            recommandation: { type: "string" as const },
+          },
+          required: ["competitors", "opportunites", "langue_moins_competitive", "recommandation"],
+        },
+      }],
+      tool_choice: { type: "tool" as const, name: "save_competitor_analysis" },
       messages: [{
         role: "user",
         content: `Tu es Alex Benhamou, analyste SEO concurrentielle pour Moveo Taxi. Tu connais l'entreprise sur le bout des doigts.
 
 ${MOVEO_TAXI_BRIEF}
 
-Maintenant, analyse ces résultats Google réels pour identifier nos concurrents directs (services de taxi privé à prix fixe en Israël, transferts aéroport et/ou intercités — même niche que nous) :
+Analyse ces résultats Google réels pour identifier nos concurrents directs (services de taxi privé à prix fixe en Israël, transferts aéroport et/ou intercités — même niche que nous) :
 
 ${searchContext}
 
 Identifie UNIQUEMENT les concurrents directs qui offrent des services similaires aux nôtres (réservation en ligne, prix fixes, transferts privés). Ne liste pas les sites d'informations générales sur les taxis.
 
-IMPORTANT: Réponds UNIQUEMENT avec du JSON brut, sans texte avant ni après, sans balises markdown.
-
-Format requis:
-{"competitors":[{"name":"string","url":"string","type":"string","langues":["string"],"mots_cles":["string"],"force":"string"}],"opportunites":[{"langue":"string","action":"string","priorite":"high|medium|low"}],"langue_moins_competitive":"string","recommandation":"string"}`,
+Appelle l'outil save_competitor_analysis avec tes résultats.`,
       }],
     });
 
-    // Claude Sonnet 5 peut retourner un bloc "thinking" avant le texte — on cherche le bon bloc
-    const textBlock = msg.content.find((b) => b.type === "text");
-    const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
-
-    // Log de debug: types de blocs reçus
-    const blockTypes = msg.content.map((b) => b.type).join(", ");
-
-    // Essaie d'extraire le JSON (avec ou sans bloc markdown ```json```)
-    const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
-    const jsonStr = match ? (match[1] ?? match[0]) : null;
-
-    if (!jsonStr) {
-      await supabaseAdmin.from("seo_reports").insert({
-        agent: "competitor",
-        title: "Debug — réponse brute de Claude",
-        summary: `Blocs: [${blockTypes}] | Longueur texte: ${text.length} | Début: ${text.slice(0, 120)}`,
-        content: { error: true, block_types: blockTypes, raw_full: text, raw_length: text.length },
-      });
-      throw new Error(`No JSON. Blocks=[${blockTypes}] TextLen=${text.length}`);
-    }
-
-    let content: Record<string, unknown>;
-    try {
-      content = JSON.parse(jsonStr);
-    } catch (parseErr) {
-      await supabaseAdmin.from("seo_reports").insert({
-        agent: "competitor",
-        title: "Erreur JSON tronqué",
-        summary: `JSON coupé à ${jsonStr.length} chars. Erreur: ${String(parseErr).slice(0, 100)}`,
-        content: { error: true, partial_json: jsonStr.slice(0, 2000) },
-      });
-      throw parseErr;
-    }
+    const toolUse = msg.content.find((b) => b.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") throw new Error("No tool_use block in competitor response");
+    const content = toolUse.input as Record<string, unknown>;
     const nbConcurrents = (content.competitors as unknown[])?.length ?? 0;
 
     await supabaseAdmin.from("seo_reports").insert({

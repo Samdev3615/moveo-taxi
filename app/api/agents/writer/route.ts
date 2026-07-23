@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { anthropic, MODEL } from "@/lib/anthropic";
+import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
@@ -37,7 +37,7 @@ function getWeekTopic() {
 
 async function generateForLocale(topic: string, slug: string, locale: string, lang: string) {
   const msg = await anthropic.messages.create({
-    model: MODEL,
+    model: MODEL_SONNET,
     max_tokens: 2000,
     tools: [{
       name: "save_article",

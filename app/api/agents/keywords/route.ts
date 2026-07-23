@@ -62,14 +62,77 @@ ${formatResults(esIntercity)}
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
-      max_tokens: 16000,
+      max_tokens: 4096,
+      tools: [{
+        name: "save_keywords",
+        description: "Save keyword research results for Moveo Taxi",
+        input_schema: {
+          type: "object" as const,
+          properties: {
+            high_intent: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  keyword: { type: "string" as const },
+                  locale: { type: "string" as const },
+                  volume: { type: "string" as const, enum: ["high", "medium", "low"] },
+                  competition: { type: "string" as const, enum: ["high", "medium", "low"] },
+                  opportunity: { type: "string" as const },
+                },
+                required: ["keyword", "locale", "volume", "competition", "opportunity"],
+              },
+            },
+            informational: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  keyword: { type: "string" as const },
+                  locale: { type: "string" as const },
+                  content_angle: { type: "string" as const },
+                },
+                required: ["keyword", "locale", "content_angle"],
+              },
+            },
+            long_tail: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  keyword: { type: "string" as const },
+                  locale: { type: "string" as const },
+                  difficulty: { type: "string" as const, enum: ["low", "medium"] },
+                  opportunity: { type: "string" as const },
+                },
+                required: ["keyword", "locale", "difficulty", "opportunity"],
+              },
+            },
+            hebrew_specific: {
+              type: "array" as const,
+              items: {
+                type: "object" as const,
+                properties: {
+                  keyword: { type: "string" as const },
+                  transliteration: { type: "string" as const },
+                  intent: { type: "string" as const },
+                },
+                required: ["keyword", "intent"],
+              },
+            },
+            gaps_identifies: { type: "array" as const, items: { type: "string" as const } },
+            top_5_priority: { type: "array" as const, items: { type: "string" as const } },
+            insight: { type: "string" as const },
+          },
+          required: ["high_intent", "informational", "long_tail", "hebrew_specific", "gaps_identifies", "top_5_priority", "insight"],
+        },
+      }],
+      tool_choice: { type: "tool" as const, name: "save_keywords" },
       messages: [{
         role: "user",
         content: `Tu es Rafi Shapira, expert mots-clés pour Moveo Taxi. Tu connais l'entreprise en profondeur.
 
 ${MOVEO_TAXI_BRIEF}
-
-Tu es un expert en recherche de mots-clés pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël.
 
 Voici les VRAIS résultats Google actuels en 5 langues pour les recherches taxi en Israël :
 
@@ -77,45 +140,28 @@ ${searchContext}
 
 En analysant ces résultats réels (titres, snippets, sites qui rankent, "People also ask"), identifie les meilleures opportunités de mots-clés pour Moveo Taxi.
 
-Retourne UNIQUEMENT un JSON valide :
-{
-  "high_intent": [
-    { "keyword": "mot-clé exact", "locale": "en|fr|he|ru|es", "volume": "high|medium|low", "competition": "high|medium|low", "opportunity": "explication en français" }
-  ],
-  "informational": [
-    { "keyword": "mot-clé exact", "locale": "en|fr|he|ru|es", "content_angle": "angle de contenu en français" }
-  ],
-  "long_tail": [
-    { "keyword": "mot-clé exact", "locale": "en|fr|he|ru|es", "difficulty": "low|medium", "opportunity": "pourquoi c'est une opportunité" }
-  ],
-  "hebrew_specific": [
-    { "keyword": "מילת מפתח בעברית", "transliteration": "translittération", "intent": "intention de recherche en français" }
-  ],
-  "gaps_identifies": ["lacune de contenu identifiée d'après les résultats Google 1", "gap 2"],
-  "top_5_priority": ["mot-clé prioritaire 1", "2", "3", "4", "5"],
-  "insight": "insight stratégique clé basé sur les données Google réelles, en français"
-}
-
-Minimum 6 mots-clés par catégorie. Base-toi sur ce que tu vois RÉELLEMENT dans les résultats Google fournis.`,
+Minimum 6 mots-clés par catégorie. Base-toi sur ce que tu vois RÉELLEMENT dans les résultats Google fournis.
+Appelle l'outil save_keywords avec tes résultats.`,
       }],
     });
 
-    const textBlock = msg.content.find((b) => b.type === "text");
-    const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
-    const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
-    const jsonStr = match ? (match[1] ?? match[0]) : null;
-    if (!jsonStr) throw new Error("No JSON in response");
-    const content = JSON.parse(jsonStr);
+    const toolUse = msg.content.find((b) => b.type === "tool_use");
+    if (!toolUse || toolUse.type !== "tool_use") throw new Error("No tool_use block in keywords response");
+    const content = toolUse.input as Record<string, unknown>;
+    const highIntent = content.high_intent as unknown[] | undefined;
+    const informational = content.informational as unknown[] | undefined;
+    const longTail = content.long_tail as unknown[] | undefined;
+    const top5 = content.top_5_priority as string[] | undefined;
 
     const totalKeywords =
-      (content.high_intent?.length ?? 0) +
-      (content.informational?.length ?? 0) +
-      (content.long_tail?.length ?? 0);
+      (highIntent?.length ?? 0) +
+      (informational?.length ?? 0) +
+      (longTail?.length ?? 0);
 
     await supabaseAdmin.from("seo_reports").insert({
       agent: "keywords",
       title: `Recherche mots-clés — ${totalKeywords} opportunités identifiées (données Google réelles)`,
-      summary: content.insight ?? `Top 5: ${(content.top_5_priority ?? []).join(", ")}`,
+      summary: String(content.insight ?? `Top 5: ${(top5 ?? []).join(", ")}`),
       content,
     });
 
