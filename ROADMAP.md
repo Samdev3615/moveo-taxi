@@ -60,14 +60,14 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ✅ `robots.txt` (`/robots.txt`)
 - ✅ Images renommées pour le SEO
 - ⬜ Open Graph images par locale
-- ⬜ Schema.org JSON-LD (LocalBusiness + TaxiService)
+- ✅ Schema.org JSON-LD (LocalBusiness + TaxiService) — `app/[locale]/layout.tsx`
 
 ---
 
 ## Phase 2 — Complet
 
 ### Fonctionnel
-- ⬜ **Remplacer le numéro placeholder** `+972-53-1234567` par le vrai numéro
+- ✅ ~~Remplacer le numéro placeholder~~ — vrai numéro `+972-54-310-0044` partout
 - ⬜ Centraliser les constantes (téléphone, WhatsApp, email) dans `lib/constants.ts`
 - ⬜ Calculateur de prix avancé (par km, heure, type de véhicule)
 - ⬜ Réservation aller-retour complète
@@ -76,7 +76,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ⬜ Carte Google Maps sur les pages routes et contact
 
 ### Admin
-- ⬜ Authentification admin (Supabase Auth)
+- ✅ Authentification admin — cookie httpOnly `admin_session` + `ADMIN_SECRET` serveur
 - ⬜ Notifications en temps réel (Supabase Realtime)
 - ⬜ Export CSV des réservations
 - ⬜ Statistiques dashboard (revenus, trajets, chauffeurs)
@@ -93,6 +93,22 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 
 ---
 
+## Phase 2b — SEO Agence IA
+
+### Panel `/admin/seo`
+- ✅ Agent Writer (Maya Cohen) — idées articles + analyse contenu
+- ✅ Agent Concurrent (Yossi Ben David) — analyse concurrentielle Serper
+- ✅ Agent Mots-clés (Rachel Mizrahi) — recherche keywords multi-langues
+- ✅ Agent Auditeur (Rafi Shapira) — audit SEO avec données GSC réelles
+- ✅ Agent Orchestrateur (David Levi) — plan stratégique croisé 30 jours
+- ✅ Chat animé entre agents (onglet défaut)
+- ✅ Stockage rapports en Supabase (`seo_reports`)
+- ⬜ Onglet Articles — génération et publication d'articles de blog
+- ⬜ Planification cron hebdomadaire automatique des agents
+- ⬜ Historique et comparaison de rapports (évolution dans le temps)
+
+---
+
 ## Phase 3 — Avancé
 
 - 🔮 Paiement en ligne (Payplus / iCredit — solutions israéliennes)
@@ -100,7 +116,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - 🔮 Application mobile (React Native)
 - 🔮 Suivi GPS en temps réel du chauffeur
 - 🔮 Programme de fidélité client
-- 🔮 Intégration Google Business Profile
+- ✅ Google Business Profile — créé, vérifié, 2 propriétaires (samcomm.d@gmail.com + support@moveotaxi.com), vidéo soumise
 
 ---
 

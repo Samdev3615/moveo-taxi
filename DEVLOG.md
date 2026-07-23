@@ -257,6 +257,58 @@ Chaque langue a sa propre URL (`/he`, `/fr`, `/en`, `/ru`, `/es`). Google indexe
 
 ---
 
+## 2026-07-23 — Panel SEO Agence + Google Business Profile
+
+### Panel admin SEO avec agents IA (`/admin/seo`)
+Nouveau module complet d'analyse SEO piloté par des agents Claude Sonnet 5.
+
+**5 agents créés** (`app/api/agents/*/route.ts`) :
+- **writer** (`Maya Cohen`) — Analyse contenu + idées d'articles SEO via Serper
+- **competitor** (`Yossi Ben David`) — Analyse concurrentielle Google (Ben Gurion taxi market)
+- **keywords** (`Rachel Mizrahi`) — Recherche mots-clés stratégiques multi-langues
+- **auditor** (`Rafi Shapira`) — Audit SEO complet avec données Google Search Console réelles
+- **orchestrator** (`David Levi`) — Lit les 4 rapports et produit un plan stratégique croisé
+
+**Architecture agents :**
+- Chaque agent : route GET protégée par `CRON_SECRET`
+- Déclenchement via `POST /api/admin/trigger-agent?agent=X` (protégé admin, uses `after()` pour tâche de fond)
+- Rapports stockés en table Supabase `seo_reports` (colonnes : `agent`, `title`, `summary`, `content` JSONB, `created_at`)
+- `maxDuration = 300` sur l'orchestrateur (Claude avec 16 000 tokens max)
+
+**Page admin SEO** (`app/admin/seo/page.tsx`) :
+- 3 onglets : **Chat** (défaut) | **Rapports** | **Articles**
+- Onglet Chat : conversation animée entre agents (messages progressifs avec indicateur de frappe 3 points)
+  - David (orchestrateur) à droite (style iMessage), autres agents à gauche
+  - Bouton "Rejouer" pour relancer l'animation
+  - Basé sur les vrais rapports Supabase (`buildConversation()`)
+- Onglet Rapports : liste avec avatar circulaire de l'agent + badge count réel
+- Boutons "Lancer" individuels par agent, indigo pour l'orchestrateur
+- Grille `sm:grid-cols-5` pour les 5 agents
+
+**Images équipe :**
+- `public/images/team-maya.png`, `team-yossi.png`, `team-rachel.png`, `team-rafi.png` (remplacé), `team-david.png` (nouveau)
+
+**Bug fixes :**
+- `VALID_AGENTS` dans `trigger-agent/route.ts` n'incluait pas `"orchestrator"` → ajouté
+- Filtre JSONB Supabase `.not("content->error", "is", "true")` instable → remplacé par filtre JS côté app (`data.find(r => !r.content?.error)`)
+
+**Variables d'env requises :**
+- `ANTHROPIC_API_KEY` — Claude Sonnet 5
+- `SERPER_API_KEY` — Recherches Google réelles
+- `GSC_REFRESH_TOKEN` — Google Search Console (OAuth2, déjà configuré)
+- `CRON_SECRET` — Protection des routes agents
+
+### Google Business Profile — mise à jour
+- **Vérifié existant** sous samcomm.d@gmail.com (créé lors d'une session précédente)
+- **support@moveotaxi.com ajouté comme propriétaire** (invitation acceptée)
+- **Vidéo de vérification envoyée** à Google (façade + intérieur + site moveotaxi.com) — réponse attendue sous 3-5 jours
+- Décision : garder les **deux comptes propriétaires** (samcomm.d@gmail.com = backup)
+
+### Schema.org JSON-LD
+Confirmé déjà implémenté dans `app/[locale]/layout.tsx` — `LocalBusiness` + `TaxiService`.
+
+---
+
 ## Décisions d'architecture
 
 | Décision | Raison |

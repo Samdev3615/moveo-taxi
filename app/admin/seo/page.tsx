@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare } from "lucide-react";
+import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X } from "lucide-react";
 
 type Report = {
   id: string;
@@ -19,6 +19,7 @@ type BlogPost = {
   locale: string;
   title: string;
   excerpt: string;
+  content: string;
   topic: string;
   status: "draft" | "published" | "archived";
   created_at: string;
@@ -494,11 +495,48 @@ function OrchestratorDetail({ c }: { c: Record<string, unknown> }) {
   );
 }
 
+// ── Rédacteur ─────────────────────────────────────────────────────────────────
+function WriterDetail({ c }: { c: Record<string, unknown> }) {
+  if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
+  const topic = s(c.topic);
+  const slug = s(c.slug);
+  const posts = (Array.isArray(c.posts) ? c.posts : []) as Array<Record<string, string>>;
+  return (
+    <div className="space-y-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Sujet de la semaine</p>
+        <p className="text-sm font-semibold text-slate-800">{topic}</p>
+        {!!slug && <p className="text-xs text-slate-400 mt-0.5 font-mono">/{slug}</p>}
+      </div>
+      {posts.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-3">
+            {posts.length} article{posts.length > 1 ? "s" : ""} générés
+          </h3>
+          <div className="space-y-2">
+            {posts.map((p, i) => (
+              <div key={i} className="flex gap-3 items-center bg-white border border-slate-100 rounded-lg p-3">
+                <span className="text-lg shrink-0">{FLAG[p.locale] ?? "🌐"}</span>
+                <p className="text-xs font-semibold text-slate-800 flex-1 truncate">{p.title}</p>
+                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">brouillon</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-slate-400 mt-3 flex items-center gap-1">
+            <BookOpen size={12} /> Publier depuis l&apos;onglet Articles
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ReportDetail({ report }: { report: Report }) {
   if (report.agent === "competitor") return <CompetitorDetail c={report.content} />;
   if (report.agent === "keywords") return <KeywordsDetail c={report.content} />;
   if (report.agent === "auditor") return <AuditorDetail c={report.content} />;
   if (report.agent === "orchestrator") return <OrchestratorDetail c={report.content} />;
+  if (report.agent === "writer") return <WriterDetail c={report.content} />;
   return <pre className="text-xs text-slate-600 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(report.content, null, 2)}</pre>;
 }
 
@@ -512,6 +550,9 @@ export default function AdminSeoPage() {
   const [pendingRefresh, setPendingRefresh] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [chatKey, setChatKey] = useState(0);
+  const [localeFilter, setLocaleFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published" | "archived">("all");
+  const [previewPost, setPreviewPost] = useState<BlogPost | null>(null);
 
   async function load() {
     setLoading(true);
@@ -547,6 +588,9 @@ export default function AdminSeoPage() {
   const unreadCount = reports.filter((r) => r.status === "unread").length;
   const draftCount = posts.filter((p) => p.status === "draft").length;
   const goodReports = reports.filter((r) => !(r.content as Record<string, unknown>)?.error);
+  const filteredPosts = posts
+    .filter((p) => !localeFilter || p.locale === localeFilter)
+    .filter((p) => statusFilter === "all" || p.status === statusFilter);
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -657,26 +701,109 @@ export default function AdminSeoPage() {
           ))}
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {posts.length === 0 ? (
             <div className="text-center py-16 text-slate-400">
               <BookOpen size={32} className="mx-auto mb-3 opacity-30" />
               <p>Aucun article. Lance l&apos;agent Rédacteur.</p>
             </div>
-          ) : posts.map((p) => (
-            <div key={p.id} className="bg-white border border-slate-100 rounded-xl p-4 flex items-center gap-4">
-              <span className="text-xl">{FLAG[p.locale] ?? "🌐"}</span>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-slate-900 text-sm truncate">{p.title}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{p.slug} · {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
+          ) : (
+            <>
+              {/* Filtres */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <div className="flex gap-1">
+                  {[null, "he", "en", "fr", "ru", "es"].map((loc) => (
+                    <button
+                      key={loc ?? "all"}
+                      onClick={() => setLocaleFilter(loc)}
+                      className={`text-sm px-2.5 py-1 rounded-lg transition-all ${localeFilter === loc ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+                    >
+                      {loc ? (FLAG[loc] ?? loc) : "Tous"}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-1">
+                  {(["all", "draft", "published", "archived"] as const).map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setStatusFilter(st)}
+                      className={`text-xs px-2.5 py-1 rounded-lg transition-all ${statusFilter === st ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+                    >
+                      {st === "all" ? "Tous" : st === "draft" ? "Brouillons" : st === "published" ? "Publiés" : "Archivés"}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-xs text-slate-400 ml-auto">{filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""}</span>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${p.status === "published" ? "bg-green-100 text-green-700" : p.status === "draft" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>{p.status}</span>
-                {p.status === "draft" && <button onClick={() => updatePostStatus(p.id, "published")} className="text-xs bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors">Publier</button>}
-                {p.status !== "archived" && <button onClick={() => updatePostStatus(p.id, "archived")} className="text-xs text-slate-400 hover:text-slate-700 transition-colors">Archiver</button>}
+
+              {/* Liste */}
+              <div className="space-y-2">
+                {filteredPosts.length === 0 ? (
+                  <p className="text-center py-8 text-slate-400 text-sm">Aucun article pour ce filtre.</p>
+                ) : filteredPosts.map((p) => (
+                  <div key={p.id} className="bg-white border border-slate-100 rounded-xl p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl shrink-0 mt-0.5">{FLAG[p.locale] ?? "🌐"}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-slate-900 text-sm leading-tight">{p.title}</p>
+                        {!!p.excerpt && <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{p.excerpt}</p>}
+                        <p className="text-xs text-slate-300 mt-1 font-mono">{p.slug} · {new Date(p.created_at).toLocaleDateString("fr-FR")}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${p.status === "published" ? "bg-green-100 text-green-700" : p.status === "draft" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
+                          {p.status === "published" ? "Publié" : p.status === "draft" ? "Brouillon" : "Archivé"}
+                        </span>
+                        <div className="flex gap-2">
+                          <button onClick={() => setPreviewPost(p)} className="text-xs text-slate-500 hover:text-slate-900 underline underline-offset-2 transition-colors">Aperçu</button>
+                          {p.status === "draft" && <button onClick={() => updatePostStatus(p.id, "published")} className="text-xs bg-green-600 text-white px-2.5 py-1 rounded-lg hover:bg-green-700 transition-colors">Publier</button>}
+                          {p.status === "published" && <button onClick={() => updatePostStatus(p.id, "archived")} className="text-xs text-slate-400 hover:text-slate-700 transition-colors">Archiver</button>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Modal prévisualisation article */}
+      {previewPost && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setPreviewPost(null)}>
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-slate-100">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xl shrink-0">{FLAG[previewPost.locale] ?? "🌐"}</span>
+                <p className="font-bold text-slate-900 text-sm truncate">{previewPost.title}</p>
+              </div>
+              <button onClick={() => setPreviewPost(null)} className="text-slate-400 hover:text-slate-700 ml-3 shrink-0">
+                <X size={18} />
+              </button>
             </div>
-          ))}
+            {!!previewPost.excerpt && (
+              <div className="px-4 py-2 bg-slate-50 border-b border-slate-100">
+                <p className="text-xs text-slate-500 italic">{previewPost.excerpt}</p>
+              </div>
+            )}
+            <div
+              className="flex-1 overflow-y-auto p-5 text-sm text-slate-700 [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:text-base [&_h2]:mt-5 [&_h2]:mb-2 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_li]:mb-1"
+              dangerouslySetInnerHTML={{ __html: previewPost.content }}
+            />
+            <div className="p-4 border-t border-slate-100 flex justify-end gap-2">
+              {previewPost.status === "draft" && (
+                <button
+                  onClick={() => { updatePostStatus(previewPost.id, "published"); setPreviewPost(null); }}
+                  className="text-sm bg-green-600 text-white px-4 py-1.5 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Publier cet article
+                </button>
+              )}
+              <button onClick={() => setPreviewPost(null)} className="text-sm text-slate-500 hover:text-slate-800 px-4 py-1.5 rounded-lg transition-colors">
+                Fermer
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

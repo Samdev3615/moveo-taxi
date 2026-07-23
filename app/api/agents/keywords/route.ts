@@ -3,6 +3,8 @@ import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
 
+export const maxDuration = 300;
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -10,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [enAirport, frAirport, ruAirport, heAirport, enIntercity, heIntercity, longTailFr, longTailRu] = await Promise.all([
+    const [enAirport, frAirport, ruAirport, heAirport, enIntercity, heIntercity, longTailFr, longTailRu, esAirport, esIntercity] = await Promise.all([
       serperSearch("taxi Ben Gurion airport Tel Aviv", { gl: "il", hl: "en", num: 8 }),
       serperSearch("taxi aéroport Ben Gourion", { gl: "il", hl: "fr", num: 8 }),
       serperSearch("такси аэропорт Бен Гурион", { gl: "il", hl: "ru", num: 5 }),
@@ -19,6 +21,8 @@ export async function GET(req: NextRequest) {
       serperSearch("מונית פרטית ירושלים תל אביב", { gl: "il", hl: "iw", num: 5 }),
       serperSearch("taxi pas cher Eilat depuis Tel Aviv", { gl: "il", hl: "fr", num: 5 }),
       serperSearch("такси Израиль туристы цена", { gl: "il", hl: "ru", num: 5 }),
+      serperSearch("taxi privado aeropuerto Israel Ben Gurion", { gl: "es", hl: "es", num: 5 }),
+      serperSearch("taxi Tel Aviv precio reservar online", { gl: "es", hl: "es", num: 5 }),
     ]);
 
     const searchContext = `
@@ -47,6 +51,12 @@ ${formatResults(longTailFr)}
 
 [RU] такси Израиль туристы:
 ${formatResults(longTailRu)}
+
+[ES] taxi privado aeropuerto Israel:
+${formatResults(esAirport)}
+
+[ES] taxi Tel Aviv precio:
+${formatResults(esIntercity)}
 `;
 
     const msg = await anthropic.messages.create({
@@ -87,9 +97,10 @@ Minimum 6 mots-clés par catégorie. Base-toi sur ce que tu vois RÉELLEMENT dan
 
     const textBlock = msg.content.find((b) => b.type === "text");
     const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON in response");
-    const content = JSON.parse(match[0]);
+    const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
+    const jsonStr = match ? (match[1] ?? match[0]) : null;
+    if (!jsonStr) throw new Error("No JSON in response");
+    const content = JSON.parse(jsonStr);
 
     const totalKeywords =
       (content.high_intent?.length ?? 0) +
@@ -106,6 +117,14 @@ Minimum 6 mots-clés par catégorie. Base-toi sur ce que tu vois RÉELLEMENT dan
     return NextResponse.json({ success: true, total: totalKeywords });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    try {
+      await supabaseAdmin.from("seo_reports").insert({
+        agent: "keywords",
+        title: "Erreur recherche mots-clés",
+        summary: msg.slice(0, 300),
+        content: { error: true, message: msg },
+      });
+    } catch (_) { /* ignore */ }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

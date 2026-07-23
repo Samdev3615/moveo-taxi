@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   if (type === "posts") {
     const { data, error } = await supabaseAdmin
       .from("blog_posts")
-      .select("id, slug, locale, title, excerpt, topic, status, created_at")
+      .select("id, slug, locale, title, excerpt, content, topic, status, created_at")
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -88,10 +88,13 @@ Structure actuelle du site (implémentée) :
 - Sitemap.xml soumis à Google Search Console
 - noindex sur /confirmation/*
 
+CE QUI EST IMPLÉMENTÉ :
+- Schema.org JSON-LD (LocalBusiness + TaxiService) ✅ dans app/[locale]/layout.tsx
+- Google Business Profile ✅ créé et vérifié (en attente validation vidéo Google)
+
 CE QUI MANQUE (identifié précédemment) :
-- Schema.org JSON-LD (LocalBusiness + TaxiService + FAQPage)
-- Blog / section contenu
-- Google Business Profile
+- Blog / section contenu (articles générés mais non publiés)
+- FAQPage Schema.org
 - Liens internes entre pages routes
 
 En te basant sur les VRAIES données Google fournies, fais un audit SEO complet.
@@ -144,6 +147,14 @@ Retourne UNIQUEMENT un JSON valide en français :
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    try {
+      await supabaseAdmin.from("seo_reports").insert({
+        agent: "auditor",
+        title: "Erreur audit SEO",
+        summary: msg.slice(0, 300),
+        content: { error: true, message: msg },
+      });
+    } catch (_) { /* ignore */ }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

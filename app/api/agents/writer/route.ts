@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { anthropic, MODEL } from "@/lib/anthropic";
+import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
+
+export const maxDuration = 300;
 
 const TOPICS = [
   { slug: "taxi-aeroport-ben-gourion", topic: "taxi transfers from Ben Gurion Airport to Israeli cities" },
@@ -33,7 +35,7 @@ function getWeekTopic() {
 
 async function generateForLocale(topic: string, slug: string, locale: string, lang: string) {
   const msg = await anthropic.messages.create({
-    model: MODEL,
+    model: MODEL_SONNET,
     max_tokens: 1500,
     messages: [{
       role: "user",
@@ -59,9 +61,10 @@ Requirements:
 
   const textBlock = msg.content.find((b) => b.type === "text");
   const text = textBlock && textBlock.type === "text" ? textBlock.text : "";
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error(`No JSON for ${locale}`);
-  const parsed = JSON.parse(match[0]);
+  const match = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
+  const jsonStr = match ? (match[1] ?? match[0]) : null;
+  if (!jsonStr) throw new Error(`No JSON for ${locale}`);
+  const parsed = JSON.parse(jsonStr);
 
   return {
     slug: `${slug}-${locale}`,
@@ -108,6 +111,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: true, slug, generated: posts.length });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    try {
+      await supabaseAdmin.from("seo_reports").insert({
+        agent: "writer",
+        title: "Erreur rédacteur",
+        summary: msg.slice(0, 300),
+        content: { error: true, message: msg },
+      });
+    } catch (_) { /* ignore */ }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
