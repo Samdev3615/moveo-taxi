@@ -20,6 +20,15 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-server";
+
+const BLOG_LABELS: Record<string, { sectionTitle: string; viewAll: string; readMore: string }> = {
+  fr: { sectionTitle: "Nos derniers articles", viewAll: "Voir tous les articles", readMore: "Lire" },
+  en: { sectionTitle: "Latest articles",       viewAll: "View all articles",      readMore: "Read" },
+  he: { sectionTitle: "המאמרים האחרונים",       viewAll: "כל המאמרים",             readMore: "קרא" },
+  ru: { sectionTitle: "Последние статьи",      viewAll: "Все статьи",             readMore: "Читать" },
+  es: { sectionTitle: "Últimos artículos",     viewAll: "Ver todos los artículos", readMore: "Leer" },
+};
 
 const POPULAR_ROUTE_DEFS = [
   {
@@ -63,6 +72,15 @@ export default async function HomePage() {
   const tFAQ = await getTranslations("faq");
   const steps = tHIW.raw("steps") as Array<{ num: string; title: string; desc: string }>;
   const faqItems = tFAQ.raw("items") as Array<{ q: string; a: string }>;
+
+  // Derniers articles publiés pour la section blog
+  const { data: latestPosts } = await supabaseAdmin
+    .from("blog_posts")
+    .select("slug, title, excerpt, created_at")
+    .eq("locale", locale)
+    .eq("status", "published")
+    .order("created_at", { ascending: false })
+    .limit(3);
 
   // Chargement des vrais prix depuis la base
   const { data: priceRows } = await supabase
@@ -301,6 +319,41 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ─── BLOG ──────────────────────────────────────────────── */}
+      {latestPosts && latestPosts.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {BLOG_LABELS[locale]?.sectionTitle}
+              </h2>
+              <Link
+                href={`/${locale}/blog`}
+                className="text-[#16A34A] text-sm font-semibold hover:underline flex items-center gap-1"
+              >
+                {BLOG_LABELS[locale]?.viewAll}
+                <span className="rtl:hidden">→</span>
+                <span className="ltr:hidden">←</span>
+              </Link>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {latestPosts.map((post) => {
+                const urlSlug = post.slug.replace(new RegExp(`-${locale}$`), "");
+                return (
+                  <BlogPostCard
+                    key={post.slug}
+                    post={post}
+                    urlSlug={urlSlug}
+                    locale={locale}
+                    readMore={BLOG_LABELS[locale]?.readMore ?? "→"}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       <Footer />
       <WhatsAppButton />
     </div>
@@ -347,6 +400,44 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         {a}
       </div>
     </details>
+  );
+}
+
+function BlogPostCard({
+  post,
+  urlSlug,
+  locale,
+  readMore,
+}: {
+  post: { title: string; excerpt: string | null; created_at: string };
+  urlSlug: string;
+  locale: string;
+  readMore: string;
+}) {
+  const date = new Date(post.created_at).toLocaleDateString(
+    locale === "he" ? "he-IL" : locale === "ru" ? "ru-RU" : locale === "es" ? "es-ES" : locale === "fr" ? "fr-FR" : "en-GB",
+    { day: "numeric", month: "long" }
+  );
+  return (
+    <Link
+      href={`/${locale}/blog/${urlSlug}`}
+      className="group bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col gap-3"
+    >
+      <span className="text-xs text-gray-400">{date}</span>
+      <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-[#16A34A] transition-colors line-clamp-2">
+        {post.title}
+      </h3>
+      {post.excerpt && (
+        <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 flex-1">
+          {post.excerpt}
+        </p>
+      )}
+      <span className="text-sm font-semibold text-[#16A34A] flex items-center gap-1 mt-auto">
+        {readMore}
+        <span className="rtl:hidden">→</span>
+        <span className="ltr:hidden">←</span>
+      </span>
+    </Link>
   );
 }
 
