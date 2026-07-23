@@ -8,10 +8,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
+  const BASE = "https://www.moveotaxi.com";
   return {
     title: t("routes.title"),
     description: t("routes.description"),
-    alternates: { canonical: `https://www.moveotaxi.com/${locale}/routes` },
+    alternates: {
+      canonical: `${BASE}/${locale}/routes`,
+      languages: {
+        he: `${BASE}/he/routes`,
+        en: `${BASE}/en/routes`,
+        fr: `${BASE}/fr/routes`,
+        ru: `${BASE}/ru/routes`,
+        es: `${BASE}/es/routes`,
+        "x-default": `${BASE}/he/routes`,
+      },
+    },
   };
 }
 import Link from "next/link";
@@ -63,7 +74,7 @@ export default async function RoutesPage() {
       <section className="py-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {ROUTE_PAIRS.map((route, i) => {
+            {ROUTE_PAIRS.map((route) => {
               const sedanPrice = getPrice(route.from, route.to, "sedan");
               const minibusPrice = getPrice(route.from, route.to, "minibus");
               if (!sedanPrice) return null;
@@ -80,11 +91,8 @@ export default async function RoutesPage() {
                   (r.from === route.to && r.to === route.from)
               );
 
-              return (
-                <div
-                  key={i}
-                  className="bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all group"
-                >
+              const cardBody = (
+                <>
                   {/* Route header */}
                   <div className="flex items-center gap-2 mb-4">
                     <div className="flex-1">
@@ -104,7 +112,7 @@ export default async function RoutesPage() {
                   </div>
 
                   {/* Prices */}
-                  <div className="bg-gray-50 rounded-xl p-3 mb-4 space-y-2">
+                  <div className="bg-gray-50 rounded-xl p-3 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">{t("booking.form.vehicles.sedan")}</span>
                       <span className="font-black text-[#F5922A]" dir="ltr">₪{sedanPrice}</span>
@@ -116,23 +124,32 @@ export default async function RoutesPage() {
                       </div>
                     )}
                   </div>
+                </>
+              );
 
-                  <div className="flex gap-2">
+              return (
+                <div
+                  key={`${route.from}-${route.to}`}
+                  className="bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col"
+                >
+                  {landingPage ? (
+                    <Link
+                      href={`/${locale}/route/${landingPage.slug}`}
+                      className="flex-1 p-5 block"
+                    >
+                      {cardBody}
+                    </Link>
+                  ) : (
+                    <div className="flex-1 p-5">{cardBody}</div>
+                  )}
+
+                  <div className="px-5 pb-5">
                     <Link
                       href={`/${locale}/booking?${bookingParams.toString()}`}
-                      className="flex-1 bg-[#1B7A3C] text-white text-center py-2.5 rounded-xl text-sm font-semibold hover:bg-[#145F2E] transition-colors"
+                      className="block bg-[#1B7A3C] text-white text-center py-2.5 rounded-xl text-sm font-semibold hover:bg-[#145F2E] transition-colors"
                     >
                       {t("routes.book")}
                     </Link>
-                    {landingPage && (
-                      <Link
-                        href={`/${locale}/route/${landingPage.slug}`}
-                        className="px-3 py-2.5 border border-gray-200 rounded-xl text-xs text-gray-500 hover:border-[#1B7A3C] hover:text-[#1B7A3C] transition-colors"
-                        title={t("routes.more_info")}
-                      >
-                        +
-                      </Link>
-                    )}
                   </div>
                 </div>
               );

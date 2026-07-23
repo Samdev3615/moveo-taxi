@@ -30,10 +30,31 @@ export async function generateMetadata({
   const tb = await getTranslations({ locale, namespace: "booking" });
   const fromName = tb(`form.cities.${route.from}`);
   const toName = tb(`form.cities.${route.to}`);
+  const sedanPrice = getPrice(route.from, route.to, "sedan");
+
+  const fixedPriceLabel: Record<string, string> = {
+    fr: "prix fixe",
+    en: "fixed price",
+    he: "מחיר קבוע",
+    ru: "фиксированная цена",
+    es: "precio fijo",
+  };
+
+  const descByLocale: Record<string, string> = {
+    fr: `Taxi privé ${fromName} → ${toName}${sedanPrice ? ` au prix fixe de ₪${sedanPrice}` : ""}. Aucun compteur, chauffeurs professionnels. Réservation en ligne 24h/24.`,
+    en: `Private taxi ${fromName} to ${toName}${sedanPrice ? ` at fixed price ₪${sedanPrice}` : ""}. No meter, professional drivers. Book online 24/7.`,
+    he: `מונית פרטית ${fromName} → ${toName}${sedanPrice ? ` במחיר קבוע ₪${sedanPrice}` : ""}. ללא מד מרחק. הזמנה אונליין 24/7.`,
+    ru: `Частное такси ${fromName} → ${toName}${sedanPrice ? ` по фиксированной цене ₪${sedanPrice}` : ""}. Без счётчика. Бронирование онлайн 24/7.`,
+    es: `Taxi privado ${fromName} → ${toName}${sedanPrice ? ` a precio fijo ₪${sedanPrice}` : ""}. Sin taxímetro. Reserva online 24/7.`,
+  };
+
+  const title = sedanPrice
+    ? `Taxi ${fromName} → ${toName} — ₪${sedanPrice} ${fixedPriceLabel[locale] ?? "fixed price"} | Moveo Taxi`
+    : tp("meta_title", { from: fromName, to: toName });
 
   return {
-    title: tp("meta_title", { from: fromName, to: toName }),
-    description: tp("meta_desc", { from: fromName, to: toName }),
+    title,
+    description: descByLocale[locale] ?? tp("meta_desc", { from: fromName, to: toName }),
     alternates: {
       canonical: `${BASE_URL}/${locale}/route/${slug}`,
       languages: {
@@ -99,9 +120,48 @@ export default async function RouteSlugPage({
     },
   ];
 
+  const routesLabel: Record<string, string> = {
+    fr: "Toutes les routes", en: "All routes", he: "כל המסלולים", ru: "Все маршруты", es: "Todas las rutas",
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": { "@type": "Answer", "text": faq.a },
+    })),
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Moveo Taxi", "item": `${BASE_URL}/${locale}` },
+      { "@type": "ListItem", "position": 2, "name": routesLabel[locale] ?? "Routes", "item": `${BASE_URL}/${locale}/routes` },
+      { "@type": "ListItem", "position": 3, "name": `${fromName} → ${toName}`, "item": `${BASE_URL}/${locale}/route/${slug}` },
+    ],
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <Navbar />
+
+      {/* Breadcrumb */}
+      <nav className="bg-white border-b border-gray-100 py-3" aria-label="breadcrumb">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ol className="flex items-center gap-2 text-sm text-gray-400 flex-wrap" dir="ltr">
+            <li><Link href={`/${locale}`} className="hover:text-gray-600 transition-colors">Moveo Taxi</Link></li>
+            <li aria-hidden="true">/</li>
+            <li><Link href={`/${locale}/routes`} className="hover:text-gray-600 transition-colors">{routesLabel[locale] ?? "Routes"}</Link></li>
+            <li aria-hidden="true">/</li>
+            <li className="text-gray-900 font-medium" aria-current="page">{fromName} → {toName}</li>
+          </ol>
+        </div>
+      </nav>
 
       {/* Hero */}
       <section className="bg-gradient-to-br from-gray-50 to-white py-14 lg:py-20">

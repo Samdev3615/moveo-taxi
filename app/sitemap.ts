@@ -21,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const page of pages) {
       entries.push({
         url: `${BASE_URL}/${locale}${page.path}`,
-        lastModified: new Date("2026-07-07"),
+        lastModified: new Date(),
         changeFrequency: page.changeFrequency,
         priority: page.priority,
       });
@@ -30,9 +30,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     for (const route of ROUTE_PAGES) {
       entries.push({
         url: `${BASE_URL}/${locale}/route/${route.slug}`,
-        lastModified: new Date("2026-07-07"),
+        lastModified: new Date(),
         changeFrequency: "monthly" as const,
-        priority: 0.8,
+        priority: 0.85,
       });
     }
   }
