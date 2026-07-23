@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X } from "lucide-react";
+import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X, Trash2 } from "lucide-react";
 
 type Report = {
   id: string;
@@ -553,6 +553,7 @@ export default function AdminSeoPage() {
   const [localeFilter, setLocaleFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "published" | "archived">("all");
   const [previewPost, setPreviewPost] = useState<BlogPost | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -583,6 +584,13 @@ export default function AdminSeoPage() {
   async function updatePostStatus(id: string, status: "published" | "archived") {
     await fetch(`/api/admin/seo-data?type=post-status&id=${id}&status=${status}`, { method: "POST" });
     setPosts((prev) => prev.map((p) => p.id === id ? { ...p, status } : p));
+  }
+
+  async function deletePost(id: string) {
+    await fetch(`/api/admin/seo-data?type=delete-post&id=${id}`, { method: "POST" });
+    setPosts((prev) => prev.filter((p) => p.id !== id));
+    setConfirmDelete(null);
+    if (previewPost?.id === id) setPreviewPost(null);
   }
 
   const unreadCount = reports.filter((r) => r.status === "unread").length;
@@ -753,10 +761,20 @@ export default function AdminSeoPage() {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${p.status === "published" ? "bg-green-100 text-green-700" : p.status === "draft" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"}`}>
                           {p.status === "published" ? "Publié" : p.status === "draft" ? "Brouillon" : "Archivé"}
                         </span>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
                           <button onClick={() => setPreviewPost(p)} className="text-xs text-slate-500 hover:text-slate-900 underline underline-offset-2 transition-colors">Aperçu</button>
                           {p.status === "draft" && <button onClick={() => updatePostStatus(p.id, "published")} className="text-xs bg-green-600 text-white px-2.5 py-1 rounded-lg hover:bg-green-700 transition-colors">Publier</button>}
                           {p.status === "published" && <button onClick={() => updatePostStatus(p.id, "archived")} className="text-xs text-slate-400 hover:text-slate-700 transition-colors">Archiver</button>}
+                          {confirmDelete === p.id ? (
+                            <span className="flex gap-1 items-center">
+                              <button onClick={() => deletePost(p.id)} className="text-xs bg-red-600 text-white px-2 py-1 rounded-lg hover:bg-red-700 transition-colors">Confirmer</button>
+                              <button onClick={() => setConfirmDelete(null)} className="text-xs text-slate-400 hover:text-slate-700 transition-colors">Annuler</button>
+                            </span>
+                          ) : (
+                            <button onClick={() => setConfirmDelete(p.id)} className="text-slate-300 hover:text-red-500 transition-colors" title="Supprimer">
+                              <Trash2 size={13} />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

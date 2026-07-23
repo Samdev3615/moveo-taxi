@@ -62,5 +62,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
+  if (type === "delete-post" && id) {
+    const { error } = await supabaseAdmin
+      .from("blog_posts")
+      .delete()
+      .eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
   return NextResponse.json({ error: "Invalid type" }, { status: 400 });
 }
