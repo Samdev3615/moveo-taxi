@@ -79,8 +79,9 @@ ${formatResults(esIntercity)}
                   volume: { type: "string" as const, enum: ["high", "medium", "low"] },
                   competition: { type: "string" as const, enum: ["high", "medium", "low"] },
                   opportunity: { type: "string" as const },
+                  confidence: { type: "string" as const, enum: ["high", "medium", "low"] },
                 },
-                required: ["keyword", "locale", "volume", "competition", "opportunity"],
+                required: ["keyword", "locale", "volume", "competition", "opportunity", "confidence"],
               },
             },
             informational: {
@@ -91,8 +92,9 @@ ${formatResults(esIntercity)}
                   keyword: { type: "string" as const },
                   locale: { type: "string" as const },
                   content_angle: { type: "string" as const },
+                  confidence: { type: "string" as const, enum: ["high", "medium", "low"] },
                 },
-                required: ["keyword", "locale", "content_angle"],
+                required: ["keyword", "locale", "content_angle", "confidence"],
               },
             },
             long_tail: {
@@ -104,8 +106,9 @@ ${formatResults(esIntercity)}
                   locale: { type: "string" as const },
                   difficulty: { type: "string" as const, enum: ["low", "medium"] },
                   opportunity: { type: "string" as const },
+                  confidence: { type: "string" as const, enum: ["high", "medium", "low"] },
                 },
-                required: ["keyword", "locale", "difficulty", "opportunity"],
+                required: ["keyword", "locale", "difficulty", "opportunity", "confidence"],
               },
             },
             hebrew_specific: {
@@ -141,6 +144,7 @@ ${searchContext}
 En analysant ces résultats réels (titres, snippets, sites qui rankent, "People also ask"), identifie les meilleures opportunités de mots-clés pour Moveo Taxi.
 
 Minimum 6 mots-clés par catégorie. Base-toi sur ce que tu vois RÉELLEMENT dans les résultats Google fournis.
+Pour le champ "confidence" : "high" = mot-clé explicitement présent dans plusieurs titres/snippets des résultats ci-dessus ; "medium" = inféré des résultats ; "low" = estimation basée sur ta connaissance du marché.
 Appelle l'outil save_keywords avec tes résultats.`,
       }],
     });

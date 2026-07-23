@@ -7,6 +7,43 @@ export const maxDuration = 300;
 
 type ReportRow = { content: Record<string, unknown>; created_at: string; title: string };
 
+async function getBookingStats() {
+  const since = new Date();
+  since.setDate(since.getDate() - 30);
+  const { data } = await supabaseAdmin
+    .from("bookings")
+    .select("from_city, to_city, trip_type, vehicle_type, price_estimate, status")
+    .gte("created_at", since.toISOString());
+
+  if (!data || data.length === 0) return null;
+
+  const confirmed = data.filter((b) => b.status === "confirmed" || b.status === "completed").length;
+  const revenue = data.reduce((s, b) => s + (Number(b.price_estimate) || 0), 0);
+
+  const routeCounts: Record<string, number> = {};
+  data.forEach((b) => {
+    const key = `${b.from_city} → ${b.to_city}`;
+    routeCounts[key] = (routeCounts[key] || 0) + 1;
+  });
+  const topRoutes = Object.entries(routeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([route, count]) => ({ route, count }));
+
+  return {
+    periode: "30 derniers jours",
+    total_reservations: data.length,
+    confirmees: confirmed,
+    taux_confirmation: data.length ? `${Math.round((confirmed / data.length) * 100)}%` : "0%",
+    revenu_estime_nis: Math.round(revenue),
+    sedans: data.filter((b) => b.vehicle_type === "sedan").length,
+    minibus: data.filter((b) => b.vehicle_type === "minibus").length,
+    aeroport: data.filter((b) => b.trip_type === "airport").length,
+    intercite: data.filter((b) => b.trip_type === "intercity").length,
+    top_routes: topRoutes,
+  };
+}
+
 async function getLatestGoodReport(agent: string): Promise<ReportRow | null> {
   const { data } = await supabaseAdmin
     .from("seo_reports")
@@ -28,11 +65,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [competitor, auditor, keywords, writer] = await Promise.all([
+    const [competitor, auditor, keywords, writer, localSeo, bookingStats] = await Promise.all([
       getLatestGoodReport("competitor"),
       getLatestGoodReport("auditor"),
       getLatestGoodReport("keywords"),
       getLatestGoodReport("writer"),
+      getLatestGoodReport("local-seo"),
+      getBookingStats(),
     ]);
 
     const sections = [
@@ -40,10 +79,12 @@ export async function GET(req: NextRequest) {
       auditor    ? `=== RAPPORT AUDIT SEO (${auditor.created_at.slice(0, 10)})\nTitre: ${auditor.title}\n${JSON.stringify(auditor.content, null, 2)}` : null,
       keywords   ? `=== RAPPORT MOTS-CLÉS (${keywords.created_at.slice(0, 10)})\nTitre: ${keywords.title}\n${JSON.stringify(keywords.content, null, 2)}` : null,
       writer     ? `=== RAPPORT RÉDACTEUR (${writer.created_at.slice(0, 10)})\nTitre: ${writer.title}\n${JSON.stringify(writer.content, null, 2)}` : null,
+      localSeo   ? `=== RAPPORT SEO LOCAL / GBP (${localSeo.created_at.slice(0, 10)})\nTitre: ${localSeo.title}\n${JSON.stringify(localSeo.content, null, 2)}` : null,
+      bookingStats ? `=== DONNÉES RÉSERVATIONS (${bookingStats.periode})\n${JSON.stringify(bookingStats, null, 2)}` : null,
     ].filter(Boolean);
 
     if (sections.length === 0) {
-      throw new Error("Aucun rapport disponible. Lance d'abord au moins un autre agent (Concurrent, Mots-clés, Auditeur ou Rédacteur).");
+      throw new Error("Aucun rapport disponible et aucune réservation trouvée. Lance d'abord au moins un agent SEO.");
     }
 
     const availableReports = sections.join("\n\n");
@@ -96,6 +137,7 @@ export async function GET(req: NextRequest) {
             },
             opportunite_rapide: { type: "string" as const },
             alerte: { type: "string" as const },
+            conversion_insights: { type: "string" as const },
             plan_30_jours: {
               type: "array" as const,
               items: {

@@ -392,6 +392,89 @@ Après génération et lecture du plan de David (Score SEO actuel 25/100 → pot
 
 ---
 
+## 2026-07-23 (suite 2) — Audit ChatGPT/Gemini : corrections et nouveaux agents
+
+### Faits commerciaux confirmés (propriétaire, 2026-07-23)
+- ✅ **VRAI** : 800+ chauffeurs partenaires actifs
+- ✅ **VRAI** : Chauffeurs anciens militaires (IDF veterans / ותיקי צה"ל)
+- ✅ **VRAI** : 30% moins cher que les tarifs officiels du ministère des transports
+- ❌ **FAUX** : "depuis 2015" — supprimé de toutes les traductions
+- ❌ **FAUX** : "50 000+ trajets" — chiffre non réel, supprimé
+
+### Priorité #1 — Page About (corrections affirmations commerciales)
+**Fichiers modifiés** : `messages/en.json`, `fr.json`, `he.json`, `ru.json`, `es.json` + `app/[locale]/about/page.tsx`
+
+- `about.subtitle` : supprimé "depuis 2015" dans les 5 langues
+- `meta.about.description` : supprimé "depuis 2015" + "50 000+ trips", ajouté mention "anciens militaires"
+- **Stats About page** : clés `stats.clients` / `stats.trips` / `stats.safety` n'existaient pas (bug silencieux). Remplacées par clés existantes et exactes :
+  - "25 000+ clients" (faux) → "24/7" (`stats.available`)
+  - "50 000+ trajets" (faux) → "5" (`stats.languages`)
+  - "100% sécurité" (clé manquante) → "0%" (`stats.noHiddenFees`)
+
+### Priorité #2 — Cohérence "prix fixe garanti" vs "estimation"
+Analyse : la clé `booking.price.estimate` existe dans les traductions mais n'est utilisée nulle part dans l'UI client. `BookingForm` affiche le montant brut ₪ sans label. "Sur devis" n'apparaît que pour les routes sans prix fixe. Aucun changement nécessaire.
+
+### Priorité #3 — David Levi : données de réservation en temps réel
+**Fichier modifié** : `app/api/agents/orchestrator/route.ts`
+- Nouvelle fonction `getBookingStats()` : requête Supabase sur les 30 derniers jours
+  - Total réservations, confirmées, taux de confirmation
+  - Revenu estimé (NIS), split sedan/minibus, split aéroport/intercités
+  - Top 5 routes par volume de réservations
+- Injecté dans le prompt de David comme `=== DONNÉES RÉSERVATIONS (30 derniers jours) ===`
+- Nouveau champ `conversion_insights` dans le schema tool_use de David
+
+### Priorité #4 — Sitemap : vraies dates de modification
+**Fichier modifié** : `app/sitemap.ts`
+- Avant : `lastModified: new Date()` (= aujourd'hui à chaque déploiement = trompeur pour Google)
+- Après : dates statiques par page reflétant la vraie dernière modification
+  - Homepage, /routes, /taxi-eilat, /about : 2026-07-23 (modifiées aujourd'hui)
+  - /airport, /booking, /drivers, /contact : dates historiques fixes
+  - Pages routes individuelles : 2026-07-23 (TaxiService JSON-LD ajouté)
+- `changeFrequency` "daily" → "weekly" (homepage), "weekly" → "monthly" (routes)
+
+### Priorité #5 — TaxiService JSON-LD avec prix sur chaque page route
+**Fichier modifié** : `app/[locale]/route/[slug]/page.tsx`
+- Ajout d'un 3ème bloc `<script type="application/ld+json">` : schema `Service` / `serviceType: "TaxiService"`
+- Inclut : `offers[]` avec prix Sedan (NIS) + Minibus si disponible, `priceCurrency: "ILS"`, `availability: "InStock"`
+- `provider` : Moveo Taxi avec téléphone + URL + areaServed
+- `availableLanguage` : 5 langues listées
+
+### Priorité #6 — Champ `confidence` chez Rafi (mots-clés)
+**Fichier modifié** : `app/api/agents/keywords/route.ts`
+- Nouveau champ `confidence` (high/medium/low) ajouté dans les 3 catégories de mots-clés : `high_intent`, `informational`, `long_tail`
+- Prompt enrichi : définition explicite des niveaux ("high" = présent explicitement dans les résultats Google, "medium" = inféré, "low" = estimation marché)
+- Permet à David de distinguer les recommandations basées sur des données réelles vs estimations
+
+### Priorité #7 — Nouvel agent Noam Ben-David (SEO Local & Réputation)
+**Fichiers créés** : `app/api/agents/local-seo/route.ts`
+**Fichiers modifiés** : `app/api/admin/trigger-agent/route.ts`, `app/admin/seo/page.tsx`, `supabase/seo-agency.sql`
+
+Noam surveille :
+- Mentions de la marque "Moveo Taxi" en ligne (Serper)
+- Paysage des avis taxi Israël (TripAdvisor, Viator, GetYourGuide, LonelyPlanet)
+- Opportunités backlinks (blogs voyage, sites touristiques)
+- GBP concurrents (Gett, Yango)
+- Génère un **template WhatsApp** de demande d'avis après course
+
+Schema tool_use : `brand_presence`, `opportunites_backlinks`, `sites_avis_a_viser`, `concurrents_gbp`, `recommandations_gbp`, `template_demande_avis`, `top_actions`, `insight`
+
+Ajouté au panel admin avec composant `LocalSeoDetail`, icône `MapPin`, couleur teal.
+David (orchestrateur) lit maintenant aussi le rapport de Noam.
+
+**⚠️ ACTION REQUISE** : Exécuter en SQL Supabase :
+```sql
+ALTER TABLE seo_reports DROP CONSTRAINT IF EXISTS seo_reports_agent_check;
+ALTER TABLE seo_reports ADD CONSTRAINT seo_reports_agent_check 
+  CHECK (agent IN ('competitor', 'auditor', 'keywords', 'writer', 'orchestrator', 'local-seo'));
+```
+
+**⚠️ IMAGE MANQUANTE** : Ajouter `public/images/team-noam.png` (photo du personnage Noam)
+
+### Priorité #8 — Sophie enrichit les pages routes (différé Phase 3)
+Nécessite architecture dynamique (ISR + table `route_content` Supabase). Reporté.
+
+---
+
 ## Décisions d'architecture
 
 | Décision | Raison |

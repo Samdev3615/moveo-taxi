@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 
 CREATE TABLE IF NOT EXISTS seo_reports (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  agent TEXT NOT NULL CHECK (agent IN ('competitor', 'auditor', 'keywords', 'writer', 'orchestrator')),
+  agent TEXT NOT NULL CHECK (agent IN ('competitor', 'auditor', 'keywords', 'writer', 'orchestrator', 'local-seo')),
   title TEXT NOT NULL,
   summary TEXT,
   content JSONB NOT NULL DEFAULT '{}',

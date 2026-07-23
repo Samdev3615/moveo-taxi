@@ -71,9 +71,9 @@ export default async function AboutPage() {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { value: "800+", label: t("stats.drivers"), color: "text-[#1B7A3C]" },
-                { value: "25 000+", label: t("stats.clients"), color: "text-[#F5922A]" },
-                { value: "50 000+", label: t("stats.trips"), color: "text-[#1B7A3C]" },
-                { value: "100%", label: t("stats.safety"), color: "text-[#F5922A]" },
+                { value: "24/7", label: t("stats.available"), color: "text-[#F5922A]" },
+                { value: "5", label: t("stats.languages"), color: "text-[#1B7A3C]" },
+                { value: "0%", label: t("stats.noHiddenFees"), color: "text-[#F5922A]" },
               ].map((stat) => (
                 <div key={stat.label} className="bg-gray-50 rounded-2xl p-5 text-center">
                   <div className={`text-2xl font-black mb-1 ${stat.color}`} dir="ltr">

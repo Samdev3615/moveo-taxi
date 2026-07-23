@@ -144,10 +144,46 @@ export default async function RouteSlugPage({
     ],
   };
 
+  const taxiServiceOffers = [
+    ...(sedanPrice ? [{
+      "@type": "Offer",
+      "name": "Sedan",
+      "price": sedanPrice,
+      "priceCurrency": "ILS",
+      "availability": "https://schema.org/InStock",
+    }] : []),
+    ...(minibusPrice ? [{
+      "@type": "Offer",
+      "name": "Minibus / Van",
+      "price": minibusPrice,
+      "priceCurrency": "ILS",
+      "availability": "https://schema.org/InStock",
+    }] : []),
+  ];
+
+  const taxiServiceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "TaxiService",
+    "name": `Taxi ${fromName} → ${toName}`,
+    "url": `${BASE_URL}/${locale}/route/${slug}`,
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Moveo Taxi",
+      "telephone": "+972-54-310-0044",
+      "url": BASE_URL,
+      "areaServed": "Israel",
+    },
+    "areaServed": [fromName, toName],
+    "availableLanguage": ["Hebrew", "English", "French", "Russian", "Spanish"],
+    ...(taxiServiceOffers.length > 0 ? { "offers": taxiServiceOffers } : {}),
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(taxiServiceSchema) }} />
       <Navbar />
 
       {/* Breadcrumb */}

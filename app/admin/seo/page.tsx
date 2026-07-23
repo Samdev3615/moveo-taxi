@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X, Trash2 } from "lucide-react";
+import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X, Trash2, MapPin } from "lucide-react";
 
 type Report = {
   id: string;
-  agent: "competitor" | "auditor" | "keywords" | "writer" | "orchestrator";
+  agent: "competitor" | "auditor" | "keywords" | "writer" | "orchestrator" | "local-seo";
   title: string;
   summary: string;
   content: Record<string, unknown>;
@@ -37,6 +37,7 @@ const AGENT_ICONS: Record<string, React.ReactNode> = {
   auditor: <TrendingUp size={16} />,
   keywords: <Search size={16} />,
   orchestrator: <Layers size={16} />,
+  "local-seo": <MapPin size={16} />,
 };
 
 const AGENT_COLORS: Record<string, string> = {
@@ -45,6 +46,7 @@ const AGENT_COLORS: Record<string, string> = {
   auditor: "bg-purple-100 text-purple-700",
   keywords: "bg-green-100 text-green-700",
   orchestrator: "bg-indigo-100 text-indigo-700",
+  "local-seo": "bg-teal-100 text-teal-700",
 };
 
 const AGENT_LABELS: Record<string, string> = {
@@ -53,6 +55,7 @@ const AGENT_LABELS: Record<string, string> = {
   auditor: "Auditeur",
   keywords: "Mots-clés",
   orchestrator: "Orchestrateur",
+  "local-seo": "SEO Local",
 };
 
 const TEAM: Record<string, { name: string; role: string; avatar: string; color: string }> = {
@@ -61,6 +64,7 @@ const TEAM: Record<string, { name: string; role: string; avatar: string; color: 
   auditor:      { name: "Maya Cohen",      role: "Auditrice SEO Technique",         avatar: "/images/team-maya.png",     color: "border-purple-200" },
   keywords:     { name: "Rafi Shapira",    role: "Expert Mots-clés & Tendances",   avatar: "/images/team-rafi.png",     color: "border-green-200" },
   orchestrator: { name: "David Levi",      role: "Orchestrateur Stratégique",       avatar: "/images/team-david.png",    color: "border-indigo-200" },
+  "local-seo":  { name: "Noam Ben-David", role: "Expert SEO Local & Réputation",   avatar: "/images/team-noam.png",     color: "border-teal-200" },
 };
 
 const FLAG: Record<string, string> = {
@@ -531,12 +535,94 @@ function WriterDetail({ c }: { c: Record<string, unknown> }) {
   );
 }
 
+// ── SEO Local ─────────────────────────────────────────────────────────────────
+function LocalSeoDetail({ c }: { c: Record<string, unknown> }) {
+  if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
+  const bp = c.brand_presence as Record<string, unknown> | undefined;
+  const backlinks = a(c.opportunites_backlinks).map(asStr);
+  const avis = a(c.sites_avis_a_viser).map(asStr);
+  const topActions = a(c.top_actions).map(asStr);
+  const recoGbp = a(c.recommandations_gbp).map(String);
+  const template = s(c.template_demande_avis);
+
+  const impactColor: Record<string, string> = {
+    haute: "bg-red-50 text-red-700 border-red-100",
+    moyenne: "bg-amber-50 text-amber-700 border-amber-100",
+    basse: "bg-slate-50 text-slate-600 border-slate-100",
+  };
+
+  return (
+    <div className="space-y-5">
+      {bp && (
+        <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
+          <p className="text-xs font-semibold text-teal-600 uppercase tracking-wide mb-2">Présence de la marque</p>
+          <div className="flex gap-4 flex-wrap text-sm">
+            <span><strong className="text-teal-800">{String(bp.mentions_trouvees ?? 0)}</strong> mentions trouvées</span>
+            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${bp.sentiment === "positif" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>{String(bp.sentiment ?? "—")}</span>
+          </div>
+          {!!bp.note && <p className="text-xs text-teal-700 mt-2">{String(bp.note)}</p>}
+        </div>
+      )}
+      {topActions.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Top actions</h3>
+          <div className="space-y-2">{topActions.map((a, i) => (
+            <div key={i} className={`flex gap-3 items-start text-xs border rounded-lg p-3 ${impactColor[a.impact] ?? "bg-white border-slate-100"}`}>
+              <span className="font-black shrink-0">{i + 1}</span>
+              <span className="flex-1">{a.action}</span>
+              <span className="shrink-0 opacity-60">effort: {a.effort}</span>
+            </div>
+          ))}</div>
+        </div>
+      )}
+      {backlinks.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Opportunités backlinks ({backlinks.length})</h3>
+          <div className="space-y-2">{backlinks.map((b, i) => (
+            <div key={i} className="flex gap-3 items-start text-xs bg-white border border-slate-100 rounded-lg p-3">
+              <span className="font-semibold text-teal-700 shrink-0">{b.site}</span>
+              <span className="text-slate-600 flex-1">{b.action}</span>
+              <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded-full ${b.priorite === "haute" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-500"}`}>{b.priorite}</span>
+            </div>
+          ))}</div>
+        </div>
+      )}
+      {avis.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Plateformes d'avis à viser</h3>
+          <div className="flex flex-wrap gap-2">{avis.map((v, i) => (
+            <div key={i} className="text-xs bg-white border border-slate-200 rounded-lg px-3 py-2">
+              <span className="font-semibold text-slate-700">{v.plateforme}</span>
+              <span className="text-slate-400 ml-1">— {v.action}</span>
+            </div>
+          ))}</div>
+        </div>
+      )}
+      {recoGbp.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Recommandations GBP</h3>
+          <ul className="space-y-1">{recoGbp.map((r, i) => (
+            <li key={i} className="text-xs text-slate-600 bg-slate-50 rounded-lg px-3 py-2 flex gap-2"><span className="text-teal-500">•</span>{r}</li>
+          ))}</ul>
+        </div>
+      )}
+      {!!template && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Template WhatsApp — demande d'avis</h3>
+          <pre className="text-xs bg-green-50 border border-green-200 rounded-xl p-4 whitespace-pre-wrap text-green-800 leading-relaxed">{template}</pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ReportDetail({ report }: { report: Report }) {
   if (report.agent === "competitor") return <CompetitorDetail c={report.content} />;
   if (report.agent === "keywords") return <KeywordsDetail c={report.content} />;
   if (report.agent === "auditor") return <AuditorDetail c={report.content} />;
   if (report.agent === "orchestrator") return <OrchestratorDetail c={report.content} />;
   if (report.agent === "writer") return <WriterDetail c={report.content} />;
+  if (report.agent === "local-seo") return <LocalSeoDetail c={report.content} />;
   return <pre className="text-xs text-slate-600 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(report.content, null, 2)}</pre>;
 }
 
@@ -612,8 +698,8 @@ export default function AdminSeoPage() {
       </div>
 
       {/* Cartes équipe */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
-        {(["writer", "competitor", "auditor", "keywords", "orchestrator"] as const).map((agent) => {
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        {(["writer", "competitor", "auditor", "keywords", "orchestrator", "local-seo"] as const).map((agent) => {
           const member = TEAM[agent];
           const lastReport = goodReports.find((r) => r.agent === agent);
           const isActive = triggering === agent;
@@ -633,7 +719,7 @@ export default function AdminSeoPage() {
                 <button
                   onClick={() => triggerAgent(agent)}
                   disabled={!!triggering}
-                  className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : agent === "orchestrator" ? "bg-indigo-600 text-white hover:bg-indigo-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
+                  className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : agent === "orchestrator" ? "bg-indigo-600 text-white hover:bg-indigo-700" : agent === "local-seo" ? "bg-teal-600 text-white hover:bg-teal-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                 >
                   {triggering === agent ? "En cours… (~2 min)" : "Lancer"}
                 </button>

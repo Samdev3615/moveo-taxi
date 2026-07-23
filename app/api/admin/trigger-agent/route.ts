@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase-server";
 
 export const maxDuration = 300;
 
-const VALID_AGENTS = ["writer", "competitor", "auditor", "keywords", "orchestrator"];
+const VALID_AGENTS = ["writer", "competitor", "auditor", "keywords", "orchestrator", "local-seo"];
 
 export async function POST(req: NextRequest) {
   const authed = await isAdminAuthenticated();

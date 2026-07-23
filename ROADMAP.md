@@ -103,9 +103,10 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 ### Panel `/admin/seo`
 - ✅ Agent Writer / Sophie Laurent — génération articles blog 5 langues via tool_use
 - ✅ Agent Concurrent / Alex Benhamou — analyse concurrentielle Serper 5 langues
-- ✅ Agent Mots-clés / Rafi Shapira — recherche keywords multi-langues via Serper
+- ✅ Agent Mots-clés / Rafi Shapira — recherche keywords multi-langues via Serper + champ `confidence`
 - ✅ Agent Auditeur / Maya Cohen — audit SEO avec données GSC réelles
-- ✅ Agent Orchestrateur / David Levi — plan stratégique croisé 30 jours
+- ✅ Agent Orchestrateur / David Levi — plan stratégique croisé (rapports + réservations Supabase)
+- ✅ Agent SEO Local / Noam Ben-David — mentions marque, backlinks, avis, GBP (⚠️ migration SQL requise)
 - ✅ Chat animé entre agents (onglet défaut)
 - ✅ Stockage rapports en Supabase (`seo_reports`)
 - ✅ Tous les agents migrés vers Anthropic tool_use (plus de JSON.parse manuel)
@@ -113,6 +114,8 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ✅ Rapports d'erreur visibles en rouge dans le panel
 - ✅ Articles de blog générés et publiés en 5 langues (onglet Articles)
 - ✅ Plan David Levi analysé et intégralement implémenté (voir DEVLOG 2026-07-23)
+- ✅ David reçoit les données de réservation Supabase (top routes, revenus, taux confirmation)
+- ⬜ Photo Noam Ben-David (`public/images/team-noam.png`)
 - ⬜ Planification cron hebdomadaire automatique des agents
 - ⬜ Historique et comparaison de rapports (évolution dans le temps)
 - ⬜ Publications GBP automatiques via l'orchestrateur
@@ -122,11 +125,15 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 ## Phase 2c — SEO Contenu (suite)
 
 - ✅ Page `/taxi-eilat` en 5 langues (keyword "taxi Eilat pas cher")
+- ✅ TaxiService JSON-LD avec prix (offers) sur toutes les pages routes individuelles
+- ✅ Sitemap : dates de modification statiques et réelles par page (fini le `new Date()` systématique)
+- ✅ Affirmations About page corrigées : supprimé "depuis 2015" et "50 000+ trajets" (faux)
 - ⬜ Pages dédiées autres destinations touristiques (Mer Morte, Nazareth, Tibériade)
 - ⬜ Page hub "Taxi depuis l'aéroport Ben Gurion" avec toutes les destinations et prix
 - ⬜ Liens internes depuis les articles de blog vers les pages routes correspondantes
-- ⬜ Avis Google — demander aux clients via WhatsApp après chaque course
+- ⬜ Avis Google — utiliser template Noam pour demander via WhatsApp après chaque course
 - ⬜ Google Business Profile — validation vidéo en attente (délai 3-7 jours)
+- ⬜ Sophie — enrichissement des pages routes existantes avec contenu dynamique (Phase 3)
 
 ---
 
