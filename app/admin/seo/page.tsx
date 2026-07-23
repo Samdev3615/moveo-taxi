@@ -598,7 +598,7 @@ export default function AdminSeoPage() {
           Chat
         </button>
         <button onClick={() => setTab("reports")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "reports" ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
-          Rapports {unreadCount > 0 && <span className="ml-1.5 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">{unreadCount}</span>}
+          Rapports {goodReports.length > 0 && <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${unreadCount > 0 ? "bg-red-500 text-white" : "bg-slate-300 text-slate-700"}`}>{goodReports.length}</span>}
         </button>
         <button onClick={() => setTab("posts")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "posts" ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
           Articles {draftCount > 0 && <span className="ml-1.5 bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full">{draftCount}</span>}
