@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp } from "lucide-react";
+import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers } from "lucide-react";
 
 type Report = {
   id: string;
-  agent: "competitor" | "auditor" | "keywords" | "writer";
+  agent: "competitor" | "auditor" | "keywords" | "writer" | "orchestrator";
   title: string;
   summary: string;
   content: Record<string, unknown>;
@@ -29,6 +29,7 @@ const AGENT_ICONS: Record<string, React.ReactNode> = {
   competitor: <Users size={16} />,
   auditor: <TrendingUp size={16} />,
   keywords: <Search size={16} />,
+  orchestrator: <Layers size={16} />,
 };
 
 const AGENT_COLORS: Record<string, string> = {
@@ -36,6 +37,7 @@ const AGENT_COLORS: Record<string, string> = {
   competitor: "bg-orange-100 text-orange-700",
   auditor: "bg-purple-100 text-purple-700",
   keywords: "bg-green-100 text-green-700",
+  orchestrator: "bg-indigo-100 text-indigo-700",
 };
 
 const AGENT_LABELS: Record<string, string> = {
@@ -43,13 +45,15 @@ const AGENT_LABELS: Record<string, string> = {
   competitor: "Concurrent",
   auditor: "Auditeur",
   keywords: "Mots-clés",
+  orchestrator: "Orchestrateur",
 };
 
 const TEAM: Record<string, { name: string; role: string; avatar: string; color: string }> = {
-  writer:     { name: "Sophie Laurent",  role: "Rédactrice SEO Multilingue",     avatar: "/images/team-sophie.png", color: "border-blue-200" },
-  competitor: { name: "Alex Benhamou",   role: "Analyste Concurrentielle",        avatar: "/images/team-alex.png",   color: "border-orange-200" },
-  auditor:    { name: "Maya Cohen",      role: "Auditrice SEO Technique",         avatar: "/images/team-maya.png",   color: "border-purple-200" },
-  keywords:   { name: "Rafi Shapira",    role: "Expert Mots-clés & Tendances",   avatar: "/images/team-rafi.png",   color: "border-green-200" },
+  writer:       { name: "Sophie Laurent",  role: "Rédactrice SEO Multilingue",       avatar: "/images/team-sophie.png",       color: "border-blue-200" },
+  competitor:   { name: "Alex Benhamou",   role: "Analyste Concurrentielle",          avatar: "/images/team-alex.png",         color: "border-orange-200" },
+  auditor:      { name: "Maya Cohen",      role: "Auditrice SEO Technique",           avatar: "/images/team-maya.png",         color: "border-purple-200" },
+  keywords:     { name: "Rafi Shapira",    role: "Expert Mots-clés & Tendances",     avatar: "/images/team-rafi.png",         color: "border-green-200" },
+  orchestrator: { name: "David Levi",      role: "Orchestrateur Stratégique",         avatar: "/images/team-david.png",        color: "border-indigo-200" },
 };
 
 const FLAG: Record<string, string> = {
@@ -89,7 +93,6 @@ function CompetitorDetail({ c }: { c: Record<string, unknown> }) {
           )}
         </div>
       )}
-
       {opportunites.length > 0 && (
         <div>
           <h3 className="text-sm font-bold text-slate-700 mb-3">Opportunités par langue</h3>
@@ -104,7 +107,6 @@ function CompetitorDetail({ c }: { c: Record<string, unknown> }) {
           </div>
         </div>
       )}
-
       {competitors.length > 0 && (
         <div>
           <h3 className="text-sm font-bold text-slate-700 mb-3">{competitors.length} concurrents identifiés</h3>
@@ -322,10 +324,137 @@ function AuditorDetail({ c }: { c: Record<string, unknown> }) {
   );
 }
 
+// ── Orchestrateur ─────────────────────────────────────────────────────────────
+function OrchestratorDetail({ c }: { c: Record<string, unknown> }) {
+  if (c.error) return <pre className="text-xs text-red-600 whitespace-pre-wrap">{JSON.stringify(c, null, 2)}</pre>;
+
+  const synthese = s(c.synthese);
+  const score = (c.score_global && typeof c.score_global === "object") ? c.score_global as Record<string, unknown> : {};
+  const priorites = a(c.priorites).map(asStr);
+  const motsCles = a(c.mots_cles_prioritaires).map(asStr);
+  const opportunite = s(c.opportunite_rapide);
+  const alerte = s(c.alerte);
+  const plan = a(c.plan_30_jours).map(asStr);
+  const aRelancer = a(c.agents_a_relancer).map(asStr);
+
+  return (
+    <div className="space-y-5">
+      {!!synthese && (
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+          <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-1">Synthèse exécutive</p>
+          <p className="text-sm text-slate-800">{synthese}</p>
+        </div>
+      )}
+
+      {(score.actuel != null || score.potentiel != null) && (
+        <div className="flex gap-4">
+          <div className="flex-1 bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-center">
+            <p className="text-3xl font-black text-indigo-700">{String(score.actuel ?? "?")}<span className="text-lg">/100</span></p>
+            <p className="text-xs text-indigo-500 mt-1">Score actuel</p>
+          </div>
+          <div className="flex-1 bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <p className="text-3xl font-black text-green-700">{String(score.potentiel ?? "?")}<span className="text-lg">/100</span></p>
+            <p className="text-xs text-green-500 mt-1">Potentiel</p>
+          </div>
+        </div>
+      )}
+      {!!s(score.note) && <p className="text-xs text-slate-500 italic">{s(score.note)}</p>}
+
+      {!!alerte && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex gap-2 items-start">
+          <span className="text-red-500 text-base shrink-0">⚠</span>
+          <div>
+            <p className="text-xs font-semibold text-red-600 mb-0.5">Alerte prioritaire</p>
+            <p className="text-xs text-slate-700">{alerte}</p>
+          </div>
+        </div>
+      )}
+
+      {!!opportunite && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex gap-2 items-start">
+          <span className="text-green-600 text-base shrink-0">⚡</span>
+          <div>
+            <p className="text-xs font-semibold text-green-700 mb-0.5">Quick win</p>
+            <p className="text-xs text-slate-700">{opportunite}</p>
+          </div>
+        </div>
+      )}
+
+      {priorites.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-3">Priorités de la semaine</h3>
+          <div className="space-y-2">
+            {priorites.map((p, i) => (
+              <div key={i} className="bg-white border border-slate-100 rounded-lg p-3">
+                <div className="flex gap-3 items-start">
+                  <span className="text-lg font-black text-indigo-300 leading-none shrink-0">#{p.rang ?? i + 1}</span>
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold text-slate-800 mb-1">{p.action}</p>
+                    {!!p.pourquoi && <p className="text-xs text-slate-500 mb-1">{p.pourquoi}</p>}
+                    <div className="flex gap-2 flex-wrap mt-1">
+                      {!!p.agent_source && <span className="text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">via {p.agent_source}</span>}
+                      {!!p.effort && <span className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono">{p.effort}</span>}
+                      {!!p.impact && <span className={`text-xs px-1.5 py-0.5 rounded ${PRIORITY[p.impact] ?? ""}`}>{p.impact}</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {motsCles.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Mots-clés prioritaires</h3>
+          <div className="space-y-1">
+            {motsCles.map((k, i) => (
+              <div key={i} className="flex gap-2 items-start text-xs bg-white border border-slate-100 rounded-lg p-2">
+                <span>{FLAG[k.locale] ?? "🌐"}</span>
+                <span className="font-semibold text-slate-800 shrink-0">{k.keyword}</span>
+                {!!k.raison && <span className="text-slate-500 flex-1">{k.raison}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {plan.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Plan 30 jours</h3>
+          <div className="space-y-1">
+            {plan.map((w, i) => (
+              <div key={i} className="flex gap-3 items-start text-xs bg-white border border-slate-100 rounded-lg p-3">
+                <span className="font-black text-indigo-400 shrink-0">S{w.semaine ?? i + 1}</span>
+                <p className="text-slate-700">{w.focus}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {aRelancer.length > 0 && (
+        <div>
+          <h3 className="text-sm font-bold text-slate-700 mb-2">Agents à relancer</h3>
+          <div className="flex flex-wrap gap-2">
+            {aRelancer.map((a, i) => (
+              <div key={i} className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                <span className="font-semibold text-slate-700">{AGENT_LABELS[a.agent] ?? a.agent}</span>
+                {!!a.raison && <span className="text-slate-400 ml-1">— {a.raison}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ReportDetail({ report }: { report: Report }) {
   if (report.agent === "competitor") return <CompetitorDetail c={report.content} />;
   if (report.agent === "keywords") return <KeywordsDetail c={report.content} />;
   if (report.agent === "auditor") return <AuditorDetail c={report.content} />;
+  if (report.agent === "orchestrator") return <OrchestratorDetail c={report.content} />;
   return <pre className="text-xs text-slate-600 overflow-x-auto whitespace-pre-wrap">{JSON.stringify(report.content, null, 2)}</pre>;
 }
 
@@ -386,8 +515,8 @@ export default function AdminSeoPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        {(["writer", "competitor", "auditor", "keywords"] as const).map((agent) => {
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+        {(["writer", "competitor", "auditor", "keywords", "orchestrator"] as const).map((agent) => {
           const member = TEAM[agent];
           const lastReport = goodReports.find((r) => r.agent === agent);
           const isActive = triggering === agent || pendingRefresh === agent;
@@ -399,6 +528,7 @@ export default function AdminSeoPage() {
                 <span className={`absolute top-2 right-2 inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${AGENT_COLORS[agent]}`}>
                   {AGENT_ICONS[agent]}
                 </span>
+                {lastReport && <span className="absolute bottom-2 left-2 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded-full">✓</span>}
               </div>
               <div className="p-3 flex flex-col flex-1">
                 <p className="font-bold text-slate-900 text-sm leading-tight">{member.name}</p>
@@ -406,7 +536,7 @@ export default function AdminSeoPage() {
                 <button
                   onClick={() => triggerAgent(agent)}
                   disabled={!!triggering || !!pendingRefresh}
-                  className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : "bg-slate-900 text-white hover:bg-slate-700"}`}
+                  className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : agent === "orchestrator" ? "bg-indigo-600 text-white hover:bg-indigo-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                 >
                   {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~60s)" : "Lancer"}
                 </button>
