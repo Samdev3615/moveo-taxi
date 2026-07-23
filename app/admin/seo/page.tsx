@@ -547,7 +547,6 @@ export default function AdminSeoPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState<string | null>(null);
-  const [pendingRefresh, setPendingRefresh] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [chatKey, setChatKey] = useState(0);
   const [localeFilter, setLocaleFilter] = useState<string | null>(null);
@@ -572,8 +571,7 @@ export default function AdminSeoPage() {
     setTriggering(agent);
     await fetch(`/api/admin/trigger-agent?agent=${agent}`, { method: "POST" });
     setTriggering(null);
-    setPendingRefresh(agent);
-    setTimeout(async () => { await load(); setPendingRefresh(null); }, 150000);
+    await load();
   }
 
   async function markRead(id: string) {
@@ -618,7 +616,7 @@ export default function AdminSeoPage() {
         {(["writer", "competitor", "auditor", "keywords", "orchestrator"] as const).map((agent) => {
           const member = TEAM[agent];
           const lastReport = goodReports.find((r) => r.agent === agent);
-          const isActive = triggering === agent || pendingRefresh === agent;
+          const isActive = triggering === agent;
           return (
             <div key={agent} className={`bg-white border-2 ${member.color} rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col`}>
               <div className="relative">
@@ -634,10 +632,10 @@ export default function AdminSeoPage() {
                 <p className="text-xs text-slate-400 mt-0.5 leading-tight">{member.role}</p>
                 <button
                   onClick={() => triggerAgent(agent)}
-                  disabled={!!triggering || !!pendingRefresh}
+                  disabled={!!triggering}
                   className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : agent === "orchestrator" ? "bg-indigo-600 text-white hover:bg-indigo-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                 >
-                  {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~2 min)" : "Lancer"}
+                  {triggering === agent ? "En cours… (~2 min)" : "Lancer"}
                 </button>
               </div>
             </div>
