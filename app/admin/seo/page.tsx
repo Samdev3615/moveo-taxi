@@ -573,7 +573,7 @@ export default function AdminSeoPage() {
     await fetch(`/api/admin/trigger-agent?agent=${agent}`, { method: "POST" });
     setTriggering(null);
     setPendingRefresh(agent);
-    setTimeout(async () => { await load(); setPendingRefresh(null); }, 90000);
+    setTimeout(async () => { await load(); setPendingRefresh(null); }, 150000);
   }
 
   async function markRead(id: string) {
@@ -596,6 +596,7 @@ export default function AdminSeoPage() {
   const unreadCount = reports.filter((r) => r.status === "unread").length;
   const draftCount = posts.filter((p) => p.status === "draft").length;
   const goodReports = reports.filter((r) => !(r.content as Record<string, unknown>)?.error);
+  const errorReports = reports.filter((r) => !!(r.content as Record<string, unknown>)?.error);
   const filteredPosts = posts
     .filter((p) => !localeFilter || p.locale === localeFilter)
     .filter((p) => statusFilter === "all" || p.status === statusFilter);
@@ -636,7 +637,7 @@ export default function AdminSeoPage() {
                   disabled={!!triggering || !!pendingRefresh}
                   className={`mt-auto pt-2 w-full text-xs font-semibold py-1.5 rounded-lg transition-all disabled:opacity-50 ${isActive ? "bg-slate-100 text-slate-500" : agent === "orchestrator" ? "bg-indigo-600 text-white hover:bg-indigo-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                 >
-                  {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~60s)" : "Lancer"}
+                  {triggering === agent ? "Lancement…" : pendingRefresh === agent ? "En cours… (~2 min)" : "Lancer"}
                 </button>
               </div>
             </div>
@@ -679,34 +680,57 @@ export default function AdminSeoPage() {
               <TrendingUp size={32} className="mx-auto mb-3 opacity-30" />
               <p>Aucun rapport. Lance un agent pour démarrer.</p>
             </div>
-          ) : goodReports.map((r) => (
-            <div key={r.id} className={`bg-white border rounded-xl overflow-hidden ${r.status === "unread" ? "border-blue-200 shadow-sm" : "border-slate-100"}`}>
-              <div className="flex items-center gap-3 p-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={TEAM[r.agent]?.avatar} alt={TEAM[r.agent]?.name} className="w-10 h-10 rounded-full object-cover object-top shrink-0 border border-slate-200" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-900 text-sm leading-tight">{r.title}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{TEAM[r.agent]?.name} · {new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button onClick={() => setExpanded(expanded === r.id ? null : r.id)} className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
-                    {expanded === r.id ? <ChevronUp size={12} /> : <Eye size={12} />}
-                    {expanded === r.id ? "Fermer" : "Détail"}
-                  </button>
-                  {r.status === "unread" && (
-                    <button onClick={() => markRead(r.id)} className="text-xs text-green-600 hover:text-green-800 flex items-center gap-1">
-                      <CheckCircle size={12} /> Lu
-                    </button>
-                  )}
-                </div>
-              </div>
-              {expanded === r.id && (
-                <div className="border-t border-slate-100 p-4 bg-slate-50">
-                  <ReportDetail report={r} />
+          ) : (
+            <>
+              {errorReports.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {errorReports.map((r) => {
+                    const c = r.content as Record<string, unknown>;
+                    const msg = String(c.message ?? c.body ?? c.summary ?? "Erreur inconnue").slice(0, 300);
+                    return (
+                      <div key={r.id} className="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3 items-start">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={TEAM[r.agent]?.avatar} alt={TEAM[r.agent]?.name} className="w-8 h-8 rounded-full object-cover object-top shrink-0 border border-red-200 opacity-70" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-red-700">{r.title}</p>
+                          <p className="text-xs text-red-500 mt-1 font-mono break-all">{msg}</p>
+                          <p className="text-xs text-red-300 mt-1">{TEAM[r.agent]?.name} · {new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
-            </div>
-          ))}
+              {goodReports.map((r) => (
+                <div key={r.id} className={`bg-white border rounded-xl overflow-hidden ${r.status === "unread" ? "border-blue-200 shadow-sm" : "border-slate-100"}`}>
+                  <div className="flex items-center gap-3 p-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={TEAM[r.agent]?.avatar} alt={TEAM[r.agent]?.name} className="w-10 h-10 rounded-full object-cover object-top shrink-0 border border-slate-200" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 text-sm leading-tight">{r.title}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{TEAM[r.agent]?.name} · {new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => setExpanded(expanded === r.id ? null : r.id)} className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                        {expanded === r.id ? <ChevronUp size={12} /> : <Eye size={12} />}
+                        {expanded === r.id ? "Fermer" : "Détail"}
+                      </button>
+                      {r.status === "unread" && (
+                        <button onClick={() => markRead(r.id)} className="text-xs text-green-600 hover:text-green-800 flex items-center gap-1">
+                          <CheckCircle size={12} /> Lu
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {expanded === r.id && (
+                    <div className="border-t border-slate-100 p-4 bg-slate-50">
+                      <ReportDetail report={r} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
