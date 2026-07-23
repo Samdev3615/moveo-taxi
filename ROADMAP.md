@@ -106,7 +106,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ✅ Agent Mots-clés / Rafi Shapira — recherche keywords multi-langues via Serper + champ `confidence`
 - ✅ Agent Auditeur / Maya Cohen — audit SEO avec données GSC réelles
 - ✅ Agent Orchestrateur / David Levi — plan stratégique croisé (rapports + réservations Supabase)
-- ✅ Agent SEO Local / Noam Ben-David — mentions marque, backlinks, avis, GBP (⚠️ migration SQL requise)
+- ✅ Agent SEO Local / Noam Ben-David — mentions marque, backlinks, avis, GBP, template WhatsApp
 - ✅ Chat animé entre agents (onglet défaut)
 - ✅ Stockage rapports en Supabase (`seo_reports`)
 - ✅ Tous les agents migrés vers Anthropic tool_use (plus de JSON.parse manuel)
@@ -115,7 +115,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ✅ Articles de blog générés et publiés en 5 langues (onglet Articles)
 - ✅ Plan David Levi analysé et intégralement implémenté (voir DEVLOG 2026-07-23)
 - ✅ David reçoit les données de réservation Supabase (top routes, revenus, taux confirmation)
-- ⬜ Photo Noam Ben-David (`public/images/team-noam.png`)
+- ✅ Photo Noam Ben-David (`public/images/team-noam.png`)
 - ⬜ Planification cron hebdomadaire automatique des agents
 - ⬜ Historique et comparaison de rapports (évolution dans le temps)
 - ⬜ Publications GBP automatiques via l'orchestrateur

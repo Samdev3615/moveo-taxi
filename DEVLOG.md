@@ -392,7 +392,70 @@ Après génération et lecture du plan de David (Score SEO actuel 25/100 → pot
 
 ---
 
-## 2026-07-23 (suite 2) — Audit ChatGPT/Gemini : corrections et nouveaux agents
+## 2026-07-23 (suite 2) — Consultation Gemini & ChatGPT + Actions
+
+### Contexte — Pourquoi consulter des IA externes ?
+
+L'agence SEO interne (5 agents Claude) analyse le site de l'intérieur. Pour avoir un regard extérieur neutre, le propriétaire a soumis une description détaillée de l'architecture à **Gemini (Google)** et **ChatGPT (OpenAI)** et leur a demandé leur avis critique.
+
+---
+
+### Ce que Gemini a dit
+
+**Verdict global :** Architecture solide et bien pensée, mais plusieurs risques à adresser.
+
+**Points positifs identifiés :**
+- Architecture multi-agents bien structurée (division des rôles claire)
+- Tool_use Anthropic = bonne décision technique (JSON fiable)
+- 5 langues avec hébreu RTL = différenciateur fort sur le marché israélien
+- Pages routes avec prix en titre = bonne pratique SEO
+
+**Risques identifiés par Gemini :**
+1. **Sophie (Writer) = risque Scaled Content Abuse** — Google peut pénaliser les sites qui publient du contenu IA en masse sans valeur ajoutée humaine réelle (EEAT)
+2. **Pas de surveillance locale** — Aucun agent ne surveille GBP, les avis, les backlinks
+3. **David aveugle aux conversions** — L'orchestrateur stratégique ne voit pas les vraies données business
+4. **Mots-clés sans niveau de confiance** — Rafi ne distingue pas ce qui est observé vs estimé
+
+---
+
+### Ce que ChatGPT a dit
+
+**Note globale : 6,5/10**
+
+**ChatGPT a crawlé la vraie page** `moveotaxi.com/en/about` et a trouvé des affirmations potentiellement fausses.
+
+**Problèmes détectés sur le site réel :**
+- "Professional taxi service in Israel **since 2015**" → non vérifié
+- "**800+ licensed drivers**" → à confirmer
+- "**50,000+ trips**" → non vérifié
+- "**IDF veterans** with certified ongoing training" → à confirmer
+- "**Over 30% cheaper**" → à confirmer
+
+**Autres recommandations de ChatGPT :**
+1. Les affirmations invérifiables nuisent à l'EEAT (Experience, Expertise, Authoritativeness, Trustworthiness) — signal de ranking Google
+2. `lastModified: new Date()` dans le sitemap est trompeur — Google voit toutes les pages comme "modifiées aujourd'hui"
+3. Pas de TaxiService JSON-LD avec prix sur les pages routes
+4. Pas de surveillance de réputation (avis, mentions)
+5. David devrait voir les vraies conversions pour prioriser correctement
+
+---
+
+### Plan d'action issu des deux consultations (8 priorités)
+
+| # | Action | Source | Statut |
+|---|--------|--------|--------|
+| 1 | Corriger les affirmations fausses page About | ChatGPT | ✅ Fait |
+| 2 | Vérifier cohérence "prix fixe" vs "estimation" | ChatGPT | ✅ Propre |
+| 3 | Connecter réservations Supabase à David | Gemini + ChatGPT | ✅ Fait |
+| 4 | Sitemap : vraies dates de modification | ChatGPT | ✅ Fait |
+| 5 | TaxiService JSON-LD avec prix (offers) | ChatGPT | ✅ Fait |
+| 6 | Champ `confidence` chez Rafi | Gemini | ✅ Fait |
+| 7 | Créer agent Noam (SEO local, GBP, backlinks, avis) | Gemini + ChatGPT | ✅ Fait |
+| 8 | Sophie enrichit pages routes au lieu d'articles | Gemini | 🔮 Phase 3 |
+
+---
+
+### Faits commerciaux confirmés par le propriétaire (2026-07-23)
 
 ### Faits commerciaux confirmés (propriétaire, 2026-07-23)
 - ✅ **VRAI** : 800+ chauffeurs partenaires actifs
