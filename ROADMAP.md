@@ -55,12 +55,17 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 
 ### SEO
 - ✅ `generateMetadata()` sur 5 pages × 5 locales
-- ✅ Balises hreflang (alternates.languages)
-- ✅ Sitemap XML (`/sitemap.xml`) — 30 URLs
+- ✅ Balises hreflang (alternates.languages) — toutes les pages publiques
+- ✅ Sitemap XML (`/sitemap.xml`) — dynamique, date `new Date()`, 30+ URLs
 - ✅ `robots.txt` (`/robots.txt`)
 - ✅ Images renommées pour le SEO
 - ⬜ Open Graph images par locale
 - ✅ Schema.org JSON-LD (LocalBusiness + TaxiService) — `app/[locale]/layout.tsx`
+- ✅ FAQPage JSON-LD sur toutes les pages routes individuelles
+- ✅ BreadcrumbList JSON-LD sur toutes les pages routes individuelles
+- ✅ Prix réels dans les titres meta des pages routes (ex: "₪320 prix fixe")
+- ✅ Maillage interne : cartes `/routes` entièrement cliquables vers pages détail
+- ✅ Page dédiée `/taxi-eilat` en 5 langues (keyword "taxi Eilat pas cher")
 
 ---
 
@@ -96,16 +101,32 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 ## Phase 2b — SEO Agence IA
 
 ### Panel `/admin/seo`
-- ✅ Agent Writer (Maya Cohen) — idées articles + analyse contenu
-- ✅ Agent Concurrent (Yossi Ben David) — analyse concurrentielle Serper
-- ✅ Agent Mots-clés (Rachel Mizrahi) — recherche keywords multi-langues
-- ✅ Agent Auditeur (Rafi Shapira) — audit SEO avec données GSC réelles
-- ✅ Agent Orchestrateur (David Levi) — plan stratégique croisé 30 jours
+- ✅ Agent Writer / Sophie Laurent — génération articles blog 5 langues via tool_use
+- ✅ Agent Concurrent / Alex Benhamou — analyse concurrentielle Serper 5 langues
+- ✅ Agent Mots-clés / Rafi Shapira — recherche keywords multi-langues via Serper
+- ✅ Agent Auditeur / Maya Cohen — audit SEO avec données GSC réelles
+- ✅ Agent Orchestrateur / David Levi — plan stratégique croisé 30 jours
 - ✅ Chat animé entre agents (onglet défaut)
 - ✅ Stockage rapports en Supabase (`seo_reports`)
-- ⬜ Onglet Articles — génération et publication d'articles de blog
+- ✅ Tous les agents migrés vers Anthropic tool_use (plus de JSON.parse manuel)
+- ✅ `maxDuration = 300` sur tous les agents
+- ✅ Rapports d'erreur visibles en rouge dans le panel
+- ✅ Articles de blog générés et publiés en 5 langues (onglet Articles)
+- ✅ Plan David Levi analysé et intégralement implémenté (voir DEVLOG 2026-07-23)
 - ⬜ Planification cron hebdomadaire automatique des agents
 - ⬜ Historique et comparaison de rapports (évolution dans le temps)
+- ⬜ Publications GBP automatiques via l'orchestrateur
+
+---
+
+## Phase 2c — SEO Contenu (suite)
+
+- ✅ Page `/taxi-eilat` en 5 langues (keyword "taxi Eilat pas cher")
+- ⬜ Pages dédiées autres destinations touristiques (Mer Morte, Nazareth, Tibériade)
+- ⬜ Page hub "Taxi depuis l'aéroport Ben Gurion" avec toutes les destinations et prix
+- ⬜ Liens internes depuis les articles de blog vers les pages routes correspondantes
+- ⬜ Avis Google — demander aux clients via WhatsApp après chaque course
+- ⬜ Google Business Profile — validation vidéo en attente (délai 3-7 jours)
 
 ---
 
@@ -125,5 +146,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 | Blocage | Impact | Solution |
 |---------|--------|----------|
 | ~~`.env.local` vide~~ | ✅ Résolu — Supabase connecté | — |
-| Numéro de téléphone placeholder | Affiche `+972-53-1234567` partout | Remplacer par le vrai numéro dans `lib/constants.ts` |
-| ~~Pas de déploiement Vercel~~ | ✅ Résolu — moveo-taxi.vercel.app | — |
+| ~~Numéro de téléphone placeholder~~ | ✅ Résolu — `+972-54-310-0044` partout | — |
+| ~~Pas de déploiement Vercel~~ | ✅ Résolu — moveotaxi.com | — |
+| GBP validation vidéo | Profil non visible sur Google Maps | En attente Google (3-7 jours) |
+| Core Web Vitals GSC | Pas de données (site récent) | Données disponibles après 90 jours de trafic réel |

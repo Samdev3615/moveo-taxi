@@ -309,6 +309,89 @@ Confirmé déjà implémenté dans `app/[locale]/layout.tsx` — `LocalBusiness`
 
 ---
 
+## 2026-07-23 (suite) — Corrections agence SEO IA + Plan David Levi
+
+### Bugs critiques corrigés — 5 agents
+
+**Problème 1 — `after()` silencieux sur Vercel**
+L'agent Writer (Sophie) était déclenché via `after()` dans `trigger-agent/route.ts`. Sur Vercel, `after()` est tué silencieusement avant la fin de la génération Claude.
+**Fix** : Supprimé `after()`, appel direct et synchrone de l'agent. `trigger-agent` attend maintenant la réponse complète avant de retourner.
+
+**Problème 2 — JSON cassé dans le Writer (root cause "All locale generations failed")**
+Le Writer demandait un JSON brut à Claude. Le contenu HTML généré (avec `class="title"`) contenait des guillemets non échappés → `JSON.parse()` crashait sur les 5 locales simultanément.
+**Fix** : Migration vers **Anthropic tool_use** (`tool_choice: { type: "tool", name: "save_article" }`) — Claude retourne un objet structuré natif, plus de JSON parsing manuel.
+
+**Problème 3 — JSON tronqué (competitor + keywords)**
+`max_tokens: 16000` déclenchait des réponses qui atteignaient la limite en plein milieu d'un tableau JSON.
+**Fix** : tool_use + `max_tokens: 4096` — Claude remplit la structure définie, jamais de troncature.
+
+**Problème 4 — `maxDuration = 60` sur l'Auditeur**
+Timeout de 60 secondes beaucoup trop court pour appels GSC API + Claude.
+**Fix** : `export const maxDuration = 300` sur tous les agents.
+
+**Tous les agents migrent vers tool_use** (competitor, auditor, keywords, orchestrator, writer) :
+- Schéma JSON-Schema explicite par agent dans le `tools[]` array
+- Extraction via `msg.content.find(b => b.type === "tool_use")` + cast `as Record<string, unknown>`
+- Plus aucun regex ni JSON.parse manuel
+
+**Modèle Sonnet** : confirmé que `claude-sonnet-5` fonctionne — ce n'était pas le modèle le problème, mais le parsing. Tous les agents utilisent `MODEL_SONNET`.
+
+**UX panel admin** (`/admin/seo`) :
+- Supprimé `pendingRefresh` state inutile
+- `triggerAgent()` appelle `load()` immédiatement après la réponse
+- Bouton affiche "En cours… (~2 min)" pendant le déclenchement
+- Rapports d'erreur affichés en rouge au-dessus des bons rapports dans l'onglet Rapports
+- Compteur rouge sur l'onglet "Rapports" si rapports non lus
+
+### Implémentation complète du plan stratégique David Levi
+
+Après génération et lecture du plan de David (Score SEO actuel 25/100 → potentiel 70/100), toutes les actions techniques ont été implémentées.
+
+**#1 — Titres SEO avec prix réels sur les pages routes** (`app/[locale]/route/[slug]/page.tsx`)
+- `generateMetadata()` modifié : titre = `Taxi {from} → {to} — ₪{prix} {prix fixe} | Moveo Taxi`
+- Description dynamique par locale avec le prix exact (₪) intégré
+- Ex : "Taxi Tel Aviv → Jérusalem — ₪320 prix fixe | Moveo Taxi"
+
+**#2 — FAQPage + BreadcrumbList JSON-LD sur chaque page route**
+- `FAQPage` : les 4 FAQ existantes sérialisées en Schema.org → rich snippets Google
+- `BreadcrumbList` : Moveo Taxi > Toutes les routes > {from} → {to} → fil d'Ariane dans les SERP
+- Fil d'Ariane visible ajouté sous la navbar
+
+**#3 — Maillage interne : cartes routes entièrement cliquables** (`app/[locale]/routes/page.tsx`)
+- Avant : seul un bouton "+" minuscule linkait à la page détail
+- Après : toute la partie supérieure de la carte (from/to + prix) est un `<Link>` vers `/route/[slug]`
+- Bouton "Réserver" reste indépendant → booking direct
+- `key={i}` → `key={\`${route.from}-${route.to}\`}` (stable)
+- hreflang `alternates.languages` ajouté sur la page `/routes`
+
+**#4 — Sitemap dynamique** (`app/sitemap.ts`)
+- `lastModified: new Date("2026-07-07")` → `lastModified: new Date()` (toujours à jour)
+- Pages routes : priorité 0.8 → 0.85 (pages enrichies FAQPage + prix)
+- `/taxi-eilat` ajouté à priority 0.85
+
+**#7 — Page dédiée Eilat** (`app/[locale]/taxi-eilat/page.tsx`)
+- Nouvelle page en 5 langues ciblant "taxi Eilat pas cher" (FR) + "taxi to Eilat Israel" (EN)
+- 3 cartes de prix : Tel Aviv ₪1120, Jérusalem ₪1000, Beer Sheva ₪810 (prix calculés dynamiquement via `getPrice()`)
+- FAQPage + BreadcrumbList JSON-LD
+- Meta titre FR : "Taxi Eilat pas cher — Prix fixe depuis Tel Aviv ₪1120 | Moveo Taxi"
+- hreflang he/en/fr/ru/es + x-default
+- `generateStaticParams()` pour les 5 locales
+
+### Google Business Profile
+- Toutes les optimisations déjà effectuées en amont (catégories, description avec prix, services, horaires 24/7, zone desservie)
+- **En attente** : validation Google par vidéo (délai 3-7 jours)
+
+### Google Search Console
+- Sitemap déjà soumis. Données en cours de traitement (normal pour site récent, 90 jours pour Core Web Vitals)
+- Décision : ne pas resoummettre le sitemap à chaque déploiement — Google relit automatiquement
+
+### Articles de blog (Sophie / Writer agent)
+- Articles générés en 5 langues via l'agent Writer
+- Publiés depuis le panel admin (`/admin/seo` onglet Articles)
+- Slug format : `{base-slug}-{locale}` (ex: `transfert-aeroport-ben-gourion-fr`)
+
+---
+
 ## Décisions d'architecture
 
 | Décision | Raison |
