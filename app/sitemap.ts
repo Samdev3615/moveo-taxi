@@ -8,6 +8,7 @@ const pages = [
   { path: "", changeFrequency: "daily" as const, priority: 1.0 },
   { path: "/airport", changeFrequency: "weekly" as const, priority: 0.9 },
   { path: "/routes", changeFrequency: "weekly" as const, priority: 0.9 },
+  { path: "/taxi-eilat", changeFrequency: "monthly" as const, priority: 0.85 },
   { path: "/booking", changeFrequency: "weekly" as const, priority: 0.8 },
   { path: "/drivers", changeFrequency: "monthly" as const, priority: 0.7 },
   { path: "/about", changeFrequency: "monthly" as const, priority: 0.6 },
