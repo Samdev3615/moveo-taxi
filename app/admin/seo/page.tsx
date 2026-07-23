@@ -677,6 +677,16 @@ export default function AdminSeoPage() {
     if (previewPost?.id === id) setPreviewPost(null);
   }
 
+  async function deleteReport(id: string) {
+    await fetch(`/api/admin/seo-data?type=delete-report&id=${id}`, { method: "POST" });
+    setReports((prev) => prev.filter((r) => r.id !== id));
+  }
+
+  async function clearErrors() {
+    await fetch("/api/admin/seo-data?type=clear-errors", { method: "POST" });
+    setReports((prev) => prev.filter((r) => !(r.content as Record<string, unknown>)?.error));
+  }
+
   const unreadCount = reports.filter((r) => r.status === "unread").length;
   const draftCount = posts.filter((p) => p.status === "draft").length;
   const goodReports = reports.filter((r) => !(r.content as Record<string, unknown>)?.error);
@@ -768,6 +778,15 @@ export default function AdminSeoPage() {
             <>
               {errorReports.length > 0 && (
                 <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between px-1">
+                    <p className="text-xs font-semibold text-red-500 uppercase tracking-wide">{errorReports.length} erreur{errorReports.length > 1 ? "s" : ""}</p>
+                    <button
+                      onClick={clearErrors}
+                      className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 size={12} /> Tout supprimer
+                    </button>
+                  </div>
                   {errorReports.map((r) => {
                     const c = r.content as Record<string, unknown>;
                     const msg = String(c.message ?? c.body ?? c.summary ?? "Erreur inconnue").slice(0, 300);
@@ -780,6 +799,13 @@ export default function AdminSeoPage() {
                           <p className="text-xs text-red-500 mt-1 font-mono break-all">{msg}</p>
                           <p className="text-xs text-red-300 mt-1">{TEAM[r.agent]?.name} · {new Date(r.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</p>
                         </div>
+                        <button
+                          onClick={() => deleteReport(r.id)}
+                          className="text-red-300 hover:text-red-600 transition-colors shrink-0 mt-0.5"
+                          title="Supprimer cette erreur"
+                        >
+                          <X size={14} />
+                        </button>
                       </div>
                     );
                   })}

@@ -71,5 +71,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
+  if (type === "delete-report" && id) {
+    const { error } = await supabaseAdmin
+      .from("seo_reports")
+      .delete()
+      .eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
+  if (type === "clear-errors") {
+    const { error } = await supabaseAdmin
+      .from("seo_reports")
+      .delete()
+      .filter("content->>error", "eq", "true");
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
   return NextResponse.json({ error: "Invalid type" }, { status: 400 });
 }
