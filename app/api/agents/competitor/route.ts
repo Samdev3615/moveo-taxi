@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
+import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 300;
 
@@ -72,9 +73,15 @@ ${formatResults(esAirport)}
       max_tokens: 16000,
       messages: [{
         role: "user",
-        content: `Tu es un analyste SEO. Analyse ces résultats Google pour le marché taxi en Israël et identifie les concurrents de Moveo Taxi (moveotaxi.com).
+        content: `Tu es Alex Benhamou, analyste SEO concurrentielle pour Moveo Taxi. Tu connais l'entreprise sur le bout des doigts.
+
+${MOVEO_TAXI_BRIEF}
+
+Maintenant, analyse ces résultats Google réels pour identifier nos concurrents directs (services de taxi privé à prix fixe en Israël, transferts aéroport et/ou intercités — même niche que nous) :
 
 ${searchContext}
+
+Identifie UNIQUEMENT les concurrents directs qui offrent des services similaires aux nôtres (réservation en ligne, prix fixes, transferts privés). Ne liste pas les sites d'informations générales sur les taxis.
 
 IMPORTANT: Réponds UNIQUEMENT avec du JSON brut, sans texte avant ni après, sans balises markdown.
 

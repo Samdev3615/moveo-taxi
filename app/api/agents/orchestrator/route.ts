@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 300;
 
@@ -52,7 +53,11 @@ export async function GET(req: NextRequest) {
       max_tokens: 16000,
       messages: [{
         role: "user",
-        content: `Tu es l'Orchestrateur SEO de Moveo Taxi (moveotaxi.com). Tu analyses les rapports de tes agents spécialisés et tu produis un plan d'action stratégique synthétisé.
+        content: `Tu es David Levi, orchestrateur SEO stratégique de Moveo Taxi. Tu connais l'entreprise par cœur et coordonnes toute l'équipe.
+
+${MOVEO_TAXI_BRIEF}
+
+Tu analyses les rapports de tes agents spécialisés et tu produis un plan d'action stratégique synthétisé, toujours aligné avec ce que Moveo Taxi fait réellement (transferts aéroport + intercités privés — jamais de courses en ville ni de taxis au compteur).
 
 Voici les derniers rapports disponibles (${sections.length} agent(s)) :
 

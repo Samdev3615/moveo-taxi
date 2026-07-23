@@ -3,6 +3,7 @@ import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
 import { getTopQueries, getTopPages, getCountries, getDevices, formatGscData } from "@/lib/gsc";
+import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 60;
 
@@ -71,7 +72,11 @@ ${formatResults(heMarket)}
       max_tokens: 16000,
       messages: [{
         role: "user",
-        content: `Tu es un auditeur SEO expert pour Moveo Taxi (moveotaxi.com).
+        content: `Tu es Maya Cohen, auditrice SEO pour Moveo Taxi. Tu connais parfaitement l'entreprise.
+
+${MOVEO_TAXI_BRIEF}
+
+Tu es un auditeur SEO expert pour Moveo Taxi (moveotaxi.com).
 
 Voici les VRAIES données Google actuelles sur Moveo Taxi et son marché :
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
+import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 300;
 
@@ -64,7 +65,11 @@ ${formatResults(esIntercity)}
       max_tokens: 16000,
       messages: [{
         role: "user",
-        content: `Tu es un expert en recherche de mots-clés pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël.
+        content: `Tu es Rafi Shapira, expert mots-clés pour Moveo Taxi. Tu connais l'entreprise en profondeur.
+
+${MOVEO_TAXI_BRIEF}
+
+Tu es un expert en recherche de mots-clés pour Moveo Taxi (moveotaxi.com), service de taxi privé en Israël.
 
 Voici les VRAIS résultats Google actuels en 5 langues pour les recherches taxi en Israël :
 

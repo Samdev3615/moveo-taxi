@@ -1,22 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 300;
 
+// Sujets alignés avec les services réels de Moveo Taxi (aéroport + intercités)
 const TOPICS = [
-  { slug: "taxi-aeroport-ben-gourion", topic: "taxi transfers from Ben Gurion Airport to Israeli cities" },
-  { slug: "taxi-tel-aviv-jerusalem", topic: "taxi from Tel Aviv to Jerusalem: private transfer vs public transport" },
-  { slug: "taxi-nuit-israel", topic: "night taxi travel in Israel: safety tips and how to book" },
-  { slug: "taxi-groupe-minibus", topic: "group taxi and minibus rentals in Israel for families and groups" },
-  { slug: "taxi-eilat", topic: "taxi to Eilat from Tel Aviv and Jerusalem: complete guide" },
-  { slug: "prix-taxi-israel", topic: "taxi fares in Israel: complete price guide in NIS" },
-  { slug: "taxi-touriste-israel", topic: "taxi guide for tourists in Israel: everything you need to know" },
-  { slug: "taxi-vs-train-aeroport", topic: "taxi vs train from Ben Gurion Airport: honest comparison" },
-  { slug: "taxi-haifa", topic: "taxi from Haifa to Ben Gurion Airport and Tel Aviv" },
-  { slug: "taxi-mer-morte", topic: "day trip taxi to the Dead Sea from Tel Aviv and Jerusalem" },
-  { slug: "taxi-reserve-avance", topic: "why you should pre-book your taxi in Israel" },
-  { slug: "taxi-conseils-aeroport", topic: "10 tips for taking a taxi at Ben Gurion Airport" },
+  { slug: "transfert-aeroport-ben-gourion", topic: "private taxi transfer from Ben Gurion Airport: complete guide (Moveo Taxi prices, booking, tips)" },
+  { slug: "taxi-ben-gurion-tel-aviv", topic: "Ben Gurion Airport to Tel Aviv by private taxi: prices, duration, what to expect (140₪ fixed rate)" },
+  { slug: "taxi-ben-gurion-jerusalem", topic: "Ben Gurion Airport to Jerusalem private taxi: fixed price 250₪, night rates, booking guide" },
+  { slug: "taxi-ben-gurion-haifa", topic: "Ben Gurion Airport to Haifa private taxi: 490₪ fixed rate, 1h15 drive, how to book" },
+  { slug: "taxi-ben-gurion-eilat", topic: "Ben Gurion Airport to Eilat private taxi: 1410₪, 3h30, the cheapest and most comfortable option" },
+  { slug: "pourquoi-reserver-taxi-avance-israel", topic: "Why pre-booking your taxi in Israel saves money and stress vs showing up at the airport" },
+  { slug: "taxi-vs-train-aeroport-ben-gurion", topic: "Private taxi vs. train from Ben Gurion Airport: honest comparison for 2025 (prices, comfort, convenience)" },
+  { slug: "suivi-vol-taxi-aeroport", topic: "Flight tracking for airport taxis in Israel: how Moveo Taxi waits for free if your flight is delayed" },
+  { slug: "taxi-groupe-israel-minibus", topic: "Group transfer in Israel: when to book a minibus vs sedan (families, groups of 5-6)" },
+  { slug: "taxi-ben-gurion-beer-sheva", topic: "Ben Gurion Airport to Beer Sheva private taxi: 440₪, 1 hour, guide for Negev travelers" },
+  { slug: "taxi-ben-gurion-netanya", topic: "Ben Gurion Airport to Netanya private taxi: 230₪, 35 minutes, best option for the coast" },
+  { slug: "taxi-intercite-tel-aviv-jerusalem", topic: "Tel Aviv to Jerusalem private taxi: fixed price ~320₪, 1h10, book in advance vs on-demand" },
 ];
 
 const LOCALES = [
@@ -39,23 +41,28 @@ async function generateForLocale(topic: string, slug: string, locale: string, la
     max_tokens: 1500,
     messages: [{
       role: "user",
-      content: `You are an SEO content writer for Moveo Taxi, a premium private taxi service in Israel.
-Write a blog post in ${lang} about: "${topic}"
+      content: `You are Sophie Laurent, SEO content writer for Moveo Taxi. You know the company inside out.
+
+${MOVEO_TAXI_BRIEF}
+
+Your task: Write a blog post in ${lang} about this topic:
+"${topic}"
+
+STRICT RULES:
+- Write ONLY about services Moveo Taxi actually offers (airport transfers + intercity private taxi)
+- NEVER mention street taxis, meters (compteurs), Uber/Gett, shared rides, intra-city rides
+- Use ONLY the real Moveo Taxi prices listed in the brief above — no invented prices
+- Present Moveo Taxi as the solution naturally (2-3 mentions)
+- Write entirely in ${lang}
+- SEO-optimized with natural keyword usage
+- Practical, trustworthy, expert tone
 
 Return ONLY a valid JSON object (no markdown, no explanation):
 {
   "title": "SEO-optimized title (50-60 characters)",
   "excerpt": "Meta description (140-160 characters)",
   "content": "Full blog post in HTML using <h2>, <p>, <ul>, <li> tags (400-600 words)"
-}
-
-Requirements:
-- Write entirely in ${lang}
-- Focus on Israeli taxi market: Ben Gurion airport, Tel Aviv, Jerusalem, Haifa, Eilat
-- Include realistic NIS prices (airport taxi ~140-250₪, intercity varies)
-- Mention Moveo Taxi 2-3 times naturally
-- SEO-optimized with natural keyword usage
-- Practical, trustworthy tone`,
+}`,
     }],
   });
 
