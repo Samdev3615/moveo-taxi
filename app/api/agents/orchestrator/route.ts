@@ -4,6 +4,22 @@ import { supabaseAdmin } from "@/lib/supabase-server";
 
 export const maxDuration = 300;
 
+type ReportRow = { content: Record<string, unknown>; created_at: string; title: string };
+
+async function getLatestGoodReport(agent: string): Promise<ReportRow | null> {
+  const { data } = await supabaseAdmin
+    .from("seo_reports")
+    .select("content, created_at, title")
+    .eq("agent", agent)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (!data) return null;
+  // Filtre les rapports d'erreur côté JS — évite les filtres JSONB instables
+  const good = data.find((r) => !(r.content as Record<string, unknown>)?.error);
+  return good ?? null;
+}
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -12,22 +28,24 @@ export async function GET(req: NextRequest) {
 
   try {
     const [competitor, auditor, keywords, writer] = await Promise.all([
-      supabaseAdmin.from("seo_reports").select("content, created_at, title").eq("agent", "competitor").not("content->error", "is", "true").order("created_at", { ascending: false }).limit(1).maybeSingle(),
-      supabaseAdmin.from("seo_reports").select("content, created_at, title").eq("agent", "auditor").not("content->error", "is", "true").order("created_at", { ascending: false }).limit(1).maybeSingle(),
-      supabaseAdmin.from("seo_reports").select("content, created_at, title").eq("agent", "keywords").not("content->error", "is", "true").order("created_at", { ascending: false }).limit(1).maybeSingle(),
-      supabaseAdmin.from("seo_reports").select("content, created_at, title").eq("agent", "writer").not("content->error", "is", "true").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+      getLatestGoodReport("competitor"),
+      getLatestGoodReport("auditor"),
+      getLatestGoodReport("keywords"),
+      getLatestGoodReport("writer"),
     ]);
 
-    const availableReports = [
-      competitor.data ? `=== RAPPORT CONCURRENT (${competitor.data.created_at?.slice(0, 10)})\nTitre: ${competitor.data.title}\n${JSON.stringify(competitor.data.content, null, 2)}` : null,
-      auditor.data ? `=== RAPPORT AUDIT SEO (${auditor.data.created_at?.slice(0, 10)})\nTitre: ${auditor.data.title}\n${JSON.stringify(auditor.data.content, null, 2)}` : null,
-      keywords.data ? `=== RAPPORT MOTS-CLÉS (${keywords.data.created_at?.slice(0, 10)})\nTitre: ${keywords.data.title}\n${JSON.stringify(keywords.data.content, null, 2)}` : null,
-      writer.data ? `=== RAPPORT RÉDACTEUR (${writer.data.created_at?.slice(0, 10)})\nTitre: ${writer.data.title}\n${JSON.stringify(writer.data.content, null, 2)}` : null,
-    ].filter(Boolean).join("\n\n");
+    const sections = [
+      competitor ? `=== RAPPORT CONCURRENT (${competitor.created_at.slice(0, 10)})\nTitre: ${competitor.title}\n${JSON.stringify(competitor.content, null, 2)}` : null,
+      auditor    ? `=== RAPPORT AUDIT SEO (${auditor.created_at.slice(0, 10)})\nTitre: ${auditor.title}\n${JSON.stringify(auditor.content, null, 2)}` : null,
+      keywords   ? `=== RAPPORT MOTS-CLÉS (${keywords.created_at.slice(0, 10)})\nTitre: ${keywords.title}\n${JSON.stringify(keywords.content, null, 2)}` : null,
+      writer     ? `=== RAPPORT RÉDACTEUR (${writer.created_at.slice(0, 10)})\nTitre: ${writer.title}\n${JSON.stringify(writer.content, null, 2)}` : null,
+    ].filter(Boolean);
 
-    if (!availableReports) {
-      throw new Error("Aucun rapport d'agent disponible. Lance d'abord au moins un autre agent.");
+    if (sections.length === 0) {
+      throw new Error("Aucun rapport disponible. Lance d'abord au moins un autre agent (Concurrent, Mots-clés, Auditeur ou Rédacteur).");
     }
+
+    const availableReports = sections.join("\n\n");
 
     const msg = await anthropic.messages.create({
       model: MODEL_SONNET,
@@ -36,7 +54,7 @@ export async function GET(req: NextRequest) {
         role: "user",
         content: `Tu es l'Orchestrateur SEO de Moveo Taxi (moveotaxi.com). Tu analyses les rapports de tes agents spécialisés et tu produis un plan d'action stratégique synthétisé.
 
-Voici les derniers rapports disponibles :
+Voici les derniers rapports disponibles (${sections.length} agent(s)) :
 
 ${availableReports}
 
