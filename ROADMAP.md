@@ -132,7 +132,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ⬜ Page hub "Taxi depuis l'aéroport Ben Gurion" avec toutes les destinations et prix
 - ⬜ Liens internes depuis les articles de blog vers les pages routes correspondantes
 - ⬜ Avis Google — utiliser template Noam pour demander via WhatsApp après chaque course
-- ⬜ Google Business Profile — validation vidéo en attente (délai 3-7 jours)
+- ✅ Google Business Profile — **validé le 2026-07-23** · support@moveotaxi.com propriétaire · profil actif sur Google Maps
 - ⬜ Sophie — enrichissement des pages routes existantes avec contenu dynamique (Phase 3)
 
 ---
@@ -144,7 +144,7 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - 🔮 Application mobile (React Native)
 - 🔮 Suivi GPS en temps réel du chauffeur
 - 🔮 Programme de fidélité client
-- ✅ Google Business Profile — créé, vérifié, 2 propriétaires (samcomm.d@gmail.com + support@moveotaxi.com), vidéo soumise
+- ✅ Google Business Profile — créé, validé (2026-07-23), 2 propriétaires (samcomm.d@gmail.com + support@moveotaxi.com), profil actif
 
 ---
 
@@ -155,5 +155,5 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 | ~~`.env.local` vide~~ | ✅ Résolu — Supabase connecté | — |
 | ~~Numéro de téléphone placeholder~~ | ✅ Résolu — `+972-54-310-0044` partout | — |
 | ~~Pas de déploiement Vercel~~ | ✅ Résolu — moveotaxi.com | — |
-| GBP validation vidéo | Profil non visible sur Google Maps | En attente Google (3-7 jours) |
+| ~~GBP validation vidéo~~ | ✅ Résolu — Profil actif sur Google Maps depuis le 2026-07-23 | — |
 | Core Web Vitals GSC | Pas de données (site récent) | Données disponibles après 90 jours de trafic réel |
