@@ -5,7 +5,7 @@
     "airport": "Aéroport",
     "intercity": "Inter-villes",
     "routes": "Trajets",
-    "drivers": "Pour les chauffeurs",
+    "drivers": "Nos chauffeurs",
     "about": "À propos",
     "contact": "Contact",
     "login": "Se connecter",
@@ -318,23 +318,26 @@
     "value_transparent_desc": "Prix fixes, sans surprise"
   },
   "driversPage": {
-    "title": "Rejoignez notre flotte",
-    "subtitle": "Devenez chauffeur partenaire Moveo Taxi",
-    "cta": "Rejoindre maintenant",
-    "benefits_title": "Pourquoi nous rejoindre ?",
-    "benefit_income": "Revenus attractifs",
-    "benefit_income_desc": "Gagnez plus avec la meilleure commission du marché",
-    "benefit_flexible": "Horaires flexibles",
-    "benefit_flexible_desc": "Travaillez quand vous voulez",
-    "benefit_support": "Support dédié",
-    "benefit_support_desc": "Notre équipe vous accompagne 7j/7",
-    "benefit_partners": "Réseau de partenaires",
-    "benefit_partners_desc": "Rejoignez +800 chauffeurs professionnels",
-    "join_title": "Comment nous rejoindre ?",
-    "join_step1": "Envoyez votre candidature sur WhatsApp",
-    "join_step2": "Vérification de votre permis de conduire",
-    "join_step3": "Formation et intégration à notre réseau",
-    "join_cta": "Postuler sur WhatsApp"
+    "title": "Nos Chauffeurs",
+    "subtitle": "800+ professionnels vérifiés à votre service",
+    "trust_title": "Pourquoi faire confiance à nos chauffeurs ?",
+    "trust_military": "Anciens militaires IDF",
+    "trust_military_desc": "Tous nos chauffeurs ont servi dans l'armée israélienne. Discipline, ponctualité et sens du devoir.",
+    "trust_licensed": "Licenciés & assurés",
+    "trust_licensed_desc": "Permis professionnel, assurance passagers complète, casier judiciaire vierge.",
+    "trust_expert": "Experts des routes",
+    "trust_expert_desc": "Connaissance parfaite de toutes les routes israéliennes, aéroport Ben Gourion inclus.",
+    "trust_available": "Disponibles 24h/24",
+    "trust_available_desc": "Votre chauffeur est à l'heure, même pour les vols de nuit ou les départs à l'aube.",
+    "standards_title": "Nos standards de qualité",
+    "standard1": "Ponctualité garantie — votre chauffeur vous attend",
+    "standard2": "Véhicules propres, climatisés et confortables",
+    "standard3": "Aucun détour — prix fixe confirmé à la réservation",
+    "standard4": "Service en 5 langues : hébreu, anglais, français, russe, espagnol",
+    "standard5": "Discrétion et professionnalisme garantis",
+    "book_cta": "Réserver votre taxi maintenant",
+    "book_subtitle": "Faites confiance à nos chauffeurs Moveo Taxi pour votre prochain trajet en Israël",
+    "book_button": "Réserver via WhatsApp"
   },
   "privacy": {
     "title": "Politique de confidentialité",
@@ -384,8 +387,8 @@
       "description": "Contactez Moveo Taxi par téléphone ou WhatsApp pour réserver votre taxi en Israël. Service disponible 24h/24, 7j/7."
     },
     "drivers": {
-      "title": "Rejoignez Moveo Taxi — Devenir Chauffeur Partenaire en Israël",
-      "description": "Devenez chauffeur partenaire Moveo Taxi. Revenus flexibles, liberté de travail, support 24h/24. Rejoignez notre réseau de chauffeurs professionnels en Israël."
+      "title": "Nos Chauffeurs Professionnels | Moveo Taxi Israël",
+      "description": "800+ chauffeurs ex-militaires IDF, tous licenciés et assurés. Taxi professionnel en Israël — aéroport Ben Gourion, inter-villes. Ponctualité et discrétion garanties."
     }
   },
   "routePage": {

@@ -5,7 +5,7 @@
     "airport": "Airport",
     "intercity": "Intercity",
     "routes": "Routes",
-    "drivers": "For Drivers",
+    "drivers": "Our Drivers",
     "about": "About",
     "contact": "Contact",
     "login": "Sign In",
@@ -318,23 +318,26 @@
     "value_transparent_desc": "Fixed prices, no surprises"
   },
   "driversPage": {
-    "title": "Join Our Fleet",
-    "subtitle": "Become a Moveo Taxi partner driver",
-    "cta": "Join Now",
-    "benefits_title": "Why Join Us?",
-    "benefit_income": "Attractive Income",
-    "benefit_income_desc": "Earn more with the lowest commission on the market",
-    "benefit_flexible": "Flexible Hours",
-    "benefit_flexible_desc": "Work whenever you want",
-    "benefit_support": "Dedicated Support",
-    "benefit_support_desc": "Our team supports you 7 days a week",
-    "benefit_partners": "Partner Network",
-    "benefit_partners_desc": "Join 800+ professional drivers",
-    "join_title": "How to Join?",
-    "join_step1": "Send your application on WhatsApp",
-    "join_step2": "Verification of your driving license",
-    "join_step3": "Training and integration into our network",
-    "join_cta": "Apply on WhatsApp"
+    "title": "Our Drivers",
+    "subtitle": "800+ verified professionals at your service",
+    "trust_title": "Why trust our drivers?",
+    "trust_military": "IDF Veterans",
+    "trust_military_desc": "All our drivers served in the Israeli Defense Forces. Discipline, punctuality, and a sense of duty.",
+    "trust_licensed": "Licensed & Insured",
+    "trust_licensed_desc": "Professional license, full passenger insurance, clean criminal record.",
+    "trust_expert": "Route Experts",
+    "trust_expert_desc": "Perfect knowledge of all Israeli roads, including Ben Gurion Airport.",
+    "trust_available": "Available 24/7",
+    "trust_available_desc": "Your driver is on time, even for late-night flights or early morning departures.",
+    "standards_title": "Our quality standards",
+    "standard1": "Punctuality guaranteed — your driver waits for you",
+    "standard2": "Clean, air-conditioned and comfortable vehicles",
+    "standard3": "No detours — fixed price confirmed at booking",
+    "standard4": "Service in 5 languages: Hebrew, English, French, Russian, Spanish",
+    "standard5": "Discretion and professionalism guaranteed",
+    "book_cta": "Book your taxi now",
+    "book_subtitle": "Trust Moveo Taxi drivers for your next trip in Israel",
+    "book_button": "Book via WhatsApp"
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -384,8 +387,8 @@
       "description": "Contact Moveo Taxi by phone or WhatsApp to book your taxi in Israel. Service available 24/7."
     },
     "drivers": {
-      "title": "Join Moveo Taxi — Become a Partner Driver in Israel",
-      "description": "Become a Moveo Taxi partner driver. Flexible income, free working hours, 24/7 support. Join our network of professional drivers in Israel."
+      "title": "Our Professional Drivers | Moveo Taxi Israel",
+      "description": "800+ IDF veteran drivers, all licensed and insured. Professional taxi in Israel — Ben Gurion Airport, intercity. Punctuality and discretion guaranteed."
     }
   },
   "routePage": {
