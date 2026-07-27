@@ -8,7 +8,7 @@ import DatePicker from "@/components/DatePicker";
 import TimePicker from "@/components/TimePicker";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { cn } from "@/lib/utils";
-import { CITIES, type CityKey } from "@/lib/prices";
+import { CITIES, type CityKey } from "@/lib/cities";
 import { usePriceData } from "@/lib/hooks/usePriceData";
 
 type Step = 1 | 2 | 3;

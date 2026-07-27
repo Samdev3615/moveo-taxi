@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { ROUTE_PAGES, getRouteBySlug } from "@/lib/route-pages";
-import { getPrice } from "@/lib/prices";
+import { getRoutePrice } from "@/lib/get-route-price";
 import { ShieldCheck, Clock, Car, Globe, MapPin, ArrowRight } from "lucide-react";
 
 const WHATSAPP_NUMBER = "972543100044";
@@ -30,7 +30,7 @@ export async function generateMetadata({
   const tb = await getTranslations({ locale, namespace: "booking" });
   const fromName = tb(`form.cities.${route.from}`);
   const toName = tb(`form.cities.${route.to}`);
-  const sedanPrice = getPrice(route.from, route.to, "sedan");
+  const { sedan: sedanPrice } = await getRoutePrice(route.from, route.to);
 
   const fixedPriceLabel: Record<string, string> = {
     fr: "prix fixe",
@@ -84,8 +84,7 @@ export default async function RouteSlugPage({
   const fromName = tb(`form.cities.${route.from}`);
   const toName = tb(`form.cities.${route.to}`);
 
-  const sedanPrice = getPrice(route.from, route.to, "sedan");
-  const minibusPrice = getPrice(route.from, route.to, "minibus");
+  const { sedan: sedanPrice, minibus: minibusPrice } = await getRoutePrice(route.from, route.to);
 
   const bookingParams = new URLSearchParams({
     type: route.to === "ben_gurion" || route.from === "ben_gurion" ? "airport" : "intercity",

@@ -1,4 +1,4 @@
-import type { CityKey } from "./prices";
+import type { CityKey } from "./cities";
 
 export interface RoutePage {
   slug: string;

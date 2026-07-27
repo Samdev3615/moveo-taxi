@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { getPrice } from "@/lib/prices";
+import { getAllRoutePrices } from "@/lib/get-route-price";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
 import { locales } from "@/i18n/config";
 import { ROUTE_PAGES } from "@/lib/route-pages";
@@ -288,6 +288,7 @@ export default async function EilatPage({
   const c = CONTENT[locale as keyof typeof CONTENT] ?? CONTENT.en;
   const tb = await getTranslations({ locale, namespace: "booking" });
   const cityName = (key: string) => tb(`form.cities.${key}`);
+  const priceMap = await getAllRoutePrices();
 
   const faqSchema = {
     "@context": "https://schema.org",
@@ -355,8 +356,9 @@ export default async function EilatPage({
           <h2 className="text-2xl font-bold text-gray-900 mb-8">{c.routesTitle}</h2>
           <div className="grid sm:grid-cols-3 gap-5">
             {EILAT_ROUTES.map((route) => {
-              const sedanPrice = getPrice(route.from, route.to, "sedan");
-              const minibusPrice = getPrice(route.from, route.to, "minibus");
+              const prices = priceMap.get(`${route.from}:${route.to}`);
+              const sedanPrice = prices?.sedan ?? null;
+              const minibusPrice = prices?.minibus ?? null;
               if (!sedanPrice) return null;
 
               const landingPage = ROUTE_PAGES.find(

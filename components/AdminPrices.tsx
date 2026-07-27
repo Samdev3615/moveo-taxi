@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import type { RoutePrice, RoutePriceInsert } from "@/lib/supabase";
-import { CITIES, type CityKey } from "@/lib/prices";
+import { CITIES, type CityKey } from "@/lib/cities";
 import { Plus, Save, Trash2, Loader2, CheckCircle, RefreshCw, Search } from "lucide-react";
 
 const CITY_LABELS: Record<CityKey, string> = {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import type { CityKey } from "@/lib/prices";
+import type { CityKey } from "@/lib/cities";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

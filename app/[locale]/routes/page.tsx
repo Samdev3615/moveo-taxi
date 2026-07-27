@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import { getAllRoutePrices } from "@/lib/get-route-price";
+import { ROUTE_PAGES } from "@/lib/route-pages";
 
 export async function generateMetadata({
   params,
@@ -25,35 +31,30 @@ export async function generateMetadata({
     },
   };
 }
-import Link from "next/link";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import { getPrice, type CityKey } from "@/lib/prices";
-import { ROUTE_PAGES } from "@/lib/route-pages";
 
-const ROUTE_PAIRS: { from: CityKey; to: CityKey; duration: string }[] = [
-  { from: "tel_aviv", to: "jerusalem", duration: "1h 10min" },
-  { from: "tel_aviv", to: "haifa", duration: "1h 00min" },
-  { from: "tel_aviv", to: "ben_gurion", duration: "30 min" },
-  { from: "tel_aviv", to: "beer_sheva", duration: "1h 10min" },
-  { from: "tel_aviv", to: "eilat", duration: "3h 30min" },
-  { from: "tel_aviv", to: "netanya", duration: "35 min" },
-  { from: "jerusalem", to: "ben_gurion", duration: "45 min" },
-  { from: "jerusalem", to: "haifa", duration: "1h 30min" },
-  { from: "jerusalem", to: "beer_sheva", duration: "1h 05min" },
-  { from: "jerusalem", to: "eilat", duration: "3h 10min" },
-  { from: "haifa", to: "ben_gurion", duration: "1h 15min" },
-  { from: "haifa", to: "beer_sheva", duration: "1h 45min" },
-  { from: "haifa", to: "netanya", duration: "30 min" },
+const ROUTE_PAIRS = [
+  { from: "tel_aviv",   to: "jerusalem",  duration: "1h 10min" },
+  { from: "tel_aviv",   to: "haifa",      duration: "1h 00min" },
+  { from: "tel_aviv",   to: "ben_gurion", duration: "30 min" },
+  { from: "tel_aviv",   to: "beer_sheva", duration: "1h 10min" },
+  { from: "tel_aviv",   to: "eilat",      duration: "3h 30min" },
+  { from: "tel_aviv",   to: "netanya",    duration: "35 min" },
+  { from: "jerusalem",  to: "ben_gurion", duration: "45 min" },
+  { from: "jerusalem",  to: "haifa",      duration: "1h 30min" },
+  { from: "jerusalem",  to: "beer_sheva", duration: "1h 05min" },
+  { from: "jerusalem",  to: "eilat",      duration: "3h 10min" },
+  { from: "haifa",      to: "ben_gurion", duration: "1h 15min" },
+  { from: "haifa",      to: "beer_sheva", duration: "1h 45min" },
+  { from: "haifa",      to: "netanya",    duration: "30 min" },
   { from: "beer_sheva", to: "ben_gurion", duration: "35 min" },
-  { from: "beer_sheva", to: "eilat", duration: "2h 10min" },
-  { from: "netanya", to: "ben_gurion", duration: "30 min" },
+  { from: "beer_sheva", to: "eilat",      duration: "2h 10min" },
+  { from: "netanya",    to: "ben_gurion", duration: "30 min" },
 ];
 
 export default async function RoutesPage() {
   const t = await getTranslations();
   const locale = await getLocale();
+  const priceMap = await getAllRoutePrices();
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -75,8 +76,9 @@ export default async function RoutesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {ROUTE_PAIRS.map((route) => {
-              const sedanPrice = getPrice(route.from, route.to, "sedan");
-              const minibusPrice = getPrice(route.from, route.to, "minibus");
+              const prices = priceMap.get(`${route.from}:${route.to}`);
+              const sedanPrice = prices?.sedan ?? null;
+              const minibusPrice = prices?.minibus ?? null;
               if (!sedanPrice) return null;
 
               const bookingParams = new URLSearchParams({
@@ -93,7 +95,6 @@ export default async function RoutesPage() {
 
               const cardBody = (
                 <>
-                  {/* Route header */}
                   <div className="flex items-center gap-2 mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1">
@@ -106,12 +107,8 @@ export default async function RoutesPage() {
                         {t(`booking.form.cities.${route.to}`)}
                       </div>
                     </div>
-                    <div className="text-xs text-gray-400 text-end">
-                      {route.duration}
-                    </div>
+                    <div className="text-xs text-gray-400 text-end">{route.duration}</div>
                   </div>
-
-                  {/* Prices */}
                   <div className="bg-gray-50 rounded-xl p-3 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">{t("booking.form.vehicles.sedan")}</span>
@@ -133,16 +130,12 @@ export default async function RoutesPage() {
                   className="bg-white border border-gray-100 rounded-2xl hover:shadow-lg hover:-translate-y-0.5 transition-all group flex flex-col"
                 >
                   {landingPage ? (
-                    <Link
-                      href={`/${locale}/route/${landingPage.slug}`}
-                      className="flex-1 p-5 block"
-                    >
+                    <Link href={`/${locale}/route/${landingPage.slug}`} className="flex-1 p-5 block">
                       {cardBody}
                     </Link>
                   ) : (
                     <div className="flex-1 p-5">{cardBody}</div>
                   )}
-
                   <div className="px-5 pb-5">
                     <Link
                       href={`/${locale}/booking?${bookingParams.toString()}`}
