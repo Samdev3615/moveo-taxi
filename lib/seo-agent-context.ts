@@ -57,7 +57,7 @@ Kiryat Shmona : 820₪
 Eilat : 1 410₪
 
 Supplément nuit (21h–6h) : +10 à +70₪ selon destination
-Minibus 6 places : prix sedan × 1.35
+Voiture 6 places : prix sedan × 1.35
 
 === PRIX INTERCITÉS (sedan, tarif jour — formule fixe) ===
 Calcul : ≤50km → 100₪ + (km × 3.50₪) | >50km → 275₪ + ((km-50) × 2.80₪) | arrondi à la dizaine
@@ -71,7 +71,7 @@ Tel Aviv → Eilat (350km) : ~1 120₪
 
 === NOS VÉHICULES ===
 - Sedan 4 places : jusqu'à 4 valises standard
-- Minibus 6 places : pour 5–6 passagers ou beaucoup de bagages (tarif ×1.35)
+- Voiture 6 places : pour 5–6 passagers ou beaucoup de bagages (tarif ×1.35)
 - Baby seat disponible sur demande
 - Tous les véhicules sont climatisés
 

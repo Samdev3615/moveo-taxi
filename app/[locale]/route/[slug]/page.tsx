@@ -146,14 +146,14 @@ export default async function RouteSlugPage({
   const taxiServiceOffers = [
     ...(sedanPrice ? [{
       "@type": "Offer",
-      "name": "Sedan",
+      "name": "Taxi 4 places",
       "price": sedanPrice,
       "priceCurrency": "ILS",
       "availability": "https://schema.org/InStock",
     }] : []),
     ...(minibusPrice ? [{
       "@type": "Offer",
-      "name": "Minibus / Van",
+      "name": "Taxi 6 places",
       "price": minibusPrice,
       "priceCurrency": "ILS",
       "availability": "https://schema.org/InStock",
