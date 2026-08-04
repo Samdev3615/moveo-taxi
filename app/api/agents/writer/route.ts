@@ -127,13 +127,17 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, slug, generated: posts.length });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
+    const msg = err instanceof Error
+      ? err.message
+      : typeof err === "object" && err !== null && "message" in err
+        ? String((err as { message: unknown }).message)
+        : String(err);
     try {
       await supabaseAdmin.from("seo_reports").insert({
         agent: "writer",
         title: "Erreur rédacteur",
         summary: msg.slice(0, 300),
-        content: { error: true, message: msg },
+        content: { error: true, message: msg, raw: JSON.stringify(err).slice(0, 500) },
       });
     } catch (_) { /* ignore */ }
     return NextResponse.json({ error: msg }, { status: 500 });
