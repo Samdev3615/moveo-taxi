@@ -38,7 +38,7 @@ function getWeekTopic() {
 async function generateForLocale(topic: string, slug: string, locale: string, lang: string) {
   const msg = await anthropic.messages.create({
     model: MODEL_SONNET,
-    max_tokens: 2000,
+    max_tokens: 4096,
     tools: [{
       name: "save_article",
       description: "Save the SEO blog article for Moveo Taxi",
