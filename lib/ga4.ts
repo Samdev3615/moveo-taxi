@@ -76,6 +76,25 @@ export async function getGa4Countries(days = 28) {
   return runReport(days, ["sessions", "activeUsers"], ["country"], 10);
 }
 
+export async function getGa4DailySessions(days = 30) {
+  const analyticsData = google.analyticsdata({ version: "v1beta", auth: getAuth() });
+  const { startDate, endDate } = dateRange(days);
+  const res = await analyticsData.properties.runReport({
+    property: PROPERTY_ID,
+    requestBody: {
+      dateRanges: [{ startDate, endDate }],
+      metrics: [{ name: "sessions" }],
+      dimensions: [{ name: "date" }],
+      limit: String(days + 1),
+      orderBys: [{ dimension: { dimensionName: "date" }, desc: false }],
+    },
+  });
+  return (res.data.rows ?? []).map(r => ({
+    date: r.dimensionValues?.[0]?.value ?? "",
+    sessions: Number(r.metricValues?.[0]?.value ?? 0),
+  }));
+}
+
 export function formatGa4Overview(data: Awaited<ReturnType<typeof getGa4Overview>>) {
   if (!data) return "[GA4 non disponible]";
   const dur = `${Math.floor(data.avgDurationSec / 60)}m${data.avgDurationSec % 60}s`;
