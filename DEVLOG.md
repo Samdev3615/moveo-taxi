@@ -1,551 +1,105 @@
-# Dev Log — Moveo Taxi
-
-Journal chronologique des décisions techniques et changements importants.
+# Devlog — Moveo Taxi
 
 ---
 
-## 2026-07-07
+## Session du 2026-08-03
 
-### SEO — 5 points implémentés (demande Gemini)
-- Ajout du namespace `meta` (titre + description) dans les 5 fichiers `messages/*.json`
-- `generateMetadata()` avec hreflang dans `app/[locale]/layout.tsx` et les 5 pages clés
-- `localePrefix: "always"` explicite dans `proxy.ts`
-- Création de `app/sitemap.ts` (30 URLs : 6 pages × 5 locales)
-- Création de `app/robots.ts` (exclusion `/admin` et `/api/`)
-- Audit Tailwind : aucune classe directionnelle non-logique trouvée
+### MCP GA4 opérationnel
+- Création de `scripts/ga4-auth.js` et `scripts/ga4-mcp-server.js`
+- Authentification OAuth2 réussie — propriété GA4 "Moveo Taxi" (ID: 546389290) détectée automatiquement
+- Token sauvegardé dans `.ga4-token.json`
+- MCP `ga4-moveo` enregistré dans `.claude.json` (aux côtés de `gsc-moveo`)
+- 5 outils disponibles : `ga4_traffic_overview`, `ga4_top_pages`, `ga4_traffic_sources`, `ga4_by_country`, `ga4_by_language`
 
-### Bug critique résolu — page blanche / erreur 500
-**Cause** : Dans cette version de Next.js (16.2.9), le fichier de routing s'appelle `proxy.ts`, pas `middleware.ts`. La session précédente avait renommé `proxy.ts` → `middleware.ts` en croyant suivre la convention standard. Cette version affiche un avertissement explicite : *"The 'middleware' file convention is deprecated. Please use 'proxy' instead."*
-**Fix** : Renommage `middleware.ts` → `proxy.ts` + vidage du cache `.next`
-**Leçon** : Toujours lire `node_modules/next/dist/docs/` avant de modifier la configuration (voir `AGENTS.md`).
+### Agents SEO branchés sur données réelles
+- Création de `lib/ga4.ts` (équivalent de `lib/gsc.ts` pour Google Analytics 4)
+- `GA4_REFRESH_TOKEN` et `GA4_PROPERTY_ID` ajoutés dans `.env.local`
+- `app/api/agents/auditor/route.ts` — ajout GA4 (sessions, pages, sources, pays)
+- `app/api/agents/orchestrator/route.ts` — ajout GSC live + GA4 live en contexte direct
+- Les agents travaillent maintenant sur de vraies données, pas uniquement Serper
 
----
+### Stratégie SEO clarifiée
+Routes prioritaires validées (ordre SEO + Google Ads) :
+1. Jérusalem ↔ Ben Gourion
+2. Tel Aviv ↔ Ben Gourion
+3. Netanya ↔ Ben Gourion
+4. Ashdod ↔ Ben Gourion
+5. Tout le reste
 
-## 2026-07-07 (suite)
+Véhicule phare : **sedan 4 places, capacité 4 grandes valises**.
 
-### Déploiement Vercel — site en production
-- URL live : **https://moveo-taxi.vercel.app**
-- Variables d'environnement Supabase ajoutées dans Vercel (Production + Preview + Development)
-- Premier déploiement réussi depuis le repo GitHub `Samdev3615/moveo-taxi`
-
-### Supabase connecté
-- Projet créé : `moveo-taxi` (org Moveo Taxi, région Asia-Pacific/Tokyo)
-- Project ID : `zfoqfpbozjlqollswdli`
-- Table `bookings` créée + RLS activé + policies configurées
-- Premier test de réservation réussi — ID `83609c34-39f1-4c4e-bcfa-cb8ae0c6cc50`
-- `.env.local` rempli avec les vraies clés
-
-### Numéro de téléphone réel
-- Remplacé `+972-53-1234567` → `+972-54-310-0044` dans 8 fichiers
-- WhatsApp : `972543100044`
+### Rapport Orchestrateur (lancé depuis /admin/seo)
+- Score SEO : 25/100 → potentiel 70/100
+- 7 réservations en 30 jours, 100% aéroport, 0% intercité
+- Angle mort : Netanya = 57% des réservations mais aucun contenu SEO dédié
+- Quick win : /es non indexée alors que marché espagnol est le moins saturé
 
 ---
 
-## 2026-07-21 — Audit complet + corrections
+## Comparaison trafic 30 juil. → 3 août (4 jours)
 
-### Sécurité — refonte authentification admin
-**Problème** : Le mot de passe admin était stocké dans `NEXT_PUBLIC_ADMIN_PASSWORD` (exposé au navigateur) et vérifié côté client uniquement.
-**Solution** : Authentification entièrement déplacée côté serveur.
-- `lib/admin-auth.ts` : helper `isAdminAuthenticated()` — lit le cookie httpOnly `admin_session` et compare à `ADMIN_SECRET` (env var serveur uniquement)
-- `app/api/admin/login/route.ts` : POST vérifie le mot de passe, pose un cookie httpOnly 7 jours
-- `app/api/admin/logout/route.ts` : POST efface le cookie
-- `app/api/admin/prices/route.ts` + `[id]/route.ts` : GET/POST/PATCH/DELETE protégés par `isAdminAuthenticated()`
-- `components/AdminAuthLayout.tsx` : login/logout appellent les API routes (plus de comparaison côté client)
-- `components/AdminPrices.tsx` : mutations prix via `/api/admin/prices/*` (plus d'accès direct Supabase anon)
-- `app/api/bookings/route.ts` + `[id]/route.ts` : GET/PATCH/DELETE protégés
-- Vercel : `ADMIN_SECRET` ajouté, `NEXT_PUBLIC_ADMIN_PASSWORD` supprimé, `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` renommé en `GOOGLE_MAPS_API_KEY`
-- Supabase : policy RLS "Service write" supprimée (`supabase/fix-rls-route-prices.sql`)
+| Métrique | 30 juil. | 3 août | Δ |
+|----------|----------|--------|---|
+| Sessions | 79 | 98 | +24% |
+| Utilisateurs | 54 | 67 | +24% |
+| Pages vues | 158 | 216 | +37% |
+| Taux de rebond | 63% | 55% | -8 pts |
+| Durée moyenne | 2m14s | 2m56s | +42s |
 
-### SEO — corrections complètes
-- Canonical URLs ajoutés sur toutes les pages publiques (home, airport, about, contact, routes, drivers)
-- hreflang `alternates.languages` ajouté sur `/route/[slug]` (he/en/fr/ru/es + x-default)
-- `app/sitemap.ts` : `/drivers` ajouté (priority 0.7, changeFrequency monthly)
-- `app/[locale]/confirmation/[id]/page.tsx` : `robots: "noindex, nofollow"` + vérification UUID en base avant affichage (notFound() si inconnu)
+**Sources :**
+- Direct : 51 → 61
+- Google organique : 16 → 20
+- AI Assistant (ChatGPT/Perplexity) : 10 → 17 (+70%)
 
-### Fix images route cards — .gitignore
-**Cause** : Les règles `*.jpg` et `*.jpeg` dans `.gitignore` bloquaient les 4 images de routes (`route-jerusalem.jpg`, etc.).
-**Fix** : Suppression de ces règles, force-add des images, commit. Images maintenant déployées sur Vercel.
+**Nouvelles requêtes GSC (absentes le 30 juil.) :**
+- "moveo taxi" — pos. 3.75 — 3 clics (marque cherchée directement)
+- "taxi jerusalem to ben gurion airport price" — pos. 82
+- "taxi tel aviv to ben gurion airport" — pos. 78
+- "taxi netanya" / "netanya taxi" — pos. 61–72
+- "такси нагария" (Nahariya RU) — pos. 11.75
 
-### Performance & code
-- `app/[locale]/page.tsx` : `export const revalidate = 3600` (ISR — page régénérée toutes les heures)
-- `lib/hooks/usePriceData.ts` : hook extrait (logique fetch prix partagée entre BookingWidget et BookingForm, élimine la duplication)
-- `components/BookingForm.tsx` : fix onglets (2 intercité / 3 aéroport), validation regex téléphone, prix nuit — suppression fallback 10h (prix affiché uniquement si heure sélectionnée)
-- `app/[locale]/page.tsx` : `TFunc` dérivé de `Awaited<ReturnType<typeof getTranslations>>` (plus de type artisanal)
-
-### Admin UX
-- `components/AdminDashboard.tsx` : `LANG_FLAGS` dédupliqué, `fetchError` state + bannière rouge + bouton retry si API échoue, vérification `res.ok` sur `updateStatus`
-- `components/AdminPrices.tsx` : états de chargement `adding` + `deletingId` — spinner Loader2 sur boutons Ajouter et Supprimer pendant la requête
-
-### i18n — traductions
-- `lib/email.ts` : `cityNames` étendu de 10 à 30 villes dans les 5 langues
-- `messages/*.json` : ajout clés `booking.price.quote` et `meta.drivers.{title,description}` (via scripts Node.js pour éviter le BOM PowerShell)
-
-### Fix build Vercel
-6 fichiers existant localement mais jamais commités causaient un crash build (`module-not-found`) :
-- `components/AdminBookingModal.tsx`
-- `components/AdminCalendar.tsx`
-- `app/admin/calendar/page.tsx`
-- `public/admin-manifest.json`
-- `app/admin/layout.tsx` (modifications)
-- `lib/supabase-server.ts` (modifications)
-
-### UI fixes
-- Section garanties (`bg-gray-950`) : sous-titres `text-gray-600` → `text-gray-400` (contraste insuffisant sur fond noir)
-- `LanguageSwitcher.tsx` : emoji drapeaux → images PNG locales `public/images/flags/{code}.png` (les emoji drapeaux ne s'affichent pas sur Windows)
-
-### Google Search Console
-- Sitemap `sitemap.xml` renvoyé (Google détecte maintenant `/drivers`)
-- `/he/drivers` : indexation demandée manuellement
-- `/confirmation/*` vérifié : "Google ne reconnaît pas cette URL" — noindex effectif
+**Engagement :**
+- /fr : rebond 36% → 16%
+- /fr/booking : rebond 40% → 11%
 
 ---
 
-## 2026-07-17 → 2026-07-21
+---
 
-### Règle capacité bagages — modal d'alerte
-Règle : 1 valise = 2 unités trolley, coffre sedan = 8 unités max. Si dépassé avec ≤ 4 passagers, modal d'avertissement s'affiche.
-- Bouton "Accepter — Taxi 6 places" : force `luggageForced = true`, prix recalculé en minibus
-- Bouton "Corriger mes bagages" : revert précis sur le champ incrémenté (snapshot `preWarningLuggage`)
-- État auto-reset : si bagages repassent ≤ 8 unités, `luggageForced` repasse à `false`
-- Traductions dans les 5 fichiers `messages/*.json` : `luggage_warning_title`, `luggage_warning_body`, `luggage_warning_accept`, `luggage_warning_correct`
-- Return du composant wrappé dans `<>` (fragment) pour avoir le modal comme sibling de la div principale
+## Session du 2026-08-04
 
-### Fix widget → formulaire : données non transmises
-**Cause** : `BookingWidget.tsx` n'incluait pas le paramètre `direction` dans l'URL de navigation.  
-**Conséquence** : Les champs from/to affichaient `--` sur le formulaire même si sélectionnés sur la homepage.  
-**Fix** : Calcul `isAirport` + `direction` dans `handleSubmit`, ajouté aux `URLSearchParams`.
+### Analyse SEO — comparaison 2 → 4 août
 
-### Admin — affichage bagages et infos structurées
-- Renommage `parseLuggage` → `parseNotes` dans `AdminDashboard.tsx` (retourne désormais `suitcases`, `trolleys`, `address`, `source`, `lang`, `driverIsMe`, `driverName`, `driverPhone`)
-- Affichage dans colonne Trajet : icône valise + compteurs, adresse de prise en charge, badge chauffeur ("Moi" ou nom + téléphone)
-- Affichage dans colonne Client : badge source coloré + drapeau langue
+**Trafic GA4 (Δ 2 jours) :**
 
-### Admin Agenda (calendrier mensuel)
-Nouveau composant `components/AdminCalendar.tsx` + page `app/admin/calendar/page.tsx`.
-- Grille mensuelle 7 colonnes (Lun→Dim), cellules 88px
-- Chaque cellule : numéro jour (cercle bleu = aujourd'hui), nb réservations, revenus, points de statut (amber/vert/bleu)
-- Navigation mois précédent/suivant + bouton "Aujourd'hui"
-- Barre stats : total réservations, revenus estimés, jours actifs
-- Panneau latéral (300px) : détail du jour sélectionné, cards triées par heure
-- Chaque card : heure, trajet, client (téléphone cliquable), passagers/véhicule/bagages, chauffeur, statut + boutons action
-- Lien "Agenda" ajouté dans sidebar `AdminAuthLayout.tsx`
+| Métrique | 2 août | 4 août | Δ |
+|----------|--------|--------|---|
+| Sessions | 96 | 103 | +7 (+7.3%) |
+| Utilisateurs | 66 | 70 | +4 (+6.1%) |
+| Pages vues | 209 | 225 | +16 (+7.7%) |
+| Taux de rebond | 54.2% | 57.3% | +3.1 pts ⚠️ |
+| Durée moy. | 2m47s | 2m50s | stable |
 
-### Saisie manuelle de réservation (admin)
-Nouveau composant `components/AdminBookingModal.tsx` — drawer slide-over depuis la droite.
-- Bouton "+ Nouvelle réservation" dans l'en-tête de `AdminDashboard`
-- Champs : Client (nom, téléphone, email), Trajet (from/to avec auto-direction aéroport, date, heure, vol, terminal, adresse), Passagers & bagages, Source, Langue client, Chauffeur, Prix & statut, Notes
-- **Source** : chips WhatsApp / Téléphone / Site web / Email / Recommandation / Autre (défaut : WhatsApp)
-- **Langue client** : chips avec drapeaux 🇫🇷🇮🇱🇬🇧🇷🇺🇪🇸🇸🇦 (défaut : fr)
-- **Chauffeur** : toggle "Je fais la course" / "Attribuer à un chauffeur" + champs nom+téléphone conditionnels
-- Toutes ces données encodées comme lignes préfixées dans le champ `notes` DB : `Source: X`, `Langue: X`, `Chauffeur: X | tel`, `Adresse: X`, `Valises: N`, `Trolleys: N`
+Rythme ~8 sessions/jour. Trafic IA (ChatGPT/Perplexity) = 17 sessions = 16.5% du total.
 
-### Modification d'une réservation existante
-- Bouton **"✏ Modifier"** (bleu, visible) sur chaque ligne du tableau dans la colonne Actions
-- `AdminBookingModal` accepte prop `booking?: Booking` — mode édition si fourni
-- `parseNotesForEdit()` : décode le champ `notes` pour repeupler les champs du formulaire (source, langue, chauffeur, adresse, valises, trolleys, notes libres)
-- Titre dynamique : "Modifier la réservation" + ID court en sous-titre
-- Submit envoie `PATCH /api/bookings/${id}` avec `_full_update: true` au lieu d'un POST
-- `app/api/bookings/[id]/route.ts` : handler PATCH étendu pour mise à jour complète (tous les champs) quand `_full_update === true`
+**Signaux GSC nouveaux :**
+- "cheap airport shuttle vs taxi Israel" — pos **9** (nouveau signal, requête comparaison)
+- "taxi autour de moi pas cher" (FR) — pos **6** (inattendu, signal audience française locale)
+- /fr/routes : 18 impressions GSC, CTR 5.6% seulement → title/meta à réécrire
+- /ru/route/tel-aviv-jerusalem : CTR 100% (1 clic / 1 impression, pos 5) — page russe qui convertit
 
-### Suppression de réservations annulées
-- Bouton poubelle 🗑 sur les lignes avec statut "Annulé"
-- Confirmation inline en 2 clics : 🗑 → "Confirmer | Non" (évite `confirm()` natif bloqué en production)
-- `DELETE /api/bookings/[id]` : nouvel endpoint dans `app/api/bookings/[id]/route.ts`
-- Utilise `supabaseAdmin` (service role key) pour bypasser les politiques RLS
-
-### Fix BOM sur SUPABASE_SERVICE_ROLE_KEY
-**Cause** : La clé avait été ajoutée dans Vercel avec un caractère BOM (U+FEFF, valeur 65279) en tête.  
-**Symptôme** : `TypeError: Cannot convert argument to a ByteString because the character at index 0 has a value of 65279`  
-**Fix** : `lib/supabase-server.ts` — `.replace(/^﻿/, "").trim()` sur la clé lors de la création du client.
-
-### Admin responsive mobile
-- `AdminAuthLayout.tsx` : sidebar cachée sur mobile, bouton ☰ hamburger en top bar, slide-over avec overlay backdrop
-- `AdminDashboard.tsx` : stats en `grid-cols-2` sur mobile, cards empilées au lieu du tableau, tous les boutons d'action tappables
-- `AdminCalendar.tsx` : layout `flex-col` sur mobile (calendrier puis panneau détail en dessous), cellules réduites à 60px sur mobile
-
-### PWA — icône sur smartphone Android
-- `public/admin-manifest.json` : manifeste PWA avec `start_url: "/admin/bookings"`, `display: "standalone"`, `theme_color: "#0f2445"`, icône logo existante
-- `app/admin/layout.tsx` : `metadata.manifest = "/admin-manifest.json"`
-- Procédure : Chrome → moveotaxi.com/admin → ⋮ → "Ajouter à l'écran d'accueil"
+**3 actions prioritaires identifiées :**
+1. Réécrire title/meta /fr/routes (18 impressions perdues)
+2. Créer article blog "shuttle vs taxi Israël" (pos 9, audience décisionnelle)
+3. Surveiller rebond global semaine du 11 août (hausse de 3.1 pts à confirmer)
 
 ---
 
-## 2026-07-14 → 2026-07-17
-
-### Suppression des emojis — remplacement par lucide-react
-Tous les emojis dans les composants UI ont été remplacés par des icônes `lucide-react` (taille fixe, cohérence thème clair/sombre, pas de rendu variable selon l'OS).
-
-### Autocomplétion Google Places — refonte complète
-**Problème initial** : La bibliothèque Google Maps JS (`Autocomplete`) manipule le DOM directement, ce qui conflicte avec le cycle de rendu React → input se bloque après 2 caractères.  
-**Solution** : Pattern proxy serveur — aucune bibliothèque client Google Maps.
-- Nouveau fichier `app/api/places/route.ts` : proxy qui appelle `POST https://places.googleapis.com/v1/places:autocomplete` (Places API **New**, pas l'ancienne) côté serveur
-- `components/AddressAutocomplete.tsx` : composant React pur avec `fetch` vers `/api/places`, dropdown custom, debounce 300 ms
-- Variable d'env : `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (projet Google Cloud `iron-envelope-502418`)
-
-**Piège Vercel** : `echo "key" | vercel env add` ajoute un `\n` à la fin de la clé → API 500 en production. Fix : utiliser `printf 'key' | vercel env add` (sans retour à la ligne).  
-**Activation requise** : "Places API (New)" dans Google Cloud Console → Bibliothèque. L'ancienne "Places API" est désactivée pour ce projet.
-
-### Bug booking — véhicule toujours "6 places" en admin
-**Cause** : `AdminDashboard.tsx` comparait `b.vehicle_type === "car4"` mais la DB stocke `"sedan"`. Condition toujours fausse → toujours "6 places".  
-**Fix** : Comparaison changée en `b.vehicle_type === "sedan"` → `"minibus"`.  
-**Fix secondaire** : `lib/supabase.ts` — type TypeScript `VehicleType` corrigé : `"car4" | "car6"` → `"sedan" | "minibus"` (pour correspondre aux valeurs réelles en DB).
-
-### Formulaire de réservation — améliorations UX
-
-#### Libellés des onglets d'étapes
-- Étape 1 : `t("tabs.airport")` ou `t("tabs.intercity")` selon le type de trajet
-- Étape 2 : `t("tabs.flight")` (était tronqué "Vol")
-- Étape 3 : `t("tabs.contact")` (était tronqué "Nom co")
-- Clés ajoutées dans les 5 fichiers `messages/*.json`
-
-#### Boutons Continuer / Retour (5 langues)
-Remplacement des flèches `→` / `←` par du texte localisé (`t("form.continue")` / `t("form.back")`). Traductions ajoutées pour `he`, `fr`, `en`, `ru`, `es`.
-
-#### Validation par étape avec messages d'erreur
-Avant d'avancer à l'étape suivante, le bouton "Continuer" vérifie chaque champ obligatoire et affiche un message explicite sous le formulaire (`setValidationError`). Messages traduits dans les 5 langues.
-- Étape 1 : `from_city`, `to_city`, `date`, `time`
-- Étape 3 : `name`, `phone`
-
-#### Champs bagages (valises + trolleys)
-Ajout de deux compteurs `+/-` dans le formulaire (step 2) :
-- `suitcases` (valises) et `trolleys` (trolleys), plage 0–9
-- Données incluses dans les notes de réservation en DB : `Valises: N`, `Trolleys: N`
-- Interface en grille 2 colonnes, icônes lucide-react
-
-### Calendrier — popup coupé
-**Cause** : Deux `overflow-hidden` empilés — un dans `BookingWidget.tsx` (conteneur principal) et un dans `app/[locale]/page.tsx` (wrapper du widget).  
-**Fix** : Suppression de `overflow-hidden` dans les deux endroits. La bordure arrondie du widget est préservée via `rounded-[24px]` seul.
-
-### Suppression de l'onglet "Aller-retour"
-L'onglet aller-retour était un vestige non fonctionnel. Supprimé de `BookingWidget.tsx` : type `TripMode`, état `mode`, bloc de rendu des onglets, import `ArrowLeftRight`. Remplacé par `<ArrowRight size={14} className="rotate-90" />` pour le swap de villes.
-
-### Panel admin — améliorations
-- Lien "Voir le site" ajouté dans la sidebar (`AdminAuthLayout.tsx`) avec icône `ExternalLink` (lucide-react), ouvre `/` dans un nouvel onglet
-- Affichage corrigé du type de véhicule (voir section bug ci-dessus)
-
-### Commit de référence
-`67b5a85` — push sur `master` le 2026-07-17
-
----
-
-## Sessions précédentes
-
-### Hero — refonte Uber/Bolt style
-**Problème** : L'image hero apparaissait "collée" sur la page, look amateur.
-**Solution** : Image en fond plein (`fill` + `object-cover`) avec overlay dégradé sombre (`from-black/75 via-black/40 to-black/10`) côté texte. Widget carte blanche qui ressort sur le fond sombre. Même approche qu'Uber, Bolt, Cabify.
-**Fichier** : `app/[locale]/page.tsx`
-
-### Système de couleurs
-Couleurs finales adoptées :
-- Vert `#16A34A` / `#15803D` — confiance, action
-- Orange `#F97316` / `#EA580C` — mobilité, énergie
-Appliqué dans `globals.css`, `BookingWidget.tsx`, `Navbar.tsx`, `Footer.tsx`, `LanguageSwitcher.tsx`.
-
-### Police Heebo unifiée
-Remplacement de la combinaison Heebo + Inter par **Heebo seul** (weights 300–900). Heebo supporte l'hébreu et le latin, ce qui évite le chargement de deux polices.
-
-### GitHub — repo public
-Repo rendu public (`gh repo edit --visibility public --accept-visibility-change-consequences`) pour permettre l'accès au collaborateur Hermes.
-
-### Logo
-- Dossier créé : `public/images/`
-- Logo placé et renommé `moveo-taxi-logo.png` (nom SEO-friendly)
-- Composant `Logo.tsx` créé avec variants de taille
-
-### i18n — architecture URL
-Chaque langue a sa propre URL (`/he`, `/fr`, `/en`, `/ru`, `/es`). Google indexe chaque langue séparément — pas une seule page avec JS. next-intl gère le routing via `proxy.ts`.
-
----
-
-## 2026-07-23 — Panel SEO Agence + Google Business Profile
-
-### Panel admin SEO avec agents IA (`/admin/seo`)
-Nouveau module complet d'analyse SEO piloté par des agents Claude Sonnet 5.
-
-**5 agents créés** (`app/api/agents/*/route.ts`) :
-- **writer** (`Maya Cohen`) — Analyse contenu + idées d'articles SEO via Serper
-- **competitor** (`Yossi Ben David`) — Analyse concurrentielle Google (Ben Gurion taxi market)
-- **keywords** (`Rachel Mizrahi`) — Recherche mots-clés stratégiques multi-langues
-- **auditor** (`Rafi Shapira`) — Audit SEO complet avec données Google Search Console réelles
-- **orchestrator** (`David Levi`) — Lit les 4 rapports et produit un plan stratégique croisé
-
-**Architecture agents :**
-- Chaque agent : route GET protégée par `CRON_SECRET`
-- Déclenchement via `POST /api/admin/trigger-agent?agent=X` (protégé admin, uses `after()` pour tâche de fond)
-- Rapports stockés en table Supabase `seo_reports` (colonnes : `agent`, `title`, `summary`, `content` JSONB, `created_at`)
-- `maxDuration = 300` sur l'orchestrateur (Claude avec 16 000 tokens max)
-
-**Page admin SEO** (`app/admin/seo/page.tsx`) :
-- 3 onglets : **Chat** (défaut) | **Rapports** | **Articles**
-- Onglet Chat : conversation animée entre agents (messages progressifs avec indicateur de frappe 3 points)
-  - David (orchestrateur) à droite (style iMessage), autres agents à gauche
-  - Bouton "Rejouer" pour relancer l'animation
-  - Basé sur les vrais rapports Supabase (`buildConversation()`)
-- Onglet Rapports : liste avec avatar circulaire de l'agent + badge count réel
-- Boutons "Lancer" individuels par agent, indigo pour l'orchestrateur
-- Grille `sm:grid-cols-5` pour les 5 agents
-
-**Images équipe :**
-- `public/images/team-maya.png`, `team-yossi.png`, `team-rachel.png`, `team-rafi.png` (remplacé), `team-david.png` (nouveau)
-
-**Bug fixes :**
-- `VALID_AGENTS` dans `trigger-agent/route.ts` n'incluait pas `"orchestrator"` → ajouté
-- Filtre JSONB Supabase `.not("content->error", "is", "true")` instable → remplacé par filtre JS côté app (`data.find(r => !r.content?.error)`)
-
-**Variables d'env requises :**
-- `ANTHROPIC_API_KEY` — Claude Sonnet 5
-- `SERPER_API_KEY` — Recherches Google réelles
-- `GSC_REFRESH_TOKEN` — Google Search Console (OAuth2, déjà configuré)
-- `CRON_SECRET` — Protection des routes agents
-
-### Google Business Profile — mise à jour
-- **Vérifié existant** sous samcomm.d@gmail.com (créé lors d'une session précédente)
-- **support@moveotaxi.com ajouté comme propriétaire** (invitation acceptée)
-- **Vidéo de vérification envoyée** à Google (façade + intérieur + site moveotaxi.com) — réponse attendue sous 3-5 jours
-- Décision : garder les **deux comptes propriétaires** (samcomm.d@gmail.com = backup)
-
-### Schema.org JSON-LD
-Confirmé déjà implémenté dans `app/[locale]/layout.tsx` — `LocalBusiness` + `TaxiService`.
-
----
-
-## 2026-07-23 (suite) — Corrections agence SEO IA + Plan David Levi
-
-### Bugs critiques corrigés — 5 agents
-
-**Problème 1 — `after()` silencieux sur Vercel**
-L'agent Writer (Sophie) était déclenché via `after()` dans `trigger-agent/route.ts`. Sur Vercel, `after()` est tué silencieusement avant la fin de la génération Claude.
-**Fix** : Supprimé `after()`, appel direct et synchrone de l'agent. `trigger-agent` attend maintenant la réponse complète avant de retourner.
-
-**Problème 2 — JSON cassé dans le Writer (root cause "All locale generations failed")**
-Le Writer demandait un JSON brut à Claude. Le contenu HTML généré (avec `class="title"`) contenait des guillemets non échappés → `JSON.parse()` crashait sur les 5 locales simultanément.
-**Fix** : Migration vers **Anthropic tool_use** (`tool_choice: { type: "tool", name: "save_article" }`) — Claude retourne un objet structuré natif, plus de JSON parsing manuel.
-
-**Problème 3 — JSON tronqué (competitor + keywords)**
-`max_tokens: 16000` déclenchait des réponses qui atteignaient la limite en plein milieu d'un tableau JSON.
-**Fix** : tool_use + `max_tokens: 4096` — Claude remplit la structure définie, jamais de troncature.
-
-**Problème 4 — `maxDuration = 60` sur l'Auditeur**
-Timeout de 60 secondes beaucoup trop court pour appels GSC API + Claude.
-**Fix** : `export const maxDuration = 300` sur tous les agents.
-
-**Tous les agents migrent vers tool_use** (competitor, auditor, keywords, orchestrator, writer) :
-- Schéma JSON-Schema explicite par agent dans le `tools[]` array
-- Extraction via `msg.content.find(b => b.type === "tool_use")` + cast `as Record<string, unknown>`
-- Plus aucun regex ni JSON.parse manuel
-
-**Modèle Sonnet** : confirmé que `claude-sonnet-5` fonctionne — ce n'était pas le modèle le problème, mais le parsing. Tous les agents utilisent `MODEL_SONNET`.
-
-**UX panel admin** (`/admin/seo`) :
-- Supprimé `pendingRefresh` state inutile
-- `triggerAgent()` appelle `load()` immédiatement après la réponse
-- Bouton affiche "En cours… (~2 min)" pendant le déclenchement
-- Rapports d'erreur affichés en rouge au-dessus des bons rapports dans l'onglet Rapports
-- Compteur rouge sur l'onglet "Rapports" si rapports non lus
-
-### Implémentation complète du plan stratégique David Levi
-
-Après génération et lecture du plan de David (Score SEO actuel 25/100 → potentiel 70/100), toutes les actions techniques ont été implémentées.
-
-**#1 — Titres SEO avec prix réels sur les pages routes** (`app/[locale]/route/[slug]/page.tsx`)
-- `generateMetadata()` modifié : titre = `Taxi {from} → {to} — ₪{prix} {prix fixe} | Moveo Taxi`
-- Description dynamique par locale avec le prix exact (₪) intégré
-- Ex : "Taxi Tel Aviv → Jérusalem — ₪320 prix fixe | Moveo Taxi"
-
-**#2 — FAQPage + BreadcrumbList JSON-LD sur chaque page route**
-- `FAQPage` : les 4 FAQ existantes sérialisées en Schema.org → rich snippets Google
-- `BreadcrumbList` : Moveo Taxi > Toutes les routes > {from} → {to} → fil d'Ariane dans les SERP
-- Fil d'Ariane visible ajouté sous la navbar
-
-**#3 — Maillage interne : cartes routes entièrement cliquables** (`app/[locale]/routes/page.tsx`)
-- Avant : seul un bouton "+" minuscule linkait à la page détail
-- Après : toute la partie supérieure de la carte (from/to + prix) est un `<Link>` vers `/route/[slug]`
-- Bouton "Réserver" reste indépendant → booking direct
-- `key={i}` → `key={\`${route.from}-${route.to}\`}` (stable)
-- hreflang `alternates.languages` ajouté sur la page `/routes`
-
-**#4 — Sitemap dynamique** (`app/sitemap.ts`)
-- `lastModified: new Date("2026-07-07")` → `lastModified: new Date()` (toujours à jour)
-- Pages routes : priorité 0.8 → 0.85 (pages enrichies FAQPage + prix)
-- `/taxi-eilat` ajouté à priority 0.85
-
-**#7 — Page dédiée Eilat** (`app/[locale]/taxi-eilat/page.tsx`)
-- Nouvelle page en 5 langues ciblant "taxi Eilat pas cher" (FR) + "taxi to Eilat Israel" (EN)
-- 3 cartes de prix : Tel Aviv ₪1120, Jérusalem ₪1000, Beer Sheva ₪810 (prix calculés dynamiquement via `getPrice()`)
-- FAQPage + BreadcrumbList JSON-LD
-- Meta titre FR : "Taxi Eilat pas cher — Prix fixe depuis Tel Aviv ₪1120 | Moveo Taxi"
-- hreflang he/en/fr/ru/es + x-default
-- `generateStaticParams()` pour les 5 locales
-
-### Google Business Profile
-- Toutes les optimisations déjà effectuées en amont (catégories, description avec prix, services, horaires 24/7, zone desservie)
-- **En attente** : validation Google par vidéo (délai 3-7 jours)
-
-### Google Search Console
-- Sitemap déjà soumis. Données en cours de traitement (normal pour site récent, 90 jours pour Core Web Vitals)
-- Décision : ne pas resoummettre le sitemap à chaque déploiement — Google relit automatiquement
-
-### Articles de blog (Sophie / Writer agent)
-- Articles générés en 5 langues via l'agent Writer
-- Publiés depuis le panel admin (`/admin/seo` onglet Articles)
-- Slug format : `{base-slug}-{locale}` (ex: `transfert-aeroport-ben-gourion-fr`)
-
----
-
-## 2026-07-23 (suite 2) — Consultation Gemini & ChatGPT + Actions
-
-### Contexte — Pourquoi consulter des IA externes ?
-
-L'agence SEO interne (5 agents Claude) analyse le site de l'intérieur. Pour avoir un regard extérieur neutre, le propriétaire a soumis une description détaillée de l'architecture à **Gemini (Google)** et **ChatGPT (OpenAI)** et leur a demandé leur avis critique.
-
----
-
-### Ce que Gemini a dit
-
-**Verdict global :** Architecture solide et bien pensée, mais plusieurs risques à adresser.
-
-**Points positifs identifiés :**
-- Architecture multi-agents bien structurée (division des rôles claire)
-- Tool_use Anthropic = bonne décision technique (JSON fiable)
-- 5 langues avec hébreu RTL = différenciateur fort sur le marché israélien
-- Pages routes avec prix en titre = bonne pratique SEO
-
-**Risques identifiés par Gemini :**
-1. **Sophie (Writer) = risque Scaled Content Abuse** — Google peut pénaliser les sites qui publient du contenu IA en masse sans valeur ajoutée humaine réelle (EEAT)
-2. **Pas de surveillance locale** — Aucun agent ne surveille GBP, les avis, les backlinks
-3. **David aveugle aux conversions** — L'orchestrateur stratégique ne voit pas les vraies données business
-4. **Mots-clés sans niveau de confiance** — Rafi ne distingue pas ce qui est observé vs estimé
-
----
-
-### Ce que ChatGPT a dit
-
-**Note globale : 6,5/10**
-
-**ChatGPT a crawlé la vraie page** `moveotaxi.com/en/about` et a trouvé des affirmations potentiellement fausses.
-
-**Problèmes détectés sur le site réel :**
-- "Professional taxi service in Israel **since 2015**" → non vérifié
-- "**800+ licensed drivers**" → à confirmer
-- "**50,000+ trips**" → non vérifié
-- "**IDF veterans** with certified ongoing training" → à confirmer
-- "**Over 30% cheaper**" → à confirmer
-
-**Autres recommandations de ChatGPT :**
-1. Les affirmations invérifiables nuisent à l'EEAT (Experience, Expertise, Authoritativeness, Trustworthiness) — signal de ranking Google
-2. `lastModified: new Date()` dans le sitemap est trompeur — Google voit toutes les pages comme "modifiées aujourd'hui"
-3. Pas de TaxiService JSON-LD avec prix sur les pages routes
-4. Pas de surveillance de réputation (avis, mentions)
-5. David devrait voir les vraies conversions pour prioriser correctement
-
----
-
-### Plan d'action issu des deux consultations (8 priorités)
-
-| # | Action | Source | Statut |
-|---|--------|--------|--------|
-| 1 | Corriger les affirmations fausses page About | ChatGPT | ✅ Fait |
-| 2 | Vérifier cohérence "prix fixe" vs "estimation" | ChatGPT | ✅ Propre |
-| 3 | Connecter réservations Supabase à David | Gemini + ChatGPT | ✅ Fait |
-| 4 | Sitemap : vraies dates de modification | ChatGPT | ✅ Fait |
-| 5 | TaxiService JSON-LD avec prix (offers) | ChatGPT | ✅ Fait |
-| 6 | Champ `confidence` chez Rafi | Gemini | ✅ Fait |
-| 7 | Créer agent Noam (SEO local, GBP, backlinks, avis) | Gemini + ChatGPT | ✅ Fait |
-| 8 | Sophie enrichit pages routes au lieu d'articles | Gemini | 🔮 Phase 3 |
-
----
-
-### Faits commerciaux confirmés par le propriétaire (2026-07-23)
-
-### Faits commerciaux confirmés (propriétaire, 2026-07-23)
-- ✅ **VRAI** : 800+ chauffeurs partenaires actifs
-- ✅ **VRAI** : Chauffeurs anciens militaires (IDF veterans / ותיקי צה"ל)
-- ✅ **VRAI** : 30% moins cher que les tarifs officiels du ministère des transports
-- ❌ **FAUX** : "depuis 2015" — supprimé de toutes les traductions
-- ❌ **FAUX** : "50 000+ trajets" — chiffre non réel, supprimé
-
-### Priorité #1 — Page About (corrections affirmations commerciales)
-**Fichiers modifiés** : `messages/en.json`, `fr.json`, `he.json`, `ru.json`, `es.json` + `app/[locale]/about/page.tsx`
-
-- `about.subtitle` : supprimé "depuis 2015" dans les 5 langues
-- `meta.about.description` : supprimé "depuis 2015" + "50 000+ trips", ajouté mention "anciens militaires"
-- **Stats About page** : clés `stats.clients` / `stats.trips` / `stats.safety` n'existaient pas (bug silencieux). Remplacées par clés existantes et exactes :
-  - "25 000+ clients" (faux) → "24/7" (`stats.available`)
-  - "50 000+ trajets" (faux) → "5" (`stats.languages`)
-  - "100% sécurité" (clé manquante) → "0%" (`stats.noHiddenFees`)
-
-### Priorité #2 — Cohérence "prix fixe garanti" vs "estimation"
-Analyse : la clé `booking.price.estimate` existe dans les traductions mais n'est utilisée nulle part dans l'UI client. `BookingForm` affiche le montant brut ₪ sans label. "Sur devis" n'apparaît que pour les routes sans prix fixe. Aucun changement nécessaire.
-
-### Priorité #3 — David Levi : données de réservation en temps réel
-**Fichier modifié** : `app/api/agents/orchestrator/route.ts`
-- Nouvelle fonction `getBookingStats()` : requête Supabase sur les 30 derniers jours
-  - Total réservations, confirmées, taux de confirmation
-  - Revenu estimé (NIS), split sedan/minibus, split aéroport/intercités
-  - Top 5 routes par volume de réservations
-- Injecté dans le prompt de David comme `=== DONNÉES RÉSERVATIONS (30 derniers jours) ===`
-- Nouveau champ `conversion_insights` dans le schema tool_use de David
-
-### Priorité #4 — Sitemap : vraies dates de modification
-**Fichier modifié** : `app/sitemap.ts`
-- Avant : `lastModified: new Date()` (= aujourd'hui à chaque déploiement = trompeur pour Google)
-- Après : dates statiques par page reflétant la vraie dernière modification
-  - Homepage, /routes, /taxi-eilat, /about : 2026-07-23 (modifiées aujourd'hui)
-  - /airport, /booking, /drivers, /contact : dates historiques fixes
-  - Pages routes individuelles : 2026-07-23 (TaxiService JSON-LD ajouté)
-- `changeFrequency` "daily" → "weekly" (homepage), "weekly" → "monthly" (routes)
-
-### Priorité #5 — TaxiService JSON-LD avec prix sur chaque page route
-**Fichier modifié** : `app/[locale]/route/[slug]/page.tsx`
-- Ajout d'un 3ème bloc `<script type="application/ld+json">` : schema `Service` / `serviceType: "TaxiService"`
-- Inclut : `offers[]` avec prix Sedan (NIS) + Minibus si disponible, `priceCurrency: "ILS"`, `availability: "InStock"`
-- `provider` : Moveo Taxi avec téléphone + URL + areaServed
-- `availableLanguage` : 5 langues listées
-
-### Priorité #6 — Champ `confidence` chez Rafi (mots-clés)
-**Fichier modifié** : `app/api/agents/keywords/route.ts`
-- Nouveau champ `confidence` (high/medium/low) ajouté dans les 3 catégories de mots-clés : `high_intent`, `informational`, `long_tail`
-- Prompt enrichi : définition explicite des niveaux ("high" = présent explicitement dans les résultats Google, "medium" = inféré, "low" = estimation marché)
-- Permet à David de distinguer les recommandations basées sur des données réelles vs estimations
-
-### Priorité #7 — Nouvel agent Noam Ben-David (SEO Local & Réputation)
-**Fichiers créés** : `app/api/agents/local-seo/route.ts`
-**Fichiers modifiés** : `app/api/admin/trigger-agent/route.ts`, `app/admin/seo/page.tsx`, `supabase/seo-agency.sql`
-
-Noam surveille :
-- Mentions de la marque "Moveo Taxi" en ligne (Serper)
-- Paysage des avis taxi Israël (TripAdvisor, Viator, GetYourGuide, LonelyPlanet)
-- Opportunités backlinks (blogs voyage, sites touristiques)
-- GBP concurrents (Gett, Yango)
-- Génère un **template WhatsApp** de demande d'avis après course
-
-Schema tool_use : `brand_presence`, `opportunites_backlinks`, `sites_avis_a_viser`, `concurrents_gbp`, `recommandations_gbp`, `template_demande_avis`, `top_actions`, `insight`
-
-Ajouté au panel admin avec composant `LocalSeoDetail`, icône `MapPin`, couleur teal.
-David (orchestrateur) lit maintenant aussi le rapport de Noam.
-
-**⚠️ ACTION REQUISE** : Exécuter en SQL Supabase :
-```sql
-ALTER TABLE seo_reports DROP CONSTRAINT IF EXISTS seo_reports_agent_check;
-ALTER TABLE seo_reports ADD CONSTRAINT seo_reports_agent_check 
-  CHECK (agent IN ('competitor', 'auditor', 'keywords', 'writer', 'orchestrator', 'local-seo'));
-```
-
-**⚠️ IMAGE MANQUANTE** : Ajouter `public/images/team-noam.png` (photo du personnage Noam)
-
-### Priorité #8 — Sophie enrichit les pages routes (différé Phase 3)
-Nécessite architecture dynamique (ISR + table `route_content` Supabase). Reporté.
-
----
-
-## Décisions d'architecture
-
-| Décision | Raison |
-|----------|--------|
-| `proxy.ts` au lieu de `middleware.ts` | Convention de cette version Next.js 16.x |
-| `localePrefix: "always"` | Toutes les locales ont un préfixe URL, y compris la langue par défaut `he`. Cohérence SEO. |
-| Hébreu comme langue par défaut | Marché cible principal = Israël |
-| Heebo comme seule police | Supporte hébreu + latin, évite le chargement de 2 polices |
-| Tailwind classes logiques uniquement | Support RTL natif sans duplication de CSS |
-| Supabase + API routes Next.js | Backend simple, scalable, panel admin intégré |
-| Images héro en fond plein (pas colonne) | Approche pro (Uber/Bolt), évite l'effet "image collée" |
+## Backlog
+
+- [ ] Déployer sur Vercel + ajouter `GA4_REFRESH_TOKEN` / `GA4_PROPERTY_ID` dans variables Vercel
+- [ ] Optimiser pages Jérusalem ↔ Ben Gourion dans les 5 langues (priorité #1)
+- [ ] Ajouter "4 grandes valises" sur toutes les pages aéroport
+- [ ] Créer contenu dédié Netanya ↔ Ben Gourion (angle mort majeur)
+- [ ] Analyser concurrents sur Jérusalem → Ben Gourion avec Playwright
+- [ ] Corriger indexation /es (quick win espagnol)

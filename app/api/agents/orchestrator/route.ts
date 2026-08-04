@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
+import { getTopQueries, getTopPages, formatGscData } from "@/lib/gsc";
+import { getGa4Overview, getGa4TopPages, getGa4TrafficSources, formatGa4Overview, formatGa4Rows } from "@/lib/ga4";
 import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 300;
@@ -65,13 +67,21 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [competitor, auditor, keywords, writer, localSeo, bookingStats] = await Promise.all([
+    const gscEnabled = !!process.env.GSC_REFRESH_TOKEN;
+    const ga4Enabled = !!process.env.GA4_REFRESH_TOKEN;
+
+    const [competitor, auditor, keywords, writer, localSeo, bookingStats, gscQueries, gscPages, ga4Overview, ga4Pages, ga4Sources] = await Promise.all([
       getLatestGoodReport("competitor"),
       getLatestGoodReport("auditor"),
       getLatestGoodReport("keywords"),
       getLatestGoodReport("writer"),
       getLatestGoodReport("local-seo"),
       getBookingStats(),
+      gscEnabled ? getTopQueries(28, 15) : Promise.resolve(null),
+      gscEnabled ? getTopPages(28, 10) : Promise.resolve(null),
+      ga4Enabled ? getGa4Overview(28) : Promise.resolve(null),
+      ga4Enabled ? getGa4TopPages(28, 10) : Promise.resolve(null),
+      ga4Enabled ? getGa4TrafficSources(28) : Promise.resolve(null),
     ]);
 
     const sections = [
@@ -82,6 +92,14 @@ export async function GET(req: NextRequest) {
       localSeo   ? `=== RAPPORT SEO LOCAL / GBP (${localSeo.created_at.slice(0, 10)})\nTitre: ${localSeo.title}\n${JSON.stringify(localSeo.content, null, 2)}` : null,
       bookingStats ? `=== DONNÉES RÉSERVATIONS (${bookingStats.periode})\n${JSON.stringify(bookingStats, null, 2)}` : null,
     ].filter(Boolean);
+
+    const liveDataContext = [
+      gscQueries?.length ? `=== GSC LIVE — TOP REQUÊTES (28j)\n${formatGscData(gscQueries)}` : null,
+      gscPages?.length ? `=== GSC LIVE — TOP PAGES (28j)\n${formatGscData(gscPages)}` : null,
+      ga4Overview ? `=== GA4 LIVE — VUE D'ENSEMBLE (28j)\n${formatGa4Overview(ga4Overview)}` : null,
+      ga4Pages?.length ? `=== GA4 LIVE — PAGES VISITÉES (28j)\n${formatGa4Rows(ga4Pages, ["sessions", "users", "bounceRate"])}` : null,
+      ga4Sources?.length ? `=== GA4 LIVE — SOURCES DE TRAFIC (28j)\n${formatGa4Rows(ga4Sources, ["sessions", "users"])}` : null,
+    ].filter(Boolean).join("\n\n");
 
     if (sections.length === 0) {
       throw new Error("Aucun rapport disponible et aucune réservation trouvée. Lance d'abord au moins un agent SEO.");
@@ -173,7 +191,11 @@ ${MOVEO_TAXI_BRIEF}
 
 Tu analyses les rapports de tes agents spécialisés et tu produis un plan d'action stratégique synthétisé, toujours aligné avec ce que Moveo Taxi fait réellement (transferts aéroport + intercités privés — jamais de courses en ville ni de taxis au compteur).
 
-Voici les derniers rapports disponibles (${sections.length} agent(s)) :
+DONNÉES TEMPS RÉEL (GSC + GA4 — dernières 28 jours) :
+
+${liveDataContext || "[Aucune donnée live disponible]"}
+
+Rapports agents disponibles (${sections.length} agent(s)) :
 
 ${availableReports}
 

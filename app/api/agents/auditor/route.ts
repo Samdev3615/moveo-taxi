@@ -3,6 +3,7 @@ import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { serperSearch, formatResults } from "@/lib/serper";
 import { getTopQueries, getTopPages, getCountries, getDevices, formatGscData } from "@/lib/gsc";
+import { getGa4Overview, getGa4TopPages, getGa4TrafficSources, getGa4Countries, formatGa4Overview, formatGa4Rows } from "@/lib/ga4";
 import { MOVEO_TAXI_BRIEF } from "@/lib/seo-agent-context";
 
 export const maxDuration = 300;
@@ -15,8 +16,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const gscEnabled = !!process.env.GSC_REFRESH_TOKEN;
+    const ga4Enabled = !!process.env.GA4_REFRESH_TOKEN;
 
-    const [siteIndex, brandEn, brandFr, competitors, airportMarket, heMarket, gscQueries, gscPages, gscCountries, gscDevices] = await Promise.all([
+    const [siteIndex, brandEn, brandFr, competitors, airportMarket, heMarket, gscQueries, gscPages, gscCountries, gscDevices, ga4Overview, ga4Pages, ga4Sources, ga4Countries] = await Promise.all([
       serperSearch("site:moveotaxi.com", { gl: "il", hl: "en", num: 10 }),
       serperSearch("moveotaxi.com taxi Israel", { gl: "il", hl: "en", num: 5 }),
       serperSearch("Moveo Taxi Israël", { gl: "il", hl: "fr", num: 5 }),
@@ -27,6 +29,10 @@ export async function GET(req: NextRequest) {
       gscEnabled ? getTopPages(28, 15) : Promise.resolve(null),
       gscEnabled ? getCountries(28) : Promise.resolve(null),
       gscEnabled ? getDevices(28) : Promise.resolve(null),
+      ga4Enabled ? getGa4Overview(28) : Promise.resolve(null),
+      ga4Enabled ? getGa4TopPages(28, 15) : Promise.resolve(null),
+      ga4Enabled ? getGa4TrafficSources(28) : Promise.resolve(null),
+      ga4Enabled ? getGa4Countries(28) : Promise.resolve(null),
     ]);
 
     const gscContext = gscQueries ? `
@@ -44,6 +50,22 @@ ${formatGscData(gscCountries ?? [])}
 APPAREILS:
 ${formatGscData(gscDevices ?? [])}
 ` : "\n[Google Search Console non connecté — données Serper uniquement]\n";
+
+    const ga4Context = ga4Overview ? `
+=== DONNÉES GOOGLE ANALYTICS 4 (28 derniers jours) ===
+
+VUE D'ENSEMBLE:
+${formatGa4Overview(ga4Overview)}
+
+PAGES LES PLUS VISITÉES (sessions réelles):
+${formatGa4Rows(ga4Pages ?? [], ["sessions", "users", "bounceRate"])}
+
+SOURCES DE TRAFIC:
+${formatGa4Rows(ga4Sources ?? [], ["sessions", "users"])}
+
+PAYS:
+${formatGa4Rows(ga4Countries ?? [], ["sessions", "users"])}
+` : "\n[Google Analytics 4 non connecté]\n";
 
     const searchContext = `
 === DONNÉES GOOGLE RÉELLES SUR MOVEO TAXI ===
@@ -148,6 +170,7 @@ ${MOVEO_TAXI_BRIEF}
 Voici les VRAIES données Google actuelles sur Moveo Taxi et son marché :
 
 ${gscContext}
+${ga4Context}
 ${searchContext}
 
 Structure actuelle du site :
