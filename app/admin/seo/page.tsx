@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X, Trash2, MapPin } from "lucide-react";
+import { FileText, TrendingUp, Search, Users, RefreshCw, Eye, CheckCircle, BookOpen, ChevronUp, Layers, RotateCcw, MessageSquare, X, Trash2, MapPin, BarChart2 } from "lucide-react";
+import AnalyticsDashboard from "./AnalyticsDashboard";
 
 type Report = {
   id: string;
@@ -628,7 +629,7 @@ function ReportDetail({ report }: { report: Report }) {
 
 // ── Page principale ───────────────────────────────────────────────────────────
 export default function AdminSeoPage() {
-  const [tab, setTab] = useState<"chat" | "reports" | "posts">("chat");
+  const [tab, setTab] = useState<"chat" | "reports" | "posts" | "analytics">("chat");
   const [reports, setReports] = useState<Report[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -750,9 +751,14 @@ export default function AdminSeoPage() {
         <button onClick={() => setTab("posts")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "posts" ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
           Articles {draftCount > 0 && <span className="ml-1.5 bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full">{draftCount}</span>}
         </button>
+        <button onClick={() => setTab("analytics")} className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${tab === "analytics" ? "bg-white shadow text-slate-900" : "text-slate-500 hover:text-slate-700"}`}>
+          <BarChart2 size={14} /> Analyse
+        </button>
       </div>
 
-      {loading ? (
+      {tab === "analytics" ? (
+        <AnalyticsDashboard />
+      ) : loading ? (
         <div className="text-center py-16 text-slate-400">Chargement…</div>
       ) : tab === "chat" ? (
         <div className="bg-slate-50 rounded-2xl p-5 min-h-[400px]">
