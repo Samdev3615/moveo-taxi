@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
 import { ROUTE_PAGES } from "@/lib/route-pages";
+import { supabaseAdmin } from "@/lib/supabase-server";
 
 const BASE_URL = "https://www.moveotaxi.com";
 
@@ -15,7 +16,7 @@ const pages = [
   { path: "/contact", changeFrequency: "monthly" as const, priority: 0.6, lastMod: "2026-07-01" },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of locales) {
@@ -36,6 +37,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.85,
       });
     }
+  }
+
+  // Blog articles published in Supabase
+  const { data: posts } = await supabaseAdmin
+    .from("blog_posts")
+    .select("slug, locale, created_at")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  for (const post of posts ?? []) {
+    // Supabase slug = "article-slug-locale" → URL slug = "article-slug"
+    const urlSlug = post.slug.replace(new RegExp(`-${post.locale}$`), "");
+    entries.push({
+      url: `${BASE_URL}/${post.locale}/blog/${urlSlug}`,
+      lastModified: new Date(post.created_at as string),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    });
   }
 
   return entries;
