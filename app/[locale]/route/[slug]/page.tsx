@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { ROUTE_PAGES, getRouteBySlug } from "@/lib/route-pages";
+import { ROUTE_CONTENT } from "@/lib/route-content";
 import { getRoutePrice } from "@/lib/get-route-price";
 import { ShieldCheck, Clock, Car, Globe, MapPin, ArrowRight } from "lucide-react";
 
@@ -40,10 +41,18 @@ export async function generateMetadata({
     es: "precio fijo",
   };
 
+  const enriched = ROUTE_CONTENT[slug]?.[locale];
+
   const descByLocale: Record<string, string> = {
-    fr: `Taxi privé ${fromName} → ${toName}${sedanPrice ? ` au prix fixe de ₪${sedanPrice}` : ""}. Aucun compteur, chauffeurs professionnels. Réservation en ligne 24h/24.`,
-    en: `Private taxi ${fromName} to ${toName}${sedanPrice ? ` at fixed price ₪${sedanPrice}` : ""}. No meter, professional drivers. Book online 24/7.`,
-    he: `מונית פרטית ${fromName} → ${toName}${sedanPrice ? ` במחיר קבוע ₪${sedanPrice}` : ""}. ללא מד מרחק. הזמנה אונליין 24/7.`,
+    fr: enriched
+      ? `Taxi privé ${fromName} → ${toName}${sedanPrice ? ` — prix fixe ₪${sedanPrice}` : ""}. ${enriched.tips[0]} Réservation en ligne 24h/24.`
+      : `Taxi privé ${fromName} → ${toName}${sedanPrice ? ` au prix fixe de ₪${sedanPrice}` : ""}. Aucun compteur, chauffeurs professionnels. Réservation en ligne 24h/24.`,
+    en: enriched
+      ? `Private taxi ${fromName} to ${toName}${sedanPrice ? ` — fixed price ₪${sedanPrice}` : ""}. Door-to-door pickup, free flight tracking, no hidden fees. Book online 24/7.`
+      : `Private taxi ${fromName} to ${toName}${sedanPrice ? ` at fixed price ₪${sedanPrice}` : ""}. No meter, professional drivers. Book online 24/7.`,
+    he: enriched
+      ? `מונית פרטית מ${fromName} ל${toName}${sedanPrice ? ` — מחיר קבוע ₪${sedanPrice}` : ""}. איסוף מהדלת, מעקב טיסות, ללא הפתעות. הזמנה אונליין 24/7.`
+      : `מונית פרטית ${fromName} → ${toName}${sedanPrice ? ` במחיר קבוע ₪${sedanPrice}` : ""}. ללא מד מרחק. הזמנה אונליין 24/7.`,
     ru: `Частное такси ${fromName} → ${toName}${sedanPrice ? ` по фиксированной цене ₪${sedanPrice}` : ""}. Без счётчика. Бронирование онлайн 24/7.`,
     es: `Taxi privado ${fromName} → ${toName}${sedanPrice ? ` a precio fijo ₪${sedanPrice}` : ""}. Sin taxímetro. Reserva online 24/7.`,
   };
@@ -86,6 +95,8 @@ export default async function RouteSlugPage({
 
   const { sedan: sedanPrice, minibus: minibusPrice } = await getRoutePrice(route.from, route.to);
 
+  const routeContent = ROUTE_CONTENT[slug]?.[locale];
+
   const bookingParams = new URLSearchParams({
     type: route.to === "ben_gurion" || route.from === "ben_gurion" ? "airport" : "intercity",
     from: route.from,
@@ -123,10 +134,15 @@ export default async function RouteSlugPage({
     fr: "Toutes les routes", en: "All routes", he: "כל המסלולים", ru: "Все маршруты", es: "Todas las rutas",
   };
 
+  const allFaqs = [
+    ...faqs,
+    ...(routeContent?.extraFaqs ?? []),
+  ];
+
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqs.map((faq) => ({
+    "mainEntity": allFaqs.map((faq) => ({
       "@type": "Question",
       "name": faq.q,
       "acceptedAnswer": { "@type": "Answer", "text": faq.a },
@@ -270,6 +286,28 @@ export default async function RouteSlugPage({
           </div>
         </div>
       </section>
+
+      {/* Route-specific content */}
+      {routeContent && (
+        <section className="py-14 bg-white">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">{routeContent.aboutTitle}</h2>
+            <p className="text-gray-600 leading-relaxed mb-8 max-w-2xl">{routeContent.aboutText}</p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {routeContent.tips.map((tip, i) => (
+                <div key={i} className="flex gap-3 items-start bg-white rounded-2xl p-4 shadow-sm">
+                  <div className="w-6 h-6 bg-[#E8F5EE] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                      <path d="M2 6l3 3 5-5" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{tip}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="py-14 bg-gray-50">
