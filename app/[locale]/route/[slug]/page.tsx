@@ -6,9 +6,9 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { ROUTE_PAGES, getRouteBySlug } from "@/lib/route-pages";
+import { ROUTE_PAGES, getRouteBySlug, getRelatedRoutes } from "@/lib/route-pages";
 import { ROUTE_CONTENT } from "@/lib/route-content";
-import { getRoutePrice } from "@/lib/get-route-price";
+import { getRoutePrice, getAllRoutePrices } from "@/lib/get-route-price";
 import { ShieldCheck, Clock, Car, Globe, MapPin, ArrowRight } from "lucide-react";
 
 const WHATSAPP_NUMBER = "972543100044";
@@ -139,6 +139,13 @@ export default async function RouteSlugPage({
   const routesLabel: Record<string, string> = {
     fr: "Toutes les routes", en: "All routes", he: "כל המסלולים", ru: "Все маршруты", es: "Todas las rutas",
   };
+
+  const relatedLabel: Record<string, string> = {
+    fr: "Autres trajets", en: "Other routes", he: "מסלולים נוספים", ru: "Другие маршруты", es: "Otras rutas",
+  };
+
+  const relatedRoutes = getRelatedRoutes(route);
+  const priceMap = await getAllRoutePrices();
 
   const allFaqs = [
     ...faqs,
@@ -328,6 +335,40 @@ export default async function RouteSlugPage({
                 <p className="text-gray-500 text-sm leading-relaxed">{faq.a}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Related routes (internal linking) */}
+      <section className="py-14 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+            {relatedLabel[locale] ?? "Other routes"}
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {relatedRoutes.map((r) => {
+              const price = priceMap.get(`${r.from}:${r.to}`)?.sedan;
+              return (
+                <Link
+                  key={r.slug}
+                  href={`/${locale}/route/${r.slug}`}
+                  className="bg-gray-50 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                >
+                  <p className="font-bold text-gray-900 text-sm mb-2">
+                    {tb(`form.cities.${r.from}`)} → {tb(`form.cities.${r.to}`)}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-400">
+                    <span>{r.duration}</span>
+                    {price && <span className="text-base font-black text-[#F97316]" dir="ltr">₪{price}</span>}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="text-center mt-6">
+            <Link href={`/${locale}/routes`} className="text-sm font-semibold text-[#16A34A] hover:underline">
+              {routesLabel[locale] ?? "All routes"} {locale === "he" ? "←" : "→"}
+            </Link>
           </div>
         </div>
       </section>

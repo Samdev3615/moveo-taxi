@@ -40,3 +40,30 @@ export const ROUTE_PAGES: RoutePage[] = [
 export function getRouteBySlug(slug: string): RoutePage | undefined {
   return ROUTE_PAGES.find((r) => r.slug === slug);
 }
+
+// SEO priority cities for airport transfers
+const PRIORITY_AIRPORT_CITIES: CityKey[] = ["jerusalem", "tel_aviv", "netanya", "ashdod"];
+
+/**
+ * Routes to link from a route page: routes sharing a city (other than the airport)
+ * first, then priority airport routes, then other airport routes.
+ */
+export function getRelatedRoutes(route: RoutePage, limit = 6): RoutePage[] {
+  const cities: CityKey[] = [route.from, route.to].filter((c) => c !== "ben_gurion");
+  const isAirport = route.to === "ben_gurion" || route.from === "ben_gurion";
+
+  const score = (r: RoutePage) => {
+    if ([r.from, r.to].some((c) => cities.includes(c))) return 3;
+    const rIsAirport = r.to === "ben_gurion" || r.from === "ben_gurion";
+    if (isAirport && rIsAirport) return PRIORITY_AIRPORT_CITIES.includes(r.from) ? 2 : 1;
+    return PRIORITY_AIRPORT_CITIES.includes(r.from) && rIsAirport ? 1 : 0;
+  };
+
+  return ROUTE_PAGES
+    .filter((r) => r.slug !== route.slug)
+    .map((r) => ({ r, s: score(r) }))
+    .filter(({ s }) => s > 0)
+    .sort((a, b) => b.s - a.s) // stable: keeps ROUTE_PAGES order within a score
+    .slice(0, limit)
+    .map(({ r }) => r);
+}
