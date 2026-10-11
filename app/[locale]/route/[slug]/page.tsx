@@ -57,8 +57,14 @@ export async function generateMetadata({
     es: `Taxi privado ${fromName} → ${toName}${sedanPrice ? ` a precio fijo ₪${sedanPrice}` : ""}. Sin taxímetro. Reserva online 24/7.`,
   };
 
+  const taxiLabel: Record<string, string> = {
+    he: "מונית",
+    ru: "Такси",
+  };
+
+  // No brand suffix: keeps the price visible within Google's ~60-char title limit.
   const title = sedanPrice
-    ? `Taxi ${fromName} → ${toName} — ₪${sedanPrice} ${fixedPriceLabel[locale] ?? "fixed price"} | Moveo Taxi`
+    ? `${taxiLabel[locale] ?? "Taxi"} ${fromName} → ${toName} — ₪${sedanPrice} ${fixedPriceLabel[locale] ?? "fixed price"}`
     : tp("meta_title", { from: fromName, to: toName });
 
   return {
@@ -316,7 +322,7 @@ export default async function RouteSlugPage({
             {tp("faq_title")}
           </h2>
           <div className="space-y-4">
-            {faqs.map((faq, i) => (
+            {allFaqs.map((faq, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
                 <h3 className="font-bold text-gray-900 mb-2">{faq.q}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{faq.a}</p>

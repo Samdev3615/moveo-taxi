@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { locales } from "@/i18n/config";
 import { ArrowRight, Calendar, ChevronRight } from "lucide-react";
 
 const BASE_URL = "https://www.moveotaxi.com";
@@ -38,19 +39,27 @@ export async function generateMetadata({
 
   if (!post) return {};
 
+  // hreflang only for the languages where this article is actually published
+  const { data: translations } = await supabaseAdmin
+    .from("blog_posts")
+    .select("locale")
+    .in("slug", locales.map((l) => `${slug}-${l}`))
+    .eq("status", "published");
+
+  const publishedLocales = (translations ?? []).map((t) => t.locale as string);
+  const languages: Record<string, string> = Object.fromEntries(
+    publishedLocales.map((l) => [l, `${BASE_URL}/${l}/blog/${slug}`])
+  );
+  if (publishedLocales.length > 1) {
+    languages["x-default"] = languages.he ?? `${BASE_URL}/${locale}/blog/${slug}`;
+  }
+
   return {
     title: `${post.title} — Moveo Taxi`,
     description: post.excerpt ?? undefined,
     alternates: {
       canonical: `${BASE_URL}/${locale}/blog/${slug}`,
-      languages: {
-        he: `${BASE_URL}/he/blog/${slug}`,
-        en: `${BASE_URL}/en/blog/${slug}`,
-        fr: `${BASE_URL}/fr/blog/${slug}`,
-        ru: `${BASE_URL}/ru/blog/${slug}`,
-        es: `${BASE_URL}/es/blog/${slug}`,
-        "x-default": `${BASE_URL}/he/blog/${slug}`,
-      },
+      ...(publishedLocales.length > 1 ? { languages } : {}),
     },
     openGraph: {
       title: post.title,

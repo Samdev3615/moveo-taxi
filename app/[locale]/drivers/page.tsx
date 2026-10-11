@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { localeAlternates } from "@/lib/seo";
 import { ShieldCheck, BadgeCheck, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -16,7 +17,7 @@ export async function generateMetadata({
   return {
     title: t("drivers.title"),
     description: t("drivers.description"),
-    alternates: { canonical: `https://www.moveotaxi.com/${locale}/drivers` },
+    alternates: localeAlternates(locale, "/drivers"),
   };
 }
 

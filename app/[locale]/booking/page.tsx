@@ -1,8 +1,25 @@
+import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { localeAlternates } from "@/lib/seo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BookingForm from "@/components/BookingForm";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return {
+    title: t("booking.title"),
+    description: t("booking.description"),
+    alternates: localeAlternates(locale, "/booking"),
+  };
+}
 
 export default function BookingPage() {
   const t = useTranslations("booking");

@@ -276,7 +276,9 @@
     "tagline": "Servicio de taxi confiable en todo Israel",
     "rights": "Todos los derechos reservados",
     "privacyLink": "Privacidad",
-    "termsLink": "Condiciones de servicio"
+    "termsLink": "Condiciones de servicio",
+    "blogLink": "Blog",
+    "eilatLink": "Taxi a Eilat"
   },
   "confirmation": {
     "title": "¡Reserva recibida!",
@@ -366,6 +368,18 @@
     "contact_link": "contáctenos"
   },
   "meta": {
+    "booking": {
+      "title": "Reservar taxi online — Precio fijo | Moveo Taxi",
+      "description": "Reserve su taxi al aeropuerto Ben Gurión o entre ciudades en 2 minutos. Precio fijo, confirmación inmediata, conductores 24/7."
+    },
+    "privacy": {
+      "title": "Política de privacidad | Moveo Taxi",
+      "description": "Cómo Moveo Taxi recopila, utiliza y protege sus datos personales al reservar un viaje."
+    },
+    "terms": {
+      "title": "Términos de servicio | Moveo Taxi",
+      "description": "Términos de servicio de las reservas de Moveo Taxi: reservas, precios, pago y cancelaciones."
+    },
     "home": {
       "title": "Moveo Taxi — Traslados Aeropuerto Ben Gurión y Taxi Interurbano Israel",
       "description": "Reserve su taxi en Israel. Traslados aeropuerto Ben Gurión, viajes interurbanos Tel Aviv, Jerusalén, Haifa. Conductores profesionales, precios fijos, disponible 24/7."

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { localeAlternates } from "@/lib/seo";
 import { Shield, Star, Zap, Gem } from "lucide-react";
 
 export async function generateMetadata({
@@ -12,7 +13,7 @@ export async function generateMetadata({
   return {
     title: t("about.title"),
     description: t("about.description"),
-    alternates: { canonical: `https://www.moveotaxi.com/${locale}/about` },
+    alternates: localeAlternates(locale, "/about"),
   };
 }
 import Navbar from "@/components/Navbar";

@@ -37,7 +37,7 @@ export async function generateMetadata({
   return {
     title: {
       default: t("home.title"),
-      template: "%s | Moveo Taxi",
+      template: "%s",
     },
     description: t("home.description"),
     metadataBase: new URL(BASE_URL),
@@ -97,19 +97,24 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const isRTL = rtlLocales.includes(locale as Locale);
 
-  const jsonLd = {
+  const jsonLdBusiness = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "TaxiService"],
+    "@id": "https://www.moveotaxi.com/#business",
     "name": "Moveo Taxi",
+    "alternateName": ["מובאו טקסי", "Moveo Taxi Israel", "מובאו טקסי ישראל"],
     "url": "https://www.moveotaxi.com",
-    "logo": "https://www.moveotaxi.com/images/moveo-taxi-logo.png",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.moveotaxi.com/images/moveo-taxi-logo.png"
+    },
     "image": [
       "https://www.moveotaxi.com/images/moveo-taxi-ben-gurion-airport-transfer.png",
       "https://www.moveotaxi.com/images/moveo-taxi-chauffeur-aeroport-israel.png",
       "https://www.moveotaxi.com/images/moveo-taxi-van-6-places-aeroport-israel.png"
     ],
     "telephone": "+972543100044",
-    "description": "MOVEO TAXI מציעה שירותי הסעות ומוניות מקצועיים בכל רחבי ישראל, במחירים תחרותיים ושקופים. אנו מתמחים בנסיעות לנתב״ג ומנתב״ג, נסיעות בין־עירוניות, הסעות פרטיות והסעות לקבוצות. כל הנהגים שלנו מנוסים, מוסמכים, אדיבים ומקפידים על נהיגה בטוחה, עמידה בזמנים ורכב נקי ונוח. אצלנו השירות הוא מעל הכול: מענה מהיר, יחס אישי, זמינות גבוהה וליווי ברור מרגע ההזמנה ועד ההגעה ליעד. השירות ניתן בחמש שפות: עברית, צרפתית, אנגלית, רוסית וספרדית. MOVEO TAXI – מחיר הוגן, נהגים מקצועיים ושירות מצוין בכל נסיעה.",
+    "description": "Moveo Taxi is a private taxi and airport transfer service based in Israel. We offer fixed-price rides between Ben Gurion Airport (TLV) and all Israeli cities — Tel Aviv, Jerusalem, Netanya, Haifa, Ashdod and more. Professional drivers, 24/7 availability, service in 5 languages.",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "הרב אליעזרי 3",
@@ -118,6 +123,7 @@ export default async function LocaleLayout({
       "addressCountry": "IL"
     },
     "areaServed": [
+      { "@type": "Country", "name": "Israel" },
       { "@type": "City", "name": "Tel Aviv" },
       { "@type": "City", "name": "Jerusalem" },
       { "@type": "City", "name": "Netanya" },
@@ -134,7 +140,30 @@ export default async function LocaleLayout({
       "closes": "23:59"
     },
     "priceRange": "₪₪",
-    "availableLanguage": ["Hebrew", "French", "English", "Russian", "Spanish"]
+    "availableLanguage": ["Hebrew", "French", "English", "Russian", "Spanish"],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+972543100044",
+      "contactType": "customer service",
+      "areaServed": "IL",
+      "availableLanguage": ["Hebrew", "French", "English", "Russian", "Spanish"]
+    },
+    "sameAs": [
+      "https://www.moveotaxi.com"
+    ]
+  };
+
+  const jsonLdWebsite = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://www.moveotaxi.com/#website",
+    "url": "https://www.moveotaxi.com",
+    "name": "Moveo Taxi",
+    "description": "Private taxi service in Israel — Ben Gurion Airport transfers and intercity trips with fixed prices",
+    "inLanguage": ["he", "en", "fr", "ru", "es"],
+    "publisher": {
+      "@id": "https://www.moveotaxi.com/#business"
+    }
   };
 
   return (
@@ -163,7 +192,11 @@ export default async function LocaleLayout({
       <body className={`min-h-full flex flex-col antialiased ${heebo.className}`}>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBusiness) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
         <NextIntlClientProvider messages={messages}>
           {children}

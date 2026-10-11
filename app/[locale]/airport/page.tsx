@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { localeAlternates } from "@/lib/seo";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export async function generateMetadata({
@@ -12,7 +13,7 @@ export async function generateMetadata({
   return {
     title: t("airport.title"),
     description: t("airport.description"),
-    alternates: { canonical: `https://www.moveotaxi.com/${locale}/airport` },
+    alternates: localeAlternates(locale, "/airport"),
   };
 }
 import Link from "next/link";
@@ -20,25 +21,21 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import BookingWidget from "@/components/BookingWidget";
+import { ROUTE_PAGES } from "@/lib/route-pages";
+import { getAllRoutePrices } from "@/lib/get-route-price";
 import { Wifi, Clock, Building, Smartphone, CheckCircle, Car, MapPin, Plane, Phone } from "lucide-react";
 
 const WHATSAPP_NUMBER = "972543100044";
 const PHONE = "+972-54-310-0044";
 
-const AIRPORT_ROUTES = [
-  { city: "tel_aviv", duration: "30 min", price: 140 },
-  { city: "jerusalem", duration: "45 min", price: 180 },
-  { city: "haifa", duration: "1h 15min", price: 200 },
-  { city: "beer_sheva", duration: "35 min", price: 250 },
-  { city: "netanya", duration: "30 min", price: 160 },
-  { city: "ashdod", duration: "25 min", price: 170 },
-  { city: "eilat", duration: "3h 30min", price: 730 },
-  { city: "rishon", duration: "20 min", price: 120 },
-];
+// Durations come from the route landing pages and prices from the DB, so this grid
+// always matches what each /route/ page shows.
+const AIRPORT_ROUTES = ROUTE_PAGES.filter((r) => r.to === "ben_gurion");
 
 export default async function AirportPage() {
   const t = await getTranslations();
   const locale = await getLocale();
+  const priceMap = await getAllRoutePrices();
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -112,8 +109,8 @@ export default async function AirportPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {AIRPORT_ROUTES.map((route) => (
               <Link
-                key={route.city}
-                href={`/${locale}/booking?type=airport&from=${route.city}&to=ben_gurion&direction=to_airport`}
+                key={route.slug}
+                href={`/${locale}/route/${route.slug}`}
                 className="group bg-white border border-gray-100 rounded-2xl p-5 hover:shadow-lg hover:-translate-y-1 transition-all"
               >
                 <div className="flex items-center justify-between mb-3">
@@ -125,14 +122,16 @@ export default async function AirportPage() {
                   </span>
                 </div>
                 <h3 className="font-bold text-gray-900 mb-0.5">
-                  {t(`booking.form.cities.${route.city}`)}
+                  {t(`booking.form.cities.${route.from}`)}
                 </h3>
                 <p className="text-xs text-gray-400 mb-3">
                   {t("booking.form.cities.ben_gurion")}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-400">{route.duration}</span>
-                  <span className="text-lg font-black text-[#F5922A]">₪{route.price}</span>
+                  {priceMap.get(`${route.from}:ben_gurion`)?.sedan && (
+                    <span className="text-lg font-black text-[#F5922A]" dir="ltr">₪{priceMap.get(`${route.from}:ben_gurion`)?.sedan}</span>
+                  )}
                 </div>
               </Link>
             ))}

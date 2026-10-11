@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
+import { localeAlternates } from "@/lib/seo";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 export async function generateMetadata({
@@ -12,7 +13,7 @@ export async function generateMetadata({
   return {
     title: t("contact.title"),
     description: t("contact.description"),
-    alternates: { canonical: `https://www.moveotaxi.com/${locale}/contact` },
+    alternates: localeAlternates(locale, "/contact"),
   };
 }
 import Navbar from "@/components/Navbar";

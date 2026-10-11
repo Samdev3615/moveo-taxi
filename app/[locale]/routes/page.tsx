@@ -32,23 +32,11 @@ export async function generateMetadata({
   };
 }
 
+// Every landing page gets a card (haifa-tel-aviv is the reverse of tel-aviv-haifa),
+// plus pairs that are bookable but have no landing page yet.
 const ROUTE_PAIRS = [
-  { from: "tel_aviv",   to: "jerusalem",  duration: "1h 10min" },
-  { from: "tel_aviv",   to: "haifa",      duration: "1h 00min" },
-  { from: "tel_aviv",   to: "ben_gurion", duration: "30 min" },
-  { from: "tel_aviv",   to: "beer_sheva", duration: "1h 10min" },
-  { from: "tel_aviv",   to: "eilat",      duration: "3h 30min" },
-  { from: "tel_aviv",   to: "netanya",    duration: "35 min" },
-  { from: "jerusalem",  to: "ben_gurion", duration: "45 min" },
-  { from: "jerusalem",  to: "haifa",      duration: "1h 30min" },
-  { from: "jerusalem",  to: "beer_sheva", duration: "1h 05min" },
-  { from: "jerusalem",  to: "eilat",      duration: "3h 10min" },
-  { from: "haifa",      to: "ben_gurion", duration: "1h 15min" },
-  { from: "haifa",      to: "beer_sheva", duration: "1h 45min" },
-  { from: "haifa",      to: "netanya",    duration: "30 min" },
-  { from: "beer_sheva", to: "ben_gurion", duration: "35 min" },
-  { from: "beer_sheva", to: "eilat",      duration: "2h 10min" },
-  { from: "netanya",    to: "ben_gurion", duration: "30 min" },
+  ...ROUTE_PAGES.filter((r) => r.slug !== "haifa-tel-aviv").map(({ from, to, duration }) => ({ from, to, duration })),
+  { from: "haifa", to: "beer_sheva", duration: "1h 45min" },
 ];
 
 export default async function RoutesPage() {
@@ -79,7 +67,6 @@ export default async function RoutesPage() {
               const prices = priceMap.get(`${route.from}:${route.to}`);
               const sedanPrice = prices?.sedan ?? null;
               const minibusPrice = prices?.minibus ?? null;
-              if (!sedanPrice) return null;
 
               const bookingParams = new URLSearchParams({
                 type: route.to === "ben_gurion" || route.from === "ben_gurion" ? "airport" : "intercity",
@@ -92,6 +79,8 @@ export default async function RoutesPage() {
                   (r.from === route.from && r.to === route.to) ||
                   (r.from === route.to && r.to === route.from)
               );
+
+              if (!sedanPrice && !landingPage) return null;
 
               const cardBody = (
                 <>
@@ -109,18 +98,20 @@ export default async function RoutesPage() {
                     </div>
                     <div className="text-xs text-gray-400 text-end">{route.duration}</div>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-3 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500">{t("booking.form.vehicles.sedan")}</span>
-                      <span className="font-black text-[#F5922A]" dir="ltr">₪{sedanPrice}</span>
-                    </div>
-                    {minibusPrice && (
+                  {sedanPrice && (
+                    <div className="bg-gray-50 rounded-xl p-3 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{t("booking.form.vehicles.minibus")}</span>
-                        <span className="font-black text-[#1B7A3C]" dir="ltr">₪{minibusPrice}</span>
+                        <span className="text-xs text-gray-500">{t("booking.form.vehicles.sedan")}</span>
+                        <span className="font-black text-[#F5922A]" dir="ltr">₪{sedanPrice}</span>
                       </div>
-                    )}
-                  </div>
+                      {minibusPrice && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">{t("booking.form.vehicles.minibus")}</span>
+                          <span className="font-black text-[#1B7A3C]" dir="ltr">₪{minibusPrice}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               );
 

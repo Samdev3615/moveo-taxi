@@ -9,6 +9,21 @@ import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 const PHONE = "+972-54-310-0044";
 
+// SEO priority routes, linked from every page
+const PRIORITY_ROUTES = [
+  { slug: "jerusalem-ben-gurion", from: "jerusalem" },
+  { slug: "tel-aviv-ben-gurion", from: "tel_aviv" },
+  { slug: "netanya-ben-gurion", from: "netanya" },
+  { slug: "ashdod-ben-gurion", from: "ashdod" },
+];
+
+function trackWA(source: string, locale: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    (window as any).gtag("event", "whatsapp_click", { source, locale });
+  }
+}
+
 export default function Footer() {
   const t = useTranslations();
   const locale = useLocale();
@@ -39,6 +54,7 @@ export default function Footer() {
               <a
                 href={getWhatsAppUrl(locale)}
                 aria-label="WhatsApp"
+                onClick={() => trackWA("footer_icon", locale)}
                 className="bg-[#25D366] p-2 rounded-lg hover:bg-[#1da851] transition-colors"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="white" aria-hidden="true">
@@ -55,6 +71,14 @@ export default function Footer() {
               <li><Link href={`/${locale}/airport`} className="hover:text-white transition-colors">{t("nav.airport")}</Link></li>
               <li><Link href={`/${locale}/booking?type=intercity`} className="hover:text-white transition-colors">{t("nav.intercity")}</Link></li>
               <li><Link href={`/${locale}/routes`} className="hover:text-white transition-colors">{t("nav.routes")}</Link></li>
+              <li><Link href={`/${locale}/taxi-eilat`} className="hover:text-white transition-colors">{t("footer.eilatLink")}</Link></li>
+              {PRIORITY_ROUTES.map((r) => (
+                <li key={r.slug}>
+                  <Link href={`/${locale}/route/${r.slug}`} className="hover:text-white transition-colors">
+                    {t(`booking.form.cities.${r.from}`)} → {t("booking.form.cities.ben_gurion")}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -63,6 +87,8 @@ export default function Footer() {
             <h3 className="font-bold mb-4 text-sm uppercase tracking-wider text-[#16A34A]">{t("nav.about")}</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href={`/${locale}/about`} className="hover:text-white transition-colors">{t("nav.about")}</Link></li>
+              <li><Link href={`/${locale}/drivers`} className="hover:text-white transition-colors">{t("nav.drivers")}</Link></li>
+              <li><Link href={`/${locale}/blog`} className="hover:text-white transition-colors">{t("footer.blogLink")}</Link></li>
               <li><Link href={`/${locale}/contact`} className="hover:text-white transition-colors">{t("nav.contact")}</Link></li>
             </ul>
           </div>
@@ -74,7 +100,7 @@ export default function Footer() {
               <a href={`tel:${PHONE}`} className="flex items-center gap-2 hover:text-white transition-colors">
                 {PHONE}
               </a>
-              <a href={getWhatsAppUrl(locale)} className="flex items-center gap-2 hover:text-white transition-colors">
+              <a href={getWhatsAppUrl(locale)} onClick={() => trackWA("footer_link", locale)} className="flex items-center gap-2 hover:text-white transition-colors">
                 WhatsApp
               </a>
               <p className="text-xs mt-3">

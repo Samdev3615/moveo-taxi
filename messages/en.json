@@ -276,7 +276,9 @@
     "tagline": "Reliable taxi service across Israel",
     "rights": "All rights reserved",
     "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Service"
+    "termsLink": "Terms of Service",
+    "blogLink": "Blog",
+    "eilatLink": "Taxi to Eilat"
   },
   "confirmation": {
     "title": "Booking Received!",
@@ -366,6 +368,18 @@
     "contact_link": "contact us"
   },
   "meta": {
+    "booking": {
+      "title": "Book a Taxi Online — Fixed Price | Moveo Taxi",
+      "description": "Book your Ben Gurion Airport or intercity taxi in 2 minutes. Fixed price upfront, instant confirmation, professional drivers 24/7."
+    },
+    "privacy": {
+      "title": "Privacy Policy | Moveo Taxi",
+      "description": "How Moveo Taxi collects, uses and protects your personal data when you book a ride."
+    },
+    "terms": {
+      "title": "Terms of Service | Moveo Taxi",
+      "description": "Terms of service for Moveo Taxi bookings: reservations, pricing, payment and cancellations."
+    },
     "home": {
       "title": "Moveo Taxi — Ben Gurion Airport Transfers & Intercity Taxi Israel",
       "description": "Book your taxi in Israel. Ben Gurion airport transfers, intercity trips Tel Aviv, Jerusalem, Haifa. Professional drivers, fixed prices, available 24/7."

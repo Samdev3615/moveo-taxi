@@ -1,7 +1,23 @@
+import type { Metadata } from "next";
 import { getTranslations, getLocale } from "next-intl/server";
 import Link from "next/link";
+import { localeAlternates } from "@/lib/seo";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "meta" });
+  return {
+    title: t("terms.title"),
+    description: t("terms.description"),
+    alternates: localeAlternates(locale, "/terms"),
+  };
+}
 
 export default async function TermsPage() {
   const t = await getTranslations("terms");
