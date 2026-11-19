@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { anthropic, MODEL_SONNET } from "@/lib/anthropic";
+import { anthropic, MODEL_SONNET, AGENTS_PAUSED } from "@/lib/anthropic";
 import { supabaseAdmin } from "@/lib/supabase-server";
 import { getTopQueries, getTopPages, formatGscData } from "@/lib/gsc";
 import { getGa4Overview, getGa4TopPages, getGa4TrafficSources, formatGa4Overview, formatGa4Rows } from "@/lib/ga4";
@@ -61,6 +61,10 @@ async function getLatestGoodReport(agent: string): Promise<ReportRow | null> {
 }
 
 export async function GET(req: NextRequest) {
+  if (AGENTS_PAUSED) {
+    return NextResponse.json({ paused: true, message: "AI agents are paused" });
+  }
+
   const auth = req.headers.get("authorization");
   if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
