@@ -8,6 +8,13 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import Logo from "./Logo";
 
 const PHONE = "+972-54-310-0044";
+
+function trackWA(source: string, locale: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    (window as any).gtag("event", "whatsapp_click", { source, locale });
+  }
+}
 const WHATSAPP_NUMBER = "972543100044";
 
 export default function Navbar() {
@@ -124,7 +131,7 @@ export default function Navbar() {
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
                 className="flex-1 text-center bg-[#25D366] text-white py-2.5 rounded-xl text-sm font-semibold"
-                onClick={() => setMobileOpen(false)}
+                onClick={() => { setMobileOpen(false); trackWA("navbar_mobile", locale); }}
               >
                 WhatsApp
               </a>

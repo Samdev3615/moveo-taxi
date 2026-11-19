@@ -34,6 +34,8 @@ export async function PATCH(
         status:        body.status || "pending",
         notes:         body.notes || null,
       }
+    : body.notes !== undefined
+    ? { notes: body.notes }
     : { status: body.status };
 
   const { error } = await supabaseAdmin

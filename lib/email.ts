@@ -65,45 +65,88 @@ const confirmationTemplates: Record<string, {
   subject: (id: string) => string;
   title: string;
   subtitle: string;
-  labels: { from: string; to: string; date: string; passengers: string; price: string; phone: string; id: string; contact: string };
+  labels: { from: string; to: string; date: string; passengers: string; price: string; phone: string; id: string; contact: string; print: string };
   isRtl: boolean;
 }> = {
   he: {
     subject: (id) => `אישור הזמנה #${id} — Moveo Taxi`,
     title: "הזמנתך התקבלה!",
     subtitle: "תודה על פנייתך. אנו ניצור איתך קשר בקרוב לאישור הנסיעה.",
-    labels: { from: "מוצא", to: "יעד", date: "תאריך", passengers: "נוסעים", price: "מחיר משוער", phone: "טלפון", id: "מספר הזמנה", contact: "ליצירת קשר: " },
+    labels: { from: "מוצא", to: "יעד", date: "תאריך", passengers: "נוסעים", price: "מחיר", phone: "טלפון", id: "מספר הזמנה", contact: "ליצירת קשר: ", print: "🖨️ הדפס / שמור PDF" },
     isRtl: true,
   },
   en: {
     subject: (id) => `Booking Confirmation #${id} — Moveo Taxi`,
     title: "Your booking is confirmed!",
     subtitle: "Thank you for booking with us. We will contact you shortly to confirm your trip.",
-    labels: { from: "From", to: "To", date: "Date", passengers: "Passengers", price: "Estimated price", phone: "Phone", id: "Booking ID", contact: "Contact us: " },
+    labels: { from: "From", to: "To", date: "Date", passengers: "Passengers", price: "Price", phone: "Phone", id: "Booking ID", contact: "Contact us: ", print: "🖨️ Print / Save as PDF" },
     isRtl: false,
   },
   fr: {
     subject: (id) => `Confirmation de réservation #${id} — Moveo Taxi`,
     title: "Votre réservation est reçue !",
     subtitle: "Merci pour votre réservation. Nous vous contacterons rapidement pour confirmer votre trajet.",
-    labels: { from: "Départ", to: "Destination", date: "Date", passengers: "Passagers", price: "Prix estimé", phone: "Téléphone", id: "N° de réservation", contact: "Nous contacter : " },
+    labels: { from: "Départ", to: "Destination", date: "Date", passengers: "Passagers", price: "Prix", phone: "Téléphone", id: "N° de réservation", contact: "Nous contacter : ", print: "🖨️ Imprimer / Enregistrer PDF" },
     isRtl: false,
   },
   ru: {
     subject: (id) => `Подтверждение бронирования #${id} — Moveo Taxi`,
     title: "Ваш заказ получен!",
     subtitle: "Спасибо за ваш заказ. Мы свяжемся с вами в ближайшее время для подтверждения поездки.",
-    labels: { from: "Откуда", to: "Куда", date: "Дата", passengers: "Пассажиры", price: "Примерная цена", phone: "Телефон", id: "Номер заказа", contact: "Связаться с нами: " },
+    labels: { from: "Откуда", to: "Куда", date: "Дата", passengers: "Пассажиры", price: "Цена", phone: "Телефон", id: "Номер заказа", contact: "Связаться с нами: ", print: "🖨️ Печать / Сохранить PDF" },
     isRtl: false,
   },
   es: {
     subject: (id) => `Confirmación de reserva #${id} — Moveo Taxi`,
     title: "¡Tu reserva ha sido recibida!",
     subtitle: "Gracias por reservar con nosotros. Nos pondremos en contacto con usted pronto para confirmar su viaje.",
-    labels: { from: "Origen", to: "Destino", date: "Fecha", passengers: "Pasajeros", price: "Precio estimado", phone: "Teléfono", id: "N° de reserva", contact: "Contáctenos: " },
+    labels: { from: "Origen", to: "Destino", date: "Fecha", passengers: "Pasajeros", price: "Precio", phone: "Teléfono", id: "N° de reserva", contact: "Contáctenos: ", print: "🖨️ Imprimir / Guardar PDF" },
     isRtl: false,
   },
 };
+
+const whatsappTemplates: Record<string, (b: BookingData, from: string, to: string, id: string) => string> = {
+  he: (b, from, to, id) =>
+    `*Moveo Taxi* ✅ ההזמנה שלך אושרה!\n\nשלום ${b.name} 👋\n\n` +
+    `*מוצא:* ${from}\n*יעד:* ${to}\n*תאריך:* ${b.date} — ${b.time}` +
+    `${b.price_estimate ? `\n*מחיר:* ${b.price_estimate}₪` : ""}\n*מספר הזמנה:* #${id}\n\n` +
+    `לכל שאלה: 054-310-0044`,
+  en: (b, from, to, id) =>
+    `*Moveo Taxi* ✅ Booking confirmed!\n\nHello ${b.name} 👋\n\n` +
+    `*From:* ${from}\n*To:* ${to}\n*Date:* ${b.date} — ${b.time}` +
+    `${b.price_estimate ? `\n*Price:* ${b.price_estimate}₪` : ""}\n*Booking ID:* #${id}\n\n` +
+    `Any questions? +972-54-310-0044`,
+  fr: (b, from, to, id) =>
+    `*Moveo Taxi* ✅ Réservation confirmée !\n\nBonjour ${b.name} 👋\n\n` +
+    `*Départ :* ${from}\n*Destination :* ${to}\n*Date :* ${b.date} — ${b.time}` +
+    `${b.price_estimate ? `\n*Prix :* ${b.price_estimate}₪` : ""}\n*Référence :* #${id}\n\n` +
+    `Une question ? +972-54-310-0044`,
+  ru: (b, from, to, id) =>
+    `*Moveo Taxi* ✅ Заказ подтверждён!\n\nЗдравствуйте, ${b.name} 👋\n\n` +
+    `*Откуда:* ${from}\n*Куда:* ${to}\n*Дата:* ${b.date} — ${b.time}` +
+    `${b.price_estimate ? `\n*Цена:* ${b.price_estimate}₪` : ""}\n*Номер заказа:* #${id}\n\n` +
+    `Вопросы? +972-54-310-0044`,
+  es: (b, from, to, id) =>
+    `*Moveo Taxi* ✅ ¡Reserva confirmada!\n\n¡Hola ${b.name}! 👋\n\n` +
+    `*Origen:* ${from}\n*Destino:* ${to}\n*Fecha:* ${b.date} — ${b.time}` +
+    `${b.price_estimate ? `\n*Precio:* ${b.price_estimate}₪` : ""}\n*Reserva:* #${id}\n\n` +
+    `¿Preguntas? +972-54-310-0044`,
+};
+
+function buildWhatsAppLink(booking: BookingData, shortId: string): string {
+  const digits = booking.phone.replace(/\D/g, "");
+  const normalized = digits.startsWith("972")
+    ? digits
+    : digits.startsWith("0")
+    ? `972${digits.slice(1)}`
+    : `972${digits}`;
+  const locale = booking.locale && whatsappTemplates[booking.locale] ? booking.locale : "en";
+  const cities = cityNames[locale] || cityNames.en;
+  const from = cities[booking.from_city] || booking.from_city;
+  const to = cities[booking.to_city] || booking.to_city;
+  const message = whatsappTemplates[locale](booking, from, to, shortId);
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`;
+}
 
 type BookingData = {
   id: string;
@@ -124,6 +167,7 @@ type BookingData = {
 
 export async function sendBookingNotification(booking: BookingData) {
   const shortId = booking.id.slice(0, 8).toUpperCase();
+  const waLink = buildWhatsAppLink(booking, shortId);
 
   await transporter.sendMail({
     from: `"Moveo Taxi" <${process.env.GMAIL_USER}>`,
@@ -149,7 +193,8 @@ export async function sendBookingNotification(booking: BookingData) {
             ${booking.price_estimate ? `<tr><td style="padding: 8px 0; color: #6b7280;">Prix estimé</td><td style="padding: 8px 0; font-weight: bold; color: #16A34A;">${booking.price_estimate}₪</td></tr>` : ""}
           </table>
           <div style="margin-top: 20px; text-align: center;">
-            <a href="https://moveotaxi.com/admin" style="background: #16A34A; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">Voir dans le panel admin</a>
+            <a href="https://moveotaxi.com/admin" style="display: inline-block; background: #16A34A; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 4px;">Voir dans le panel admin</a>
+            <a href="${waLink}" style="display: inline-block; background: #25D366; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 4px;">📱 WhatsApp client</a>
           </div>
         </div>
       </div>
@@ -187,12 +232,15 @@ export async function sendClientConfirmation(booking: BookingData) {
           <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; padding: 16px; display: block;">
             <tr><td style="padding: 8px 16px; color: #6b7280; width: 160px;">${tpl.labels.from}</td><td style="padding: 8px 16px; font-weight: bold;">${fromCity}</td></tr>
             <tr style="background: #f9fafb;"><td style="padding: 8px 16px; color: #6b7280;">${tpl.labels.to}</td><td style="padding: 8px 16px; font-weight: bold;">${toCity}</td></tr>
-            <tr><td style="padding: 8px 16px; color: #6b7280;">${tpl.labels.date}</td><td style="padding: 8px 16px;">${booking.date} — ${booking.time}</td></tr>
+            <tr><td style="padding: 8px 16px; color: #6b7280;">${tpl.labels.date}</td><td style="padding: 8px 16px; white-space: nowrap;">${booking.date} — ${booking.time}</td></tr>
             <tr style="background: #f9fafb;"><td style="padding: 8px 16px; color: #6b7280;">${tpl.labels.passengers}</td><td style="padding: 8px 16px;">${booking.passengers || 1}</td></tr>
             ${booking.price_estimate ? `<tr><td style="padding: 8px 16px; color: #6b7280;">${tpl.labels.price}</td><td style="padding: 8px 16px; font-weight: bold; color: #16A34A; font-size: 18px;">${booking.price_estimate}₪</td></tr>` : ""}
           </table>
           <div style="margin-top: 20px; padding: 16px; background: #e8f5ee; border-radius: 8px; text-align: center;">
             <p style="margin: 0; color: #15803d; font-size: 14px;">${tpl.labels.contact}<strong>+972-54-310-0044</strong></p>
+          </div>
+          <div style="margin-top: 16px; text-align: center;">
+            <a href="https://www.moveotaxi.com/${locale}/receipt/${booking.id}" style="display: inline-block; background: #1a3c6e; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;">${tpl.labels.print}</a>
           </div>
         </div>
       </div>

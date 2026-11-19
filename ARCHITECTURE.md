@@ -8,7 +8,8 @@
 | Internationalisation | next-intl | 4.13.x |
 | Styles | Tailwind CSS | v4 |
 | Base de données | Supabase (PostgreSQL) | — |
-| Déploiement | Vercel (prévu) | — |
+| Déploiement | Vercel — `git push master` déclenche la production | — |
+| IA | Anthropic Claude (agents SEO, en pause) | SDK `@anthropic-ai/sdk` |
 | Langue principale | TypeScript | — |
 
 ---
@@ -32,7 +33,10 @@ moveo-taxi/
 │   │   ├── page.tsx            # Page d'accueil + Hero + BookingWidget
 │   │   ├── airport/page.tsx    # Transferts aéroport Ben Gourion
 │   │   ├── booking/page.tsx    # Formulaire de réservation complet
-│   │   ├── routes/page.tsx     # Trajets inter-villes + tarifs
+│   │   ├── routes/page.tsx     # Hub des trajets (cartes depuis ROUTE_PAGES + prix Supabase)
+│   │   ├── route/[slug]/       # 24 pages de routes : prix, contenu, FAQ, « Autres trajets »
+│   │   ├── taxi-eilat/page.tsx # Landing « Taxi Eilat » 5 langues
+│   │   ├── blog/               # Liste + articles (Supabase `blog_posts`)
 │   │   ├── about/page.tsx      # À propos
 │   │   ├── contact/page.tsx    # Contact + WhatsApp
 │   │   ├── drivers/page.tsx    # Page recrutement chauffeurs
@@ -43,15 +47,18 @@ moveo-taxi/
 │   ├── admin/                  # Panel admin (hors i18n, accès direct)
 │   │   ├── layout.tsx
 │   │   ├── page.tsx            # Dashboard réservations
-│   │   └── bookings/page.tsx
+│   │   ├── bookings/page.tsx
+│   │   ├── calendar/ · prices/ · seo/   # Calendrier, prix des routes, panel agents SEO
 │   ├── api/
+│   │   ├── agents/             # 6 agents IA SEO (crons Vercel) — en pause via AGENTS_PAUSED
+│   │   ├── admin/              # login, prix, seo-data, trigger-agent
 │   │   └── bookings/
 │   │       ├── route.ts        # POST (créer) + GET (lister)
 │   │       └── [id]/route.ts   # GET/PATCH/DELETE par ID
 │   ├── layout.tsx              # Root layout minimal (retourne children)
 │   ├── page.tsx                # Redirection racine → /he
 │   ├── globals.css             # Variables CSS + font Heebo
-│   ├── sitemap.ts              # Sitemap XML automatique (30 URLs)
+│   ├── sitemap.ts              # Sitemap : 9 pages + 24 routes × 5 langues + articles publiés
 │   └── robots.ts               # robots.txt automatique
 │
 ├── components/
@@ -70,6 +77,12 @@ moveo-taxi/
 │
 ├── lib/
 │   ├── supabase.ts             # Client Supabase + types Booking
+│   ├── seo.ts                  # localeAlternates() : canonical + hreflang + x-default
+│   ├── route-pages.ts          # 24 routes (slug, villes, durée, distance) + getRelatedRoutes()
+│   ├── route-content.ts        # Textes enrichis par route et par langue
+│   ├── get-route-price.ts      # Prix des routes depuis Supabase (`route_prices`)
+│   ├── anthropic.ts            # Client Claude + modèles + AGENTS_PAUSED
+│   ├── gsc.ts · ga4.ts         # Données Search Console / Analytics pour les agents
 │   ├── prices.ts               # Calcul des tarifs par trajet
 │   └── utils.ts                # Utilitaires divers
 │
@@ -162,9 +175,11 @@ Admin notifié → panel /admin ou WhatsApp
 
 ## SEO
 
-- `generateMetadata()` dans chaque page — titre + description par locale
-- `alternates.languages` (hreflang) dans le layout → tous les 5 locales + `x-default: /he`
-- Sitemap XML auto : `/sitemap.xml` — 30 URLs (6 pages × 5 locales)
+- `generateMetadata()` dans chaque page publique — titre + description par locale
+- Titres : template `"%s"` dans le layout → chaque page écrit son titre complet (marque incluse une seule fois) ; titres de routes sans marque, < 60 caractères
+- Canonical + hreflang : **toujours via `localeAlternates(locale, path)`** (`lib/seo.ts`). Ne jamais définir `alternates: { canonical }` seul : la fusion des métadonnées écrase alors les langues
+- Schéma FAQPage : uniquement les questions affichées sur la page
+- Sitemap XML auto : `/sitemap.xml` — 9 pages + 24 routes × 5 langues + articles de blog publiés
 - `robots.txt` auto : `/robots.txt` — `/admin` et `/api/` exclus du crawl
 - Namespace `meta` dans chaque fichier `messages/*.json`
 

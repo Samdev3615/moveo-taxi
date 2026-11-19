@@ -1,10 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, Download, CheckCircle, XCircle, Clock, Plane, Car, Phone, Briefcase, MapPin, Plus, Pencil, Trash2 } from "lucide-react";
+import { RefreshCw, Download, CheckCircle, XCircle, Clock, Plane, Car, Phone, Briefcase, MapPin, Plus, Pencil, Trash2, Share2, Star } from "lucide-react";
 import AdminBookingModal from "@/components/AdminBookingModal";
 import { cn } from "@/lib/utils";
 import type { Booking, BookingStatus } from "@/lib/supabase";
+
+const CITY_NAMES_HE: Record<string, string> = {
+  tel_aviv: "תל אביב", jerusalem: "ירושלים", haifa: "חיפה", beer_sheva: "באר שבע",
+  eilat: "אילת", netanya: "נתניה", ashdod: "אשדוד", rishon: "ראשון לציון",
+  petah_tikva: "פתח תקווה", ben_gurion: "נמל תעופה בן גוריון",
+  herzliya: "הרצליה", raanana: "רעננה", kfar_saba: "כפר סבא", modiin: "מודיעין",
+  rehovot: "רחובות", ashkelon: "אשקלון", nahariya: "נהריה", acre: "עכו",
+  tiberias: "טבריה", nazareth: "נצרת", bat_yam: "בת ים", holon: "חולון",
+  bnei_brak: "בני ברק", lod: "לוד", ramla: "רמלה",
+};
 
 const CITY_NAMES: Record<string, string> = {
   tel_aviv: "Tel Aviv", jerusalem: "Jérusalem", haifa: "Haïfa",
@@ -46,7 +56,64 @@ function parseNotes(notes?: string) {
   const driverIsMe = driverRaw === "moi";
   const driverName = driverRaw && !driverIsMe ? driverRaw.split(" | ")[0] : null;
   const driverPhone = driverRaw && !driverIsMe ? (driverRaw.split(" | ")[1] ?? null) : null;
-  return { suitcases, trolleys, address, source, lang, driverIsMe, driverName, driverPhone };
+  const feedbackSent = /FeedbackSent:\s*true/i.test(notes ?? "");
+  return { suitcases, trolleys, address, source, lang, driverIsMe, driverName, driverPhone, feedbackSent };
+}
+
+function generateDriverMessage(b: Booking): string {
+  const { suitcases, trolleys } = parseNotes(b.notes);
+  const [year, month, day] = b.date.split("-");
+  const dateHe = `${day}.${month}.${year}`;
+  const timeHe = b.time.slice(0, 5);
+  const fromHe = CITY_NAMES_HE[b.from_city] || b.from_city;
+  const toHe   = CITY_NAMES_HE[b.to_city]   || b.to_city;
+  const vehicle = b.vehicle_type === "minibus" ? "מינבוס 6 מקומות" : "מונית רגילה";
+  const commission  = b.price_estimate ? Math.round(b.price_estimate * 0.1) : null;
+  const driverPrice = b.price_estimate ? Math.round(b.price_estimate * 0.9) : null;
+
+  let msg = `🚕 *נסיעה חדשה זמינה*\n\n`;
+  msg += `📅 תאריך: ${dateHe}\n`;
+  msg += `🕒 שעה: ${timeHe}\n\n`;
+  msg += `📍 איסוף: ${fromHe}\n`;
+  msg += `➡️ יעד: ${toHe}\n\n`;
+  msg += `🚐 רכב נדרש: ${vehicle}\n`;
+  msg += `👥 נוסעים: ${b.passengers}\n`;
+  if (suitcases > 0 || trolleys > 0) {
+    const parts: string[] = [];
+    if (suitcases > 0) parts.push(`מזוודות: ${suitcases}`);
+    if (trolleys > 0)  parts.push(`טרולי: ${trolleys}`);
+    msg += `🧳 ${parts.join(" | ")}\n`;
+  }
+  msg += `\n`;
+  if (driverPrice !== null && commission !== null) {
+    msg += `💰 מחיר לנהג: ${driverPrice} ₪\n`;
+    msg += `💵 עמלה: ${commission} ₪\n`;
+  }
+  if (b.flight_number) msg += `\n✈️ מספר טיסה: ${b.flight_number}\n`;
+  msg += `\nמי שפנוי ומתאים שיכתוב בפרטי.`;
+  return msg;
+}
+
+const FEEDBACK_MSGS: Record<string, (name: string) => string> = {
+  he: (n) => `שלום ${n} 👋\n\nתודה שנסעת עם *Moveo Taxi*!\nמקווים שהנסיעה הייתה נעימה ונוחה 🚕\n\nנשמח לשמוע את המשוב שלך — איך הייתה החוויה?\nהדעה שלך עוזרת לנו להשתפר.\n\n*Moveo Taxi* תמיד כאן בשבילך.\nwww.moveotaxi.com · 054-310-0044`,
+  en: (n) => `Hi ${n} 👋\n\nThank you for traveling with *Moveo Taxi*!\nWe hope your trip was smooth and comfortable 🚕\n\nWe'd love to hear your feedback — how was your experience?\nYour opinion helps us improve our service.\n\n*Moveo Taxi* is always here when you need us.\nwww.moveotaxi.com · +972-54-310-0044`,
+  fr: (n) => `Bonjour ${n} 👋\n\nMerci d'avoir voyagé avec *Moveo Taxi* !\nNous espérons que votre trajet s'est bien passé 🚕\n\nNous serions ravis d'avoir votre avis — comment s'est passée votre expérience ?\nVotre opinion nous aide à améliorer notre service.\n\n*Moveo Taxi* est toujours là pour vous.\nwww.moveotaxi.com · +972-54-310-0044`,
+  ru: (n) => `Здравствуйте, ${n} 👋\n\nСпасибо, что воспользовались *Moveo Taxi*!\nНадеемся, поездка прошла комфортно 🚕\n\nБудем рады узнать ваше мнение — как вам поездка?\nВаш отзыв помогает нам стать лучше.\n\n*Moveo Taxi* всегда к вашим услугам.\nwww.moveotaxi.com · +972-54-310-0044`,
+  es: (n) => `¡Hola ${n}! 👋\n\n¡Gracias por viajar con *Moveo Taxi*!\nEsperamos que su viaje haya sido cómodo y agradable 🚕\n\nNos encantaría conocer su opinión — ¿cómo fue su experiencia?\nSu opinión nos ayuda a mejorar nuestro servicio.\n\n*Moveo Taxi* siempre está aquí cuando nos necesite.\nwww.moveotaxi.com · +972-54-310-0044`,
+};
+
+function buildFeedbackLink(b: Booking): string {
+  const digits = b.phone.replace(/\D/g, "");
+  const normalized = digits.startsWith("972") ? digits
+    : digits.startsWith("0") ? `972${digits.slice(1)}`
+    : `972${digits}`;
+  const { lang } = parseNotes(b.notes);
+  const locale = lang && FEEDBACK_MSGS[lang] ? lang : "en";
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(FEEDBACK_MSGS[locale](b.name))}`;
+}
+
+function isTripPast(dateStr: string): boolean {
+  return dateStr < new Date().toISOString().split("T")[0];
 }
 
 const FILTERS = [
@@ -64,6 +131,8 @@ export default function AdminDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [editBooking, setEditBooking] = useState<Booking | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [driverMsgBooking, setDriverMsgBooking] = useState<Booking | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const fetch_ = useCallback(async () => {
     setLoading(true);
@@ -93,6 +162,16 @@ export default function AdminDashboard() {
     }
     setConfirmDelete(null);
     fetch_();
+  }
+
+  async function markFeedbackSent(b: Booking) {
+    const updatedNotes = (b.notes || "").trimEnd() + "\nFeedbackSent: true";
+    await fetch(`/api/bookings/${b.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notes: updatedNotes }),
+    });
+    setBookings((prev) => prev.map((bk) => bk.id === b.id ? { ...bk, notes: updatedNotes } : bk));
   }
 
   async function updateStatus(id: string, status: BookingStatus) {
@@ -269,6 +348,23 @@ export default function AdminDashboard() {
                     className="flex items-center gap-1 px-3 py-1.5 bg-[#1a3c6e]/10 text-[#1a3c6e] rounded-lg text-xs font-semibold">
                     <Pencil size={12} />Modifier
                   </button>
+                  <button onClick={() => setDriverMsgBooking(b)}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-semibold">
+                    <Share2 size={12} />Groupes
+                  </button>
+                  {isTripPast(b.date) && b.phone && (
+                    parseNotes(b.notes).feedbackSent ? (
+                      <span className="flex items-center gap-1 px-3 py-1.5 bg-gray-50 text-gray-300 rounded-lg text-xs font-semibold">
+                        <Star size={12} />Envoyé
+                      </span>
+                    ) : (
+                      <a href={buildFeedbackLink(b)} target="_blank" rel="noopener noreferrer"
+                        onClick={() => markFeedbackSent(b)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-yellow-50 text-yellow-600 rounded-lg text-xs font-semibold">
+                        <Star size={12} />Satisfaction
+                      </a>
+                    )
+                  )}
                   {b.status === "pending" && <>
                     <button onClick={() => updateStatus(b.id, "confirmed")}
                       className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-xs font-semibold">
@@ -428,7 +524,7 @@ export default function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center flex-wrap gap-1">
                         <button
                           onClick={() => setEditBooking(b)}
                           title="Modifier"
@@ -437,6 +533,31 @@ export default function AdminDashboard() {
                           <Pencil size={12} />
                           Modifier
                         </button>
+                        <button
+                          onClick={() => setDriverMsgBooking(b)}
+                          title="Message groupes chauffeurs"
+                          className="p-1.5 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition-colors"
+                        >
+                          <Share2 size={14} />
+                        </button>
+                        {isTripPast(b.date) && b.phone && (
+                          parseNotes(b.notes).feedbackSent ? (
+                            <span title="Satisfaction envoyée" className="p-1.5 text-gray-200">
+                              <Star size={14} />
+                            </span>
+                          ) : (
+                            <a
+                              href={buildFeedbackLink(b)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => markFeedbackSent(b)}
+                              title="Message satisfaction"
+                              className="p-1.5 bg-yellow-50 text-yellow-500 rounded-lg hover:bg-yellow-100 transition-colors"
+                            >
+                              <Star size={14} />
+                            </a>
+                          )
+                        )}
                         {b.status === "pending" && (
                           <>
                             <button
@@ -513,6 +634,42 @@ export default function AdminDashboard() {
         onClose={() => setEditBooking(null)}
         onCreated={fetch_}
       />
+    )}
+
+    {driverMsgBooking && (
+      <div
+        className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+        onClick={() => { setDriverMsgBooking(null); setCopied(false); }}
+      >
+        <div
+          className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-gray-900 flex items-center gap-2">
+              <Share2 size={16} className="text-amber-600" />
+              Groupes chauffeurs
+            </h3>
+            <button
+              onClick={() => { setDriverMsgBooking(null); setCopied(false); }}
+              className="text-gray-400 hover:text-gray-600 text-lg leading-none"
+            >✕</button>
+          </div>
+          <pre className="bg-gray-50 rounded-xl p-4 text-sm text-gray-800 whitespace-pre-wrap font-sans border border-gray-100 mb-4 max-h-72 overflow-y-auto" dir="rtl">
+            {generateDriverMessage(driverMsgBooking)}
+          </pre>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(generateDriverMessage(driverMsgBooking!));
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2500);
+            }}
+            className="w-full py-3 bg-[#1a3c6e] text-white rounded-xl font-bold text-sm hover:bg-[#142d52] transition-colors"
+          >
+            {copied ? "✓ Copié !" : "📋 Copier le message"}
+          </button>
+        </div>
+      </div>
     )}
     </>
   );

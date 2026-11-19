@@ -116,7 +116,8 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ✅ Plan David Levi analysé et intégralement implémenté (voir DEVLOG 2026-07-23)
 - ✅ David reçoit les données de réservation Supabase (top routes, revenus, taux confirmation)
 - ✅ Photo Noam Ben-David (`public/images/team-noam.png`)
-- ⬜ Planification cron hebdomadaire automatique des agents
+- ✅ Planification cron des agents (`vercel.json` : writer lundi, keywords jeudi, competitor le 1er, auditor le 15)
+- ⏸ **Agents en pause depuis le 2026-11-19** (`AGENTS_PAUSED` dans `lib/anthropic.ts`) — à corriger avant réactivation : articles jamais publiés, score auditeur illisible, prix inventés
 - ⬜ Historique et comparaison de rapports (évolution dans le temps)
 - ⬜ Publications GBP automatiques via l'orchestrateur
 
@@ -129,17 +130,34 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 - ✅ Sitemap : dates de modification statiques et réelles par page (fini le `new Date()` systématique)
 - ✅ Affirmations About page corrigées : supprimé "depuis 2015" et "50 000+ trajets" (faux)
 - ⬜ Pages dédiées autres destinations touristiques (Mer Morte, Nazareth, Tibériade)
-- ⬜ Page hub "Taxi depuis l'aéroport Ben Gurion" avec toutes les destinations et prix
+- ✅ Page `/airport` : grille des 13 routes BGN avec prix Supabase et liens vers les pages de routes (2026-10-11)
+- ✅ Corrections techniques : canonical/hreflang via `lib/seo.ts`, titres sans marque en double, FAQ conforme, métadonnées booking/privacy/terms (2026-10-11)
+- ✅ Contenu Ashdod ↔ BGN (4 langues), Netanya ↔ BGN (HE), TLV ↔ BGN (4 langues) (2026-10-11)
+- ✅ Bloc « Autres trajets » sur chaque page de route + liens footer vers les routes prioritaires (2026-10-11)
 - ⬜ Liens internes depuis les articles de blog vers les pages routes correspondantes
-- ⬜ Avis Google — utiliser template Noam pour demander via WhatsApp après chaque course
+- ⬜ Avis Google — lien d'avis dans l'email de reçu / message WhatsApp après chaque course
+- ⬜ Page EN Jérusalem → BGN : prix en haut, comparatif taxi/train/sherout
 - ✅ Google Business Profile — **validé le 2026-07-23** · support@moveotaxi.com propriétaire · profil actif sur Google Maps
 - ⬜ Sophie — enrichissement des pages routes existantes avec contenu dynamique (Phase 3)
+
+---
+
+## Phase 2d — Opérations & conversion
+
+- ⬜ **Redéployer les fonctions locales non commitées** (reçu, boutons Groupes/Satisfaction) — régression prod depuis le 2026-10-11
+- ⬜ Bouton « Coller un message WhatsApp » → réservation pré-remplie par IA (Claude Haiku)
+- ⬜ WhatsApp Business + réponses rapides avec lien de réservation pré-rempli
+- ⬜ Suivi des conversions GA4 (début → réservation confirmée)
+- ⬜ Proposition du trajet retour après réservation
+- ⬜ Test Google Ads (Jérusalem / TLV ↔ BGN)
+- ✅ Filtre trafic interne GA4 actif (2026-10-11)
 
 ---
 
 ## Phase 3 — Avancé
 
 - 🔮 Paiement en ligne (Payplus / iCredit — solutions israéliennes)
+- 🔮 Assistant WhatsApp automatique (API WhatsApp Cloud, ~50–200 ₪/mois)
 - 🔮 Espace chauffeur (app web mobile — connexion, trajets du jour)
 - 🔮 Application mobile (React Native)
 - 🔮 Suivi GPS en temps réel du chauffeur
@@ -156,4 +174,6 @@ Légende : ✅ Fait · 🔄 En cours · ⬜ À faire · 🔮 Phase future
 | ~~Numéro de téléphone placeholder~~ | ✅ Résolu — `+972-54-310-0044` partout | — |
 | ~~Pas de déploiement Vercel~~ | ✅ Résolu — moveotaxi.com | — |
 | ~~GBP validation vidéo~~ | ✅ Résolu — Profil actif sur Google Maps depuis le 2026-07-23 | — |
+| Fichiers locaux non commités (reçu, admin) | Page reçu en 404, boutons admin absents en prod | Commiter + déployer via Git uniquement |
+| DKIM Google Workspace absent | Emails moins bien délivrés | Enregistrement TXT `google._domainkey` chez GoDaddy |
 | Core Web Vitals GSC | Pas de données (site récent) | Données disponibles après 90 jours de trafic réel |

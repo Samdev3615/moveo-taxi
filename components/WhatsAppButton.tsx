@@ -3,6 +3,13 @@
 import { useLocale } from "next-intl";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
 
+function trackWA(source: string, locale: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    (window as any).gtag("event", "whatsapp_click", { source, locale });
+  }
+}
+
 export default function WhatsAppButton() {
   const locale = useLocale();
 
@@ -11,6 +18,7 @@ export default function WhatsAppButton() {
       href={getWhatsAppUrl(locale)}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackWA("floating_button", locale)}
       className="fixed bottom-6 end-6 z-50 flex items-center gap-2 bg-[#25D366] text-white px-4 py-3.5 rounded-full shadow-xl hover:bg-[#1da851] transition-all hover:scale-105 group"
       aria-label="WhatsApp"
     >

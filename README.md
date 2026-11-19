@@ -4,7 +4,7 @@ Site de réservation de taxi en Israël — transferts aéroport Ben Gourion et 
 
 ## Stack technique
 
-- **Next.js 14** (App Router)
+- **Next.js 16** (App Router)
 - **next-intl** — 5 langues : hébreu (RTL), anglais, français, russe, espagnol
 - **Tailwind CSS v4**
 - **Supabase** — base de données et panel admin
@@ -35,7 +35,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 | `/` | Accueil avec widget de réservation |
 | `/airport` | Transferts aéroport Ben Gourion |
 | `/booking` | Formulaire de réservation |
-| `/routes` | Trajets inter-villes et tarifs |
+| `/routes` | Hub des trajets et tarifs |
+| `/route/[slug]` | 24 pages de routes (ex. `jerusalem-ben-gurion`) |
+| `/taxi-eilat` | Landing Taxi Eilat |
+| `/blog` | Articles de blog |
 | `/about` | À propos de Moveo Taxi |
 | `/contact` | Contact et horaires |
 | `/admin` | Panel admin (protégé) |
